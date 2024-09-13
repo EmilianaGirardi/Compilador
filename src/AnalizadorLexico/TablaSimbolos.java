@@ -11,8 +11,13 @@ public class TablaSimbolos {
     //los signos +, -, etc. no se guardan
     //las palabras reservadas se guardan en la ts
 
-    // Insertar elementos en el map (clave-valor)
-        map.put("Uno", 1);
-        map.put("Dos", 2);
-        map.put("Tres", 3);
+    public void agregarToken(String lexema, Integer atributo){
+        map.put(lexema, atributo);
+    }
+
+    public boolean estaToken(String lexema){
+        return map.containsKey(lexema);
+    }
+
 }
+
