@@ -16,17 +16,17 @@ public class AS1 implements AccionSemantica{
 
     }
 }
-public class AS5 implements AccionSemantica{
+public class AS2 implements AccionSemantica{
     @Override
     public void ejecutar(String token, Character caracterActual) {
         System.out.println("Error: cte mal escrita en linea ", Lexico.getContadorLinea());
     }
 }
-public class AS6 implements AccionSemantica{
-    private double infPositivo = Math.pow(1.1754943, -38 );
-    private double supPositivo = Math.pow(3.40282347, 38);
-    private double infNegativo = Math.pow(-3.40282347, 38);
-    private double supNegativo = Math.pow(-1.17549435, -38);
+public class AS3 implements AccionSemantica{
+    private final double infPositivo = Math.pow(1.1754943, -38 );
+    private final double supPositivo = Math.pow(3.40282347, 38);
+    private final double infNegativo = Math.pow(-3.40282347, 38);
+    private final double supNegativo = Math.pow(-1.17549435, -38);
 
 
     private boolean fueraRango(String cte){
