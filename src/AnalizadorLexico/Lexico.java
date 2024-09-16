@@ -1,6 +1,7 @@
 package AnalizadorLexico;
 
 import AnalizadorLexico.AccionesSemanticas.AS1;
+import AnalizadorLexico.AccionesSemanticas.AS14;
 import AnalizadorLexico.AccionesSemanticas.AS2;
 
 import java.io.FileReader;
@@ -16,6 +17,7 @@ public class Lexico {
     private TablaSimbolos tablaSimbolos;
     private char caracterActual;
     private FileReader fr;
+    private String yyval;
     public static final char TAB = '\t';
     public static final char BLANK = ' ';
     public static final char SALTO_LINEA = '\n';
@@ -193,6 +195,13 @@ public class Lexico {
             leerSiguiente();
     }
 
+    public void setYyval(String yyval) {
+        this.yyval = yyval;
+    }
+
+    public TablaSimbolos getTablaSimbolos() {
+        return tablaSimbolos;
+    }
 
     //generar token deberia devolver un int que es el valor del token.
     //si se requiere devolver el lexema debe devolverse en la variable yylval (puntero a la tabla de simbolos)
