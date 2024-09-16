@@ -2,24 +2,24 @@ package AnalizadorLexico.AccionesSemanticas;
 
 import AnalizadorLexico.Lexico;
 
+import java.io.IOException;
+
 public interface AccionSemantica {
 
-    public abstract void ejecutar(String token, Character caracterActual );
+    public abstract void ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException;
 }
 
 public class AS1 implements AccionSemantica{
 
     @Override
-    public void ejecutar(String token, Character caracterActual) {
-
+    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
         token = token + caracterActual;
-
     }
 }
 public class AS2 implements AccionSemantica{
     @Override
-    public void ejecutar(String token, Character caracterActual) {
-        System.out.println("Error: cte mal escrita en linea ", Lexico.getContadorLinea());
+    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
+        System.out.println("Error: cte mal escrita en linea ", lexico.getContadorLinea());
     }
 }
 public class AS3 implements AccionSemantica{
@@ -60,9 +60,9 @@ public class AS3 implements AccionSemantica{
 
 
     @Override
-    public void ejecutar(String token, Character caracterActual) {
+    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
        if (fueraRango(token)) {
-           System.out.println("Warning: cte fuera de rango en linea ", Lexico.getContadorLinea());
+           System.out.println("Warning: cte fuera de rango en linea ", lexico.getContadorLinea());
        }
 
        /* Buscar en la tabla de símbolos
