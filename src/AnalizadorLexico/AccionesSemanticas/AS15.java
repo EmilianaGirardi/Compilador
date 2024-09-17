@@ -3,15 +3,16 @@ package AnalizadorLexico.AccionesSemanticas;
 import AnalizadorLexico.Lexico;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class AS15 implements AccionSemantica{
 
     //as16 y as17 deberian ser igual a esta.
     @Override
-    public void ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
-        String simbolo = String.valueOf(caracterActual);
-        lexico.setYyval(simbolo);
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
         lexico.leerSiguiente();
+        int ascii = caracterActual;
+        return Optional.of(ascii);
     }
 
     /*
