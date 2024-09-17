@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.BufferedReader;
-
+import java.util.Optional;
 
 
 public class Lexico {
@@ -18,6 +18,7 @@ public class Lexico {
     private char caracterActual;
     private FileReader fr;
     private String yyval;
+
     public static final char TAB = '\t';
     public static final char BLANK = ' ';
     public static final char SALTO_LINEA = '\n';
@@ -206,8 +207,23 @@ public class Lexico {
     //generar token deberia devolver un int que es el valor del token.
     //si se requiere devolver el lexema debe devolverse en la variable yylval (puntero a la tabla de simbolos)
     //TODO implementar la logica del metodo principal
-    public int generarToken() throws IOException {
-        this.leerSiguiente();
+    public int yylex() throws IOException {
+        //this.leerSiguiente();
         String token = "";
+        int estadoActual = 0;
+        Optional<Integer> t = null;
+        this.leerSiguiente();
+        while (estadoActual != F){ //hacer que los estados sean String o darle un numero a F.
+            t = matriz[estadoActual][caracterActual].getAs().ejecutar(token, caracterActual, this);
+            estadoActual=matriz[estadoActual][caracterActual].getEstado();
+        }
+        //cuando sale del while retornar el int del token (los da yacc)
+        //entrega 0 si es end of file
+        if (t != null){
+            if (t.isPresent()) {
+                return t.get();
+            }
+        }
+        return 0;
     }
 }
