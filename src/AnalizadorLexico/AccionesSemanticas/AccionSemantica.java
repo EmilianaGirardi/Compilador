@@ -3,26 +3,31 @@ package AnalizadorLexico.AccionesSemanticas;
 import AnalizadorLexico.Lexico;
 
 import java.io.IOException;
+import java.util.Optional;
 
-public interface AccionSemantica {
-
-    public abstract void ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException;
+public abstract class AccionSemantica {
+    //CONSTANTES LITERALES TOKENS
+    public final static int MENORIGUAL=257;
+    p
+    public abstract Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException;
 }
 
-public class AS1 implements AccionSemantica{
+class AS1 extends AccionSemantica{
 
     @Override
-    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
         token = token + caracterActual;
+        return null;
     }
 }
-public class AS2 implements AccionSemantica{
+class AS2 extends AccionSemantica{
     @Override
-    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
         System.out.println("Error: cte mal escrita en linea ", lexico.getContadorLinea());
+        return null;
     }
 }
-public class AS3 implements AccionSemantica{
+class AS3 extends AccionSemantica{
     private final double infPositivo = Math.pow(1.1754943, -38 );
     private final double supPositivo = Math.pow(3.40282347, 38);
     private final double infNegativo = Math.pow(-3.40282347, 38);
@@ -60,7 +65,7 @@ public class AS3 implements AccionSemantica{
 
 
     @Override
-    public void ejecutar(String token, Character caracterActual, Lexico lexico) {
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
        if (fueraRango(token)) {
            System.out.println("Warning: cte fuera de rango en linea ", lexico.getContadorLinea());
        }
@@ -69,6 +74,7 @@ public class AS3 implements AccionSemantica{
         Si esta: devolver constante + puntero a la tabla de símbolos
         No está: Agregar a la tabla de símbolos, devolver constante + puntero a la tabla de símbolos
         */
+        return null;
     }
 }
 
