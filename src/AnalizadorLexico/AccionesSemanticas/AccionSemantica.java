@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import AnalizadorLexico.Lexico;
+import AnalizadorLexico.TablaSimbolos;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -8,72 +9,233 @@ import java.util.Optional;
 public abstract class AccionSemantica {
     //CONSTANTES LITERALES TOKENS
     public final static int MENORIGUAL=257;
-    p
+    public final static int ID=258;
+    public final static int ASIGNACION=259;
+    public final static int DISTINTO=260;
+    public final static int MAYORIGUAL=261;
+    public final static int SINGLE_CONSTANTE=262;
+    
     public abstract Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException;
 }
 
 class AS1 extends AccionSemantica{
 
     @Override
-    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
         token = token + caracterActual;
+        lexico.leerSiguiente();
         return null;
     }
 }
 class AS2 extends AccionSemantica{
     @Override
     public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
-        System.out.println("Error: cte mal escrita en linea ", lexico.getContadorLinea());
-        return null;
+        System.out.println("Error: cte mal escrita en linea "+ lexico.getContadorLinea());
+        
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        if(!TS.estaToken(token)) {
+        	TS.agregarToken(token, null);
+        }
+        lexico.setYyval(token);
+        return Optional.of(SINGLE_CONSTANTE);
     }
 }
 class AS3 extends AccionSemantica{
-    private final double infPositivo = Math.pow(1.1754943, -38 );
-    private final double supPositivo = Math.pow(3.40282347, 38);
-    private final double infNegativo = Math.pow(-3.40282347, 38);
-    private final double supNegativo = Math.pow(-1.17549435, -38);
+    private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
+    private final Float supPositivo = (float) Math.pow(3.40282347, 38);
+    private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
+    private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
 
 
-    private boolean fueraRango(String cte){
-        String mantisa= new String();
-        String exp = new String();
-        int i = 0;
-        while(cte.indexOf(i) != 's' && cte.indexOf(i) != 'S' && i < cte.length()) {
-            mantisa = mantisa + cte.indexOf(i);
-            i++;
+    private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
+    	// Reemplazar 's' por 'e' para convertir a notación científica y parsear el float
+        cte = cte.replace('s', 'e');
+        Float result = Float.parseFloat(cte);
+        
+        if (result > 0.0f){
+            if (infPositivo < result) {
+            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	String nuevaCte = infPositivo.toString().replace('e', 's');
+            	return nuevaCte;
+            	
+            }else if(supPositivo > result) {
+            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	String nuevaCte = supPositivo.toString().replace('e', 's');
+            	return nuevaCte;
+            }
         }
-        while (i < cte.length()){
-            exp = exp + cte.indexOf(i);
-            i++;
+        if (result < 0.0f){
+             if (infNegativo < result) {
+            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+             	String nuevaCte = infNegativo.toString().replace('e', 's');
+             	return nuevaCte;
+             	
+             }else if(supNegativo > result) {
+            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+              	String nuevaCte = supNegativo.toString().replace('e', 's');
+              	return nuevaCte; 
+             }
         }
-        if (exp.equals(" ")) {exp ="1";}
-        double mnt = Double.parseDouble(mantisa);
-        double exponente = Double.parseDouble(exp);
-        double result = Math.pow(mnt,exponente);
-
-        if (result > 0){
-            if (infPositivo < result && supPositivo > result)
-                return false;
-
-        }
-         if (result < 0){
-             if (infNegativo < result && supNegativo > result)
-                 return  false;
-         }
-         return true;
+        
+        return cte;
     }
 
 
     @Override
     public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
-       if (fueraRango(token)) {
-           System.out.println("Warning: cte fuera de rango en linea ", lexico.getContadorLinea());
-       }
+    	TablaSimbolos TS = lexico.getTablaSimbolos();
+    	
+    	token = truncarFueraRango(token, lexico.getContadorLinea());
+		
+		if(!TS.estaToken(token)) {
+			TS.agregarToken(token, null);
+		}
+		
+		lexico.setYyval(token);
+        return Optional.of(SINGLE_CONSTANTE);
+    }
+}
 
-       /* Buscar en la tabla de símbolos
-        Si esta: devolver constante + puntero a la tabla de símbolos
-        No está: Agregar a la tabla de símbolos, devolver constante + puntero a la tabla de símbolos
-        */
+/*
+ * ACC_SEM 4 - 8
+ * */
+
+class AS9 extends AccionSemantica {
+
+	@Override
+	public Optional<Integer>  ejecutar(String token, Character caracterActual, Lexico lexico) {
+		// TODO Auto-generated method stub
+		TablaSimbolos TS = lexico.getTablaSimbolos();
+		
+		if(!TS.estaToken(token)) {
+			TS.agregarToken(token, null);
+		}
+		
+		lexico.setYyval(token);
+		return Optional.of(ID);
+	}
+
+}
+
+class AS10 extends AccionSemantica {
+
+	@Override
+	public Optional<Integer> ejecutar(String token, Character caracterActual,  Lexico lexico) {
+		// TODO Auto-generated method stub
+		TablaSimbolos TS = lexico.getTablaSimbolos();
+		token+='=';
+		
+		if(caracterActual=='=') {
+			try {
+				lexico.leerSiguiente();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			System.out.println("Warning: asignación incompleta. Línea: "+lexico.getContadorLinea());
+		}
+		
+		if(!TS.estaToken(token)) {
+			TS.agregarToken(token, null);
+		}
+		lexico.setYyval(token);
+		
+		return Optional.of(ASIGNACION);
+	}
+
+}
+
+
+class AS11 extends AccionSemantica {
+
+	@Override
+	public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
+		// TODO Auto-generated method stub
+		TablaSimbolos TS = lexico.getTablaSimbolos();
+		token+='=';
+		
+		if(caracterActual=='=') {
+			try {
+				lexico.leerSiguiente();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			System.out.println("Warning: sentencia de inequidad incompleta. Línea: "+lexico.getContadorLinea());
+		}
+		
+		if(!TS.estaToken(token)) {
+			TS.agregarToken(token, null);
+		}
+		lexico.setYyval(token);
+		
+		return Optional.of(DISTINTO);
+	}
+
+}
+
+class AS12 extends AccionSemantica {
+
+	@Override
+	public Optional<Integer>  ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        token = token + caracterActual;
+        if (!lexico.getTablaSimbolos().estaToken(token)){
+            lexico.getTablaSimbolos().agregarToken(token, null);
+        }
+        lexico.setYyval(token); //puntero a la tabla de simbolos
+        lexico.leerSiguiente();
+
+        return Optional.of(MAYORIGUAL); //devuelve el token
+	}
+
+}
+
+class AS13 extends AccionSemantica{
+
+    //as16 y as17 deberian ser igual a esta.
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        int ascii = token.charAt(0);
+        return Optional.of(ascii);
+    }
+
+    //EL < NO SE GUARDA EN LA TABLA DE SIMBOLOS PORQUE ES UN SOLO CARACTER
+}
+
+class AS14 extends AccionSemantica{
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        token = token + caracterActual;
+        if (!lexico.getTablaSimbolos().estaToken(token)){
+            lexico.getTablaSimbolos().agregarToken(token, null);
+        }
+        lexico.setYyval(token); //puntero a la tabla de simbolos
+        lexico.leerSiguiente();
+
+        return Optional.of(MENORIGUAL); //devuelve el token
+
+    }
+}
+
+class AS15 extends AccionSemantica{
+
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        int ascii = token.charAt(0);
+        lexico.leerSiguiente();
+        return Optional.of(ascii);
+    }
+
+    //EL < NO SE GUARDA EN LA TABLA DE SIMBOLOS PORQUE ES UN SOLO CARACTER
+}
+
+class AS16 extends AccionSemantica{
+
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        lexico.leerSiguiente();
         return null;
     }
 }
