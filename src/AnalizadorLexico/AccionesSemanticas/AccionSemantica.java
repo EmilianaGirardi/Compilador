@@ -14,7 +14,8 @@ public abstract class AccionSemantica {
     public final static int DISTINTO=260;
     public final static int MAYORIGUAL=261;
     public final static int SINGLE_CONSTANTE=262;
-    
+    public final static int ENTERO_UNSIGNED = 263;
+    public final static int octal = 264;
     public abstract Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException;
 }
 
@@ -95,6 +96,100 @@ class AS3 extends AccionSemantica{
         return Optional.of(SINGLE_CONSTANTE);
     }
 }
+
+
+public class AS4 extends AccionSemantica {
+
+    public final int limite = Math.pow(2, 15) -1;
+
+    private String truncaEntero(String token) throws NumberFormatException {
+        int numero = Integer.parseInt(token);
+        numero = numero & 0xFFFF;
+        return Integer.toString(numero);
+    }
+
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        if ((int) token < 0 || (int) token > limite){
+            System.out.println('EL entero se encuentra fuera de rango');
+            token = truncaEntero(token);
+        }
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        if(!TS.estaToken(token)){
+            TS.agregarToken(token, null);
+        }
+        lexico.setYyval(token);
+        return Optional.of(ENTERO_UNSIGNED);
+    }
+}
+
+public class AS5 extends AccionSemantica {
+
+    public final int limite = 0177777;
+
+    private String truncaEntero(String token) throws NumberFormatException {
+        int numero = Integer.parseInt(token);
+        numero = numero & 0xFFFF;
+        return Integer.toString(numero);
+    }
+
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        if ((int) token < 0 || (int) token > limite){
+            System.out.println('EL entero se encuentra fuera de rango');
+            token = truncaEntero(token);
+        }
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        if(!TS.estaToken(token)){
+            TS.agregarToken(token, null);
+        }
+        lexico.setYyval(token);
+        return Optional.of(ENTERO_UNSIGNED);
+    }
+}
+
+public class AS6 extends AccionSemantica {
+
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) throws IOException {
+        if (caracterActual.equals("/r")) { //Se supone que al barra r lo tomaba como un solo caracter
+            caracterActual = lexico.leerSiguiente();
+            if (!caracterActual.equals("/n"))
+            {
+                token.append("/r");
+            }
+        }
+
+        return Optional.empty(); //Deberia ser void este retorno nose si esta bien
+    }
+}
+
+
+public class AS7 extends AccionSemantica{
+    @Override
+    public Optional<Integer> ejecutar(String token, Character caracterActual, Lexico lexico) {
+        if (caracterActual.equals("/r")) {
+            TablaSimbolos TS = lexico.getTablaSimbolos();
+            TS.agregarToken(token, null);
+        }
+        return Optional.empty();
+    }
+}
+public class AS8 extends AccionSemantica{
+
+    @Override
+    public Optional<Integer>  ejecutar(String token, Character caracterActual, Lexico lexico) {
+        // TODO Auto-generated method stub
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+
+        if(!TS.estaToken(token)) {
+            TS.agregarToken(token, null);
+        }
+
+        lexico.setYyval(token);
+        return Optional.of(ID);
+    }
+} //LA 8 y la 9 son iguales
 
 /*
  * ACC_SEM 4 - 8
