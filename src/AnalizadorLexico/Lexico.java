@@ -1,21 +1,6 @@
 package AnalizadorLexico;
 
-import AnalizadorLexico.AccionesSemanticas.AS1;
-import AnalizadorLexico.AccionesSemanticas.AS10;
-import AnalizadorLexico.AccionesSemanticas.AS11;
-import AnalizadorLexico.AccionesSemanticas.AS12;
-import AnalizadorLexico.AccionesSemanticas.AS13;
-import AnalizadorLexico.AccionesSemanticas.AS14;
-import AnalizadorLexico.AccionesSemanticas.AS15;
-import AnalizadorLexico.AccionesSemanticas.AS16;
-import AnalizadorLexico.AccionesSemanticas.AS2;
-import AnalizadorLexico.AccionesSemanticas.AS3;
-import AnalizadorLexico.AccionesSemanticas.AS4;
-import AnalizadorLexico.AccionesSemanticas.AS5;
-import AnalizadorLexico.AccionesSemanticas.AS6;
-import AnalizadorLexico.AccionesSemanticas.AS7;
-import AnalizadorLexico.AccionesSemanticas.AS8;
-import AnalizadorLexico.AccionesSemanticas.AS9;
+import AnalizadorLexico.AccionesSemanticas.*;
 //import AnalizadorLexico.AccionesSemanticas.AccionSemantica;
 
 import java.io.FileReader;
@@ -43,7 +28,7 @@ public class Lexico {
     public static final char BLANK = ' ';
     public static final char SALTO_LINEA = '\n';
     public static final char RETORNO_CARRO = '\r';
-    public static final char FINAL_ARCHIVO = '$';
+    //public static final char FINAL_ARCHIVO = '$'; (no hace falta ya que el reed devuelve -1 en eof)
 
 
     public Lexico(String archivo) throws IOException{
@@ -128,6 +113,12 @@ public class Lexico {
                         case "16":
                             matriz[lineaActual][simboloActual].setAs(new AS16());
                             break;
+                        case "17":
+                            matriz[lineaActual][simboloActual].setAs(new AS17());
+                            break;
+                        case "18":
+                            matriz[lineaActual][simboloActual].setAs(new AS18());
+                            break;
                     }
 
                     switch (columnaEstados[simboloActual]){
@@ -178,6 +169,9 @@ public class Lexico {
                             break;
                         case "16":
                             matriz[lineaActual][simboloActual].setEstado(16);
+                            break;
+                        case "17":
+                            matriz[lineaActual][simboloActual].setEstado(17);
                             break;
                         case "50":
                         	matriz[lineaActual][simboloActual].setEstado(50);
@@ -267,8 +261,18 @@ public class Lexico {
                 return t.get();
             }
         }
-        
-        if(caracterActual == FINAL_ARCHIVO) {
+
+        if(caracterActual == -1) { //PROBLEMA: CARACTER ACTUAL ES CHAR, POR LO QUE NO TOMA NUNCA EL VALOR -1
+            /* Cuando fr.read() devuelve -1, indica que se ha alcanzado el final del archivo.
+            Sin embargo, al convertir este valor a char con (char) fr.read(), el valor -1
+            se convierte en un carácter Unicode inválido, ya que char en Java no puede representar valores negativos.
+            En Java, el tipo char representa un carácter Unicode de 16 bits, con un rango de 0 a 65535.
+            Por lo tanto, cuando intentas asignar -1 a un char, el valor se convierte en 65535
+            debido a la conversión de tipo.
+            Para manejar correctamente el final del archivo,
+            deberías almacenar el valor devuelto por fr.read() en una variable de tipo int
+            antes de realizar cualquier conversión. */
+            //no me gusta que sea int, prefiero manejarlo de otra forma.
         	return 0;
         }
         
@@ -350,9 +354,6 @@ public class Lexico {
 		case SALTO_LINEA :
 			return 27;
 		
-		case FINAL_ARCHIVO :
-			return 28;
-		
 		default:
 			if(Character.isDigit(caracter)) {
 				int d = (int)caracter;
@@ -365,8 +366,11 @@ public class Lexico {
 				}else {
 					return 28;
 				}
-			}else {
-				return 24;
+			}else
+            { if (Character.isAlphabetic(caracter)){
+                return 24;
+            }else
+				return 28;
 			}
 		}
 	}
