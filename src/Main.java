@@ -8,11 +8,11 @@ import AnalizadorLexico.TablaSimbolos;
 
 public class Main {
 	
-	//TODO cambiar que agregue el numero de token cada vez que agrega a la TS
-	// Agregar al mapeo caracteres invalidos
-	// verificar que devuelve el reed al final del archivo
+	//TODO cambiar que agregue el numero de token cada vez que agrega a la TS (DONE)
+	// Agregar al mapeo caracteres invalidos (DONE)
+	// verificar que devuelve el reed al final del archivo (DONE pero solucionar tema del EOF)
 	// AS nico
-	// modificar tamaño de la matriz y arreglar que detecte estados y acciones nuevas.
+	// modificar tamaño de la matriz y arreglar que detecte estados y acciones nuevas. (DONE)
 	
 	
     public static void main(String[] args) {
