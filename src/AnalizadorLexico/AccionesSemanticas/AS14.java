@@ -12,7 +12,7 @@ public class AS14 extends AccionSemantica{
         String token = lexico.getToken();
         
         if (!lexico.getTablaSimbolos().estaToken(token)){
-            lexico.getTablaSimbolos().agregarToken(token, null);
+            lexico.getTablaSimbolos().agregarToken(token, MENORIGUAL);
         }
         lexico.setYyval(token); //puntero a la tabla de simbolos
         lexico.leerSiguiente();

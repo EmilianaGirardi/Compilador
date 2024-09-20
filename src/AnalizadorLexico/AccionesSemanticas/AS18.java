@@ -1,16 +1,16 @@
 package AnalizadorLexico.AccionesSemanticas;
 
+import AnalizadorLexico.Lexico;
+
 import java.io.IOException;
 import java.util.Optional;
 
-import AnalizadorLexico.Lexico;
-
-public class AS13 extends AccionSemantica{
+public class AS18 extends AccionSemantica{
 
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
-        int ascii = lexico.getToken().charAt(0);
-        return Optional.of(ascii);
+        System.out.print("Warning: caracter invalido eliminado.");
+        lexico.leerSiguiente();
+        return Optional.empty();
     }
-
 }

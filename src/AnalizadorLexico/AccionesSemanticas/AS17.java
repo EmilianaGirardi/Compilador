@@ -17,7 +17,7 @@ public class AS17 extends AccionSemantica{
 		lexico.setYyval(token);
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, null);
+			TS.agregarToken(token, ID);
 			return Optional.of(ID);
 		}else {		
 			return Optional.of(TS.getValor(token));	

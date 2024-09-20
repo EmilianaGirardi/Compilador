@@ -20,6 +20,6 @@ public class AS6 extends AccionSemantica {
             }
         }
 
-        return Optional.empty(); //Deberia ser void este retorno nose si esta bien
+        return Optional.empty();
     }
 }

@@ -28,7 +28,7 @@ public class AS11 extends AccionSemantica {
 		}
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, null);
+			TS.agregarToken(token, DISTINTO);
 		}
 		lexico.setYyval(token);
 		

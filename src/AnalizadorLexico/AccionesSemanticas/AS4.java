@@ -28,7 +28,7 @@ public class AS4 extends AccionSemantica {
         
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
-            TS.agregarToken(token, null);
+            TS.agregarToken(token, ENTERO_UNSIGNED);
         }
         lexico.setYyval(token);
         return Optional.of(ENTERO_UNSIGNED);

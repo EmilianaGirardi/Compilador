@@ -54,7 +54,7 @@ public class AS3 extends AccionSemantica{
     	token = truncarFueraRango(token, lexico.getContadorLinea());
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, null);
+			TS.agregarToken(token, SINGLE_CONSTANTE);
 		}
 		
 		lexico.setYyval(token);

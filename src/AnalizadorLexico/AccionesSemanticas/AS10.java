@@ -28,7 +28,7 @@ public class AS10 extends AccionSemantica {
 		}
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, null);
+			TS.agregarToken(token, ASIGNACION);
 		}
 		lexico.setYyval(token);
 		

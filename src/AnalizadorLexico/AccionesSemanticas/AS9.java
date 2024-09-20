@@ -14,7 +14,7 @@ public class AS9 extends AccionSemantica {
 		String token = lexico.getToken();
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, null);
+			TS.agregarToken(token, ID);
 		}
 		
 		lexico.setYyval(token);

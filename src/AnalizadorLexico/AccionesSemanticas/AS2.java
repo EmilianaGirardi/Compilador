@@ -13,7 +13,7 @@ public class AS2 extends AccionSemantica{
         
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)) {
-        	TS.agregarToken(token, null);
+        	TS.agregarToken(token, SINGLE_CONSTANTE);
         }
         lexico.setYyval(token);
         return Optional.of(SINGLE_CONSTANTE);
