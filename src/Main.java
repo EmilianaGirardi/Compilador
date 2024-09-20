@@ -1,17 +1,34 @@
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
+
+import java.io.IOException;
+
+import AnalizadorLexico.Lexico;
+import AnalizadorLexico.TablaSimbolos;
+
 public class Main {
+	
+	//TODO cambiar que agregue el numero de token cada vez que agrega a la TS
+	// Agregar al mapeo caracteres invalidos
+	// verificar que devuelve el reed al final del archivo
+	// AS nico
+	// modificar tamaño de la matriz y arreglar que detecte estados y acciones nuevas.
+	
+	
     public static void main(String[] args) {
-        // Press Alt+Intro with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
-
-        // Press Mayús+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
-
-            // Press Mayús+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
-        }
+    	
+    	String archivoPrueba="/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/ArchivoPrueba/Prueba0";
+        
+		try {
+			Lexico l = new Lexico(archivoPrueba);
+	
+        	for (int i=0; i<4; i++) {
+        		System.out.println("Token: "+l.yylex());
+        	}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
