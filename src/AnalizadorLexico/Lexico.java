@@ -1,14 +1,28 @@
 package AnalizadorLexico;
 
 import AnalizadorLexico.AccionesSemanticas.AS1;
+import AnalizadorLexico.AccionesSemanticas.AS10;
+import AnalizadorLexico.AccionesSemanticas.AS11;
+import AnalizadorLexico.AccionesSemanticas.AS12;
+import AnalizadorLexico.AccionesSemanticas.AS13;
 import AnalizadorLexico.AccionesSemanticas.AS14;
+import AnalizadorLexico.AccionesSemanticas.AS15;
+import AnalizadorLexico.AccionesSemanticas.AS16;
 import AnalizadorLexico.AccionesSemanticas.AS2;
-import AnalizadorLexico.AccionesSemanticas.AccionSemantica;
+import AnalizadorLexico.AccionesSemanticas.AS3;
+import AnalizadorLexico.AccionesSemanticas.AS4;
+import AnalizadorLexico.AccionesSemanticas.AS5;
+import AnalizadorLexico.AccionesSemanticas.AS6;
+import AnalizadorLexico.AccionesSemanticas.AS7;
+import AnalizadorLexico.AccionesSemanticas.AS8;
+import AnalizadorLexico.AccionesSemanticas.AS9;
+//import AnalizadorLexico.AccionesSemanticas.AccionSemantica;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.io.BufferedReader;
+import java.util.Iterator;
 import java.util.Optional;
 
 
@@ -19,10 +33,11 @@ public class Lexico {
     private char caracterActual;
     private FileReader fr;
     private String yyval;
-    
-    private static final int FILAS=17;
+    private String token;
+
+	private static final int FILAS=17;
     private static final int COLUMNAS=29;
-    
+    public static final int ESTADO_FINAL=50;
 
     public static final char TAB = '\t';
     public static final char BLANK = ' ';
@@ -31,18 +46,19 @@ public class Lexico {
     public static final char FINAL_ARCHIVO = '$';
 
 
-    public Lexico(TablaSimbolos tablaSimbolos, String archivo){
+    public Lexico(String archivo) throws IOException{
         crearMatriz();
-        this.tablaSimbolos = tablaSimbolos;
+        this.tablaSimbolos = new TablaSimbolos();
         this.contadorLinea=0;
+        defaultToken();
         this.abrirArchivo(archivo);
     }
 
     private void crearMatriz(){
         this.matriz = new Par[FILAS][COLUMNAS];
 
-        String archivoAccionesCSV = "\"C:\\Users\\emigi\\OneDrive\\Escritorio\\Compiladores\\Matrix\\Matriz de AS.csv\"";
-        String archivoEstadosCSV = "\"C:\\Users\\emigi\\OneDrive\\Escritorio\\Compiladores\\Matrix\\Matriz de estados.csv\"";
+        String archivoAccionesCSV = "/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/Matriz/AccionesSemanticas-MatrizEstados.csv";
+        String archivoEstadosCSV = "/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/Matriz/TransicionEstados-MatrizEstados.csv";
         String lineaAccSem = "";
         String lineaEstados = "";
         String separador = ",";
@@ -112,12 +128,6 @@ public class Lexico {
                         case "16":
                             matriz[lineaActual][simboloActual].setAs(new AS16());
                             break;
-                        case "17":
-                            matriz[lineaActual][simboloActual].setAs(new AS17());
-                            break;
-                        case "18":
-                            matriz[lineaActual][simboloActual].setAs(new AS18());
-                            break;
                     }
 
                     switch (columnaEstados[simboloActual]){
@@ -169,10 +179,25 @@ public class Lexico {
                         case "16":
                             matriz[lineaActual][simboloActual].setEstado(16);
                             break;
+                        case "50":
+                        	matriz[lineaActual][simboloActual].setEstado(50);
+                            break;
                     }
 
                 }
             }
+            /*
+            for (int i = 0; i<FILAS; i++) {
+				for (int j = 0; j<COLUMNAS; j++) {
+					System.out.println("");
+					System.out.println("Estado: "+i+" - Simbolo: "+j);
+					System.out.println("Matriz estado: "+matriz[i][j].getEstado());
+					System.out.println("Matriz accionSemantica: "+matriz[i][j].getAs());
+					System.out.println("------------------------------------");
+				}
+				
+			}
+			*/
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -183,23 +208,27 @@ public class Lexico {
         return contadorLinea;
     }
 
-    public void abrirArchivo(String archivo) {
-        try {
-            this.fr = new FileReader(archivo);
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void abrirArchivo(String archivo) throws IOException {
+        this.fr = new FileReader(archivo);
+        this.leerSiguiente();
     }
 
     public void leerSiguiente() throws IOException {
         this.caracterActual = (char) fr.read();
+        
         if (caracterActual == RETORNO_CARRO) {
+        	
             this.caracterActual = (char) fr.read();
             if (caracterActual == SALTO_LINEA)
                 this.contadorLinea++;
+            
+        }else if(caracterActual == SALTO_LINEA){
+            this.contadorLinea++;
         }
+        
         if (caracterActual == TAB || caracterActual == BLANK)
             leerSiguiente();
+        
     }
 
     public void setYyval(String yyval) {
@@ -214,23 +243,25 @@ public class Lexico {
     //si se requiere devolver el lexema debe devolverse en la variable yylval (puntero a la tabla de simbolos)
     public int yylex() throws IOException {
         //this.leerSiguiente();
-        String token = "";
+        //String token = "";
         int estadoActual = 0;
         Optional<Integer> t = null;
         
-        this.leerSiguiente();
         
-        while (estadoActual != 50){
+        while (estadoActual != ESTADO_FINAL){
         	
         	int columna = mapeoCaracter(caracterActual);
         	
-            t = matriz[estadoActual][columna].getAs().ejecutar(token, caracterActual, this);
+            t = matriz[estadoActual][columna].getAs().ejecutar(caracterActual, this);
             estadoActual=matriz[estadoActual][columna].getEstado();
             
             
         }
         //cuando sale del while retornar el int del token (los da yacc)
         //entrega 0 si es end of file
+        
+       defaultToken();
+        
         if (t != null){
             if (t.isPresent()) {
                 return t.get();
@@ -240,6 +271,8 @@ public class Lexico {
         if(caracterActual == FINAL_ARCHIVO) {
         	return 0;
         }
+        
+        return 1;
     }
 
 	public int mapeoCaracter(char caracter) {
@@ -308,9 +341,6 @@ public class Lexico {
 		case ']':
 			return 23;
 			
-		case '|':
-			return 24;
-			
 		case '_':
 			return 25;
 			
@@ -324,16 +354,32 @@ public class Lexico {
 			return 28;
 		
 		default:
-			int d = (int)caracter;
-			if(d>7) {
-				return 0;
-			}else if(d>0 && d<8) {
-				return 1;
-			}else if(d==0) {
-				return 3;
+			if(Character.isDigit(caracter)) {
+				int d = (int)caracter;
+				if(d>7) {
+					return 0;
+				}else if(d>0 && d<8) {
+					return 1;
+				}else if(d==0) {
+					return 3;
+				}else {
+					return 28;
+				}
 			}else {
-				return 28; //Hay que ver que se hace con un caracter no reconocido 
+				return 24;
 			}
 		}
+	}
+	
+    public String getToken() {
+		return token;
+	}
+
+	public void addCharToken(char t) {
+		this.token+=t;
+	}
+	
+	public void defaultToken() {
+		this.token="";
 	}
 }
