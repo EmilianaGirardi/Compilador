@@ -10,10 +10,10 @@ public class AS7 extends AccionSemantica{
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) {
     	String token = lexico.getToken();
     	
-        if (caracterActual.equals("/r")) { /////EL simbolo es ']'
+        if (caracterActual.equals(']')) {
             TablaSimbolos TS = lexico.getTablaSimbolos();
-            TS.agregarToken(token, null);
+            TS.agregarToken(token, MULTILINEA); ///NECESITO UN VALOR PARA AGREGAR y no se cual es :c. Le puse ese de forma provisional
         }
-        return Optional.empty();
+        return Optional.of(MULTILINEA);
     }
 }

@@ -19,24 +19,24 @@ public class AS3 extends AccionSemantica{
         
         if (result > 0.0f){
             if (infPositivo < result) {
-            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
             	String nuevaCte = infPositivo.toString().replace('e', 's');
             	return nuevaCte;
             	
             }else if(supPositivo > result) {
-            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
             	String nuevaCte = supPositivo.toString().replace('e', 's');
             	return nuevaCte;
             }
         }
         if (result < 0.0f){
              if (infNegativo < result) {
-            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	System.out.println("Warning: cte fuera de rango. Linea "+ linea);
              	String nuevaCte = infNegativo.toString().replace('e', 's');
              	return nuevaCte;
              	
              }else if(supNegativo > result) {
-            	System.out.println("Warning: cte fuera de rango en linea "+ linea);
+            	System.out.println("Warning: cte fuera de rango. Linea "+ linea);
               	String nuevaCte = supNegativo.toString().replace('e', 's');
               	return nuevaCte; 
              }

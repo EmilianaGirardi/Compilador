@@ -12,14 +12,20 @@ public class AS6 extends AccionSemantica {
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	
-        if (caracterActual.equals("/r")) { //Se supone que al barra r lo tomaba como un solo caracter
-            caracterActual = lexico.leerSiguiente();
-            if (!caracterActual.equals("/n"))
-            {
-                lexico.addCharToken("/r");
+        if (caracterActual.equals('\r')) {
+        	lexico.leerSiguiente();
+            caracterActual = lexico.getCaracterActual();
+            if (caracterActual.equals('\n')){
+            	lexico.leerSiguiente();
+            	return Optional.empty();
             }
+        }else if(caracterActual.equals('\n')) {
+        	lexico.leerSiguiente();
+        	return Optional.empty();
         }
-
+        
+        lexico.addCharToken(caracterActual);
+        lexico.leerSiguiente();
         return Optional.empty();
     }
 }

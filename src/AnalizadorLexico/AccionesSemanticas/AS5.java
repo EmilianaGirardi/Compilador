@@ -21,14 +21,14 @@ public class AS5 extends AccionSemantica {
     	String token = lexico.getToken();
     	
         if (Integer.valueOf(token) < 0 || Integer.valueOf(token) > limite){
-            System.out.println("EL entero se encuentra fuera de rango");
+            System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
             token = truncaEntero(token);
         }
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
-            TS.agregarToken(token, ENTERO_UNSIGNED);
+            TS.agregarToken(token, OCTAL);
         }
         lexico.setYyval(token);
-        return Optional.of(ENTERO_UNSIGNED);
+        return Optional.of(OCTAL);
     }
 }

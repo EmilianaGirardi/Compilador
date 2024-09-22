@@ -21,9 +21,10 @@ public class Main {
         
 		try {
 			Lexico l = new Lexico(archivoPrueba);
-	
-        	for (int i=0; i<4; i++) {
-        		System.out.println("Token: "+l.yylex());
+			int v = 1;
+        	while(v!=0) {
+        		v = l.yylex();
+        		//System.out.println("Token: "+v);
         	}
 			
 		} catch (IOException e) {

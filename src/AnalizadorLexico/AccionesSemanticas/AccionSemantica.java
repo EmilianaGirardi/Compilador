@@ -15,7 +15,8 @@ public abstract class AccionSemantica {
     public final static int MAYORIGUAL=261;
     public final static int SINGLE_CONSTANTE=262;
     public final static int ENTERO_UNSIGNED = 263;
-    public final static int octal = 264;
+    public final static int OCTAL = 264;
+    public final static int MULTILINEA = 265; //Valor provisional, no se como tomar la multilinea
     
     public abstract Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException;
 

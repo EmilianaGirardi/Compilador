@@ -22,7 +22,7 @@ public class AS4 extends AccionSemantica {
     	String token = lexico.getToken();
     	
         if (Integer.valueOf(token) < 0 || Integer.valueOf(token) > limite){
-            System.out.println("Warning: Entero se encuentra fuera de rango. Línea:"+lexico.getContadorLinea());
+            System.out.println("Warning: Entero se encuentra fuera de rango. Línea: "+lexico.getContadorLinea());
             token = truncaEntero(token);
         }
         

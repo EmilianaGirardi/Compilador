@@ -20,7 +20,7 @@ public class Lexico {
     private String yyval;
     private String token;
 
-	private static final int FILAS=17;
+	private static final int FILAS=18;
     private static final int COLUMNAS=29;
     public static final int ESTADO_FINAL=50;
 
@@ -28,7 +28,7 @@ public class Lexico {
     public static final char BLANK = ' ';
     public static final char SALTO_LINEA = '\n';
     public static final char RETORNO_CARRO = '\r';
-    //public static final char FINAL_ARCHIVO = '$'; (no hace falta ya que el reed devuelve -1 en eof)
+    public static final char FINAL_ARCHIVO = '$';
 
 
     public Lexico(String archivo) throws IOException{
@@ -208,21 +208,29 @@ public class Lexico {
     }
 
     public void leerSiguiente() throws IOException {
-        this.caracterActual = (char) fr.read();
-        
-        if (caracterActual == RETORNO_CARRO) {
-        	
-            this.caracterActual = (char) fr.read();
-            if (caracterActual == SALTO_LINEA)
-                this.contadorLinea++;
+    	int valor_fr = fr.read();
+    	
+    	//Verifico si lo leído es final de archivo y lo mapeo con el simbolo '$'
+    	
+    	if(valor_fr == -1) {
+    		this.caracterActual = FINAL_ARCHIVO;
+    	}else {
+    		this.caracterActual = (char) valor_fr;
             
-        }else if(caracterActual == SALTO_LINEA){
-            this.contadorLinea++;
-        }
-        
-        if (caracterActual == TAB || caracterActual == BLANK)
-            leerSiguiente();
-        
+            if (caracterActual == RETORNO_CARRO) {
+            	
+                this.caracterActual = (char) fr.read();
+                if (caracterActual == SALTO_LINEA)
+                    this.contadorLinea++;
+                
+            }else if(caracterActual == SALTO_LINEA){
+                this.contadorLinea++;
+            }
+            
+            /*
+            if (caracterActual == TAB || caracterActual == BLANK)
+                leerSiguiente();*/	
+    	}
     }
 
     public void setYyval(String yyval) {
@@ -242,37 +250,32 @@ public class Lexico {
         Optional<Integer> t = null;
         
         
-        while (estadoActual != ESTADO_FINAL){
+        while ((estadoActual != ESTADO_FINAL)&&(this.caracterActual != FINAL_ARCHIVO)){
         	
         	int columna = mapeoCaracter(caracterActual);
         	
-            t = matriz[estadoActual][columna].getAs().ejecutar(caracterActual, this);
+        	if (matriz[estadoActual][columna].getAs()!=null) {
+        		t = matriz[estadoActual][columna].getAs().ejecutar(caracterActual, this);
+        	}
             estadoActual=matriz[estadoActual][columna].getEstado();
             
             
         }
         //cuando sale del while retornar el int del token (los da yacc)
         //entrega 0 si es end of file
-        
+       System.out.println("");
+       System.out.print("Token: "+this.getToken()+" -");
        defaultToken();
         
         if (t != null){
             if (t.isPresent()) {
+            	System.out.println(" Valor: "+t.get());
                 return t.get();
             }
         }
 
-        if(caracterActual == -1) { //PROBLEMA: CARACTER ACTUAL ES CHAR, POR LO QUE NO TOMA NUNCA EL VALOR -1
-            /* Cuando fr.read() devuelve -1, indica que se ha alcanzado el final del archivo.
-            Sin embargo, al convertir este valor a char con (char) fr.read(), el valor -1
-            se convierte en un carácter Unicode inválido, ya que char en Java no puede representar valores negativos.
-            En Java, el tipo char representa un carácter Unicode de 16 bits, con un rango de 0 a 65535.
-            Por lo tanto, cuando intentas asignar -1 a un char, el valor se convierte en 65535
-            debido a la conversión de tipo.
-            Para manejar correctamente el final del archivo,
-            deberías almacenar el valor devuelto por fr.read() en una variable de tipo int
-            antes de realizar cualquier conversión. */
-            //no me gusta que sea int, prefiero manejarlo de otra forma.
+        if(caracterActual == FINAL_ARCHIVO) {
+        	System.out.println("Valor: 0");
         	return 0;
         }
         
@@ -284,15 +287,6 @@ public class Lexico {
 		switch(caracter) {
 		case '[':
 			return 3;
-			
-		case 'u':
-			return 4;
-			
-		case 'v':
-			return 5;
-
-		case 'w':
-			return 6;
 			
 		case 's':
 			return 7;
@@ -368,7 +362,23 @@ public class Lexico {
 				}
 			}else
             { if (Character.isAlphabetic(caracter)){
-                return 24;
+            	if (this.getToken()=="") {
+            		switch (caracter) {
+		            	case 'u':
+		        			return 4;
+		        			
+		        		case 'v':
+		        			return 5;
+		
+		        		case 'w':
+		        			return 6;
+		        			
+		        		default:
+		        			return 24;
+            		}
+            	}else {
+            		return 24;
+            	}
             }else
 				return 28;
 			}
@@ -386,4 +396,11 @@ public class Lexico {
 	public void defaultToken() {
 		this.token="";
 	}
+
+	
+	public char getCaracterActual() {
+		return caracterActual;
+	}
+
+	
 }

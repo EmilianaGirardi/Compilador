@@ -9,7 +9,7 @@ public class AS18 extends AccionSemantica{
 
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
-        System.out.print("Warning: caracter invalido eliminado.");
+        System.out.println("Warning: caracter invalido eliminado. Línea: "+lexico.getContadorLinea());
         lexico.leerSiguiente();
         return Optional.empty();
     }
