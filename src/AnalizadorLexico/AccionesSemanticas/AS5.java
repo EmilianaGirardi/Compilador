@@ -13,7 +13,7 @@ public class AS5 extends AccionSemantica {
     private String truncaEntero(String token) throws NumberFormatException {
         int numero = Integer.parseInt(token);
         numero = numero & 0xFFFF;
-        return Integer.toString(numero);
+        return Integer.toOctalString(numero);
     }
 
     @Override
