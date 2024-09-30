@@ -10,8 +10,7 @@ public class AS5 extends AccionSemantica {
 
     public final int limite = 0177777;
 
-    private String truncaEntero(String token) throws NumberFormatException {
-        int numero = Integer.parseInt(token);
+    private String truncaEntero(int numero) throws NumberFormatException {
         numero = numero & 0xFFFF;
         return Integer.toOctalString(numero);
     }
@@ -19,10 +18,10 @@ public class AS5 extends AccionSemantica {
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	String token = lexico.getToken();
-    	
-        if (Integer.valueOf(token) < 0 || Integer.valueOf(token) > limite){
+        int numero = Integer.parseInt(token, 8)
+        if (numero < 0 || numero > limite){
             System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
-            token = truncaEntero(token);
+            token = truncaEntero(numero);
         }
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
