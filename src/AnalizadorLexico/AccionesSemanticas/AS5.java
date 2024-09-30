@@ -11,17 +11,17 @@ public class AS5 extends AccionSemantica {
     public final int limite = 0177777;
 
     private String truncaEntero(int numero) throws NumberFormatException {
-        numero = numero & 0xFFFF;
+        numero = numero & 0x3FFFF; //Me quedo con los 18 bits de menor peso es decir con los ultimos 6 caracteres en octal
         return Integer.toOctalString(numero);
     }
 
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	String token = lexico.getToken();
-        int numero = Integer.parseInt(token, 8)
+        int numero = Integer.parseInt(token, 8);
         if (numero < 0 || numero > limite){
             System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
-            token = truncaEntero(numero);
+            token = '0' + truncaEntero(numero);
         }
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
