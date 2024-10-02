@@ -2,6 +2,7 @@ package AnalizadorLexico;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class TablaSimbolos {
     private Map<String, Integer> map; 
@@ -43,5 +44,14 @@ public class TablaSimbolos {
 		return map.get(lexema);
 	}
 
+	public void imprimirTS() {
+		
+		for(Map.Entry<String, Integer> atrib : map.entrySet()) {
+			
+			System.out.println("Lexema: "+atrib.getKey()+" - Valor: "+atrib.getValue());
+			
+		}
+		
+	}
 }
 

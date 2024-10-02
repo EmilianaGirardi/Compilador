@@ -19,6 +19,10 @@ public class Main {
         		v = l.yylex();
         		//System.out.println("Token: "+v);
         	}
+        	System.out.println("");
+        	System.out.println("---Tabla Simbolo---");
+        	System.out.println("");
+        	l.getTablaSimbolos().imprimirTS();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

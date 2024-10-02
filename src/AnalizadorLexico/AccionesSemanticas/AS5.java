@@ -14,7 +14,7 @@ public class AS5 extends AccionSemantica {
         numero = numero & 0x3FFFF; //Me quedo con los 18 bits de menor peso es decir con los ultimos 6 caracteres en octal
         return Integer.toOctalString(numero);
     }
-
+ 
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	String token = lexico.getToken();

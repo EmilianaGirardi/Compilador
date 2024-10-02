@@ -350,13 +350,13 @@ public class Lexico {
 		
 		default:
 			if(Character.isDigit(caracter)) {
-				int d = (int)caracter;
-				if(d>7) {
+				char d = caracter;
+				if(d>'7') {
 					return 0;
-				}else if(d>0 && d<8) {
+				}else if(d>'0' && d<'8') {
 					return 1;
-				}else if(d==0) {
-					return 3;
+				}else if(d=='0') {
+					return 2;
 				}else {
 					return 28;
 				}

@@ -11,9 +11,7 @@ public class AS4 extends AccionSemantica {
     public final int limite = (int) (Math.pow(2, 15) -1);
 
     private String truncaEntero(String token) throws NumberFormatException {
-        int numero = Integer.parseInt(token);
-        numero = numero & 0xFFFF;
-        return Integer.toString(numero);
+        return Integer.toString(limite);
     }
 
     @Override

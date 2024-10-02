@@ -17,19 +17,18 @@ public class AS3 extends AccionSemantica{
         cte = cte.replace('s', 'e');
         Float result = Float.parseFloat(cte);
         
-        if (result > 0.0f){
-            if (infPositivo < result) {
-            	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-            	String nuevaCte = infPositivo.toString().replace('e', 's');
-            	return nuevaCte;
+        if (infPositivo > result) {
+        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+            String nuevaCte = infPositivo.toString().replace('E', 's');
+            return nuevaCte;
             	
-            }else if(supPositivo > result) {
-            	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-            	String nuevaCte = supPositivo.toString().replace('e', 's');
-            	return nuevaCte;
-            }
+        }else if(supPositivo < result) {
+        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+            String nuevaCte = supPositivo.toString().replace('E', 's');
+            return nuevaCte;
         }
         
+        cte = cte.replace('e', 's');
         return cte;
     }
  
