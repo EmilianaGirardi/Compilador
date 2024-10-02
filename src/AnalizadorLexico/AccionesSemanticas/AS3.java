@@ -8,8 +8,8 @@ import AnalizadorLexico.TablaSimbolos;
 public class AS3 extends AccionSemantica{
     private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
     private final Float supPositivo = (float) Math.pow(3.40282347, 38);
-    private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
-    private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
+    //private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
+    //private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
 
 
     private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
@@ -28,18 +28,6 @@ public class AS3 extends AccionSemantica{
             	String nuevaCte = supPositivo.toString().replace('e', 's');
             	return nuevaCte;
             }
-        }
-        if (result < 0.0f){
-             if (infNegativo < result) {
-            	System.out.println("Warning: cte fuera de rango. Linea "+ linea);
-             	String nuevaCte = infNegativo.toString().replace('e', 's');
-             	return nuevaCte;
-             	
-             }else if(supNegativo > result) {
-            	System.out.println("Warning: cte fuera de rango. Linea "+ linea);
-              	String nuevaCte = supNegativo.toString().replace('e', 's');
-              	return nuevaCte; 
-             }
         }
         
         return cte;
