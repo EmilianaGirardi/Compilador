@@ -9,18 +9,18 @@
 programa : ID BEGIN conjunto_sentencias END ';'
   	;
 conjunto_sentencias : declarativa ';'
-			| sentencias_ejecutables
+			| ejecutable ';'
 			| conjunto_sentencias declarativa ';'
-			| conjunto_sentencias ejecutable ';'
+			| conjunto_sentencias sentencias_ejecutables ';'
 			;
 ejecutable : sentencia_if 
-|invocacion_fun 
-|asig
-| retorno
-| repeat_until
-| goto
-| salida
- ;
+    |invocacion_fun
+    |asig
+    | retorno
+    | repeat_until
+    | goto
+    | salida
+    ;
 bloque_sentencias_ejecutables : ejecutable ';'
 					| BEGIN sentencias_ejecutables END
 					;
