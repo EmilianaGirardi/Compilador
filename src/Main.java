@@ -9,11 +9,12 @@ import AnalizadorLexico.TablaSimbolos;
 public class Main {
 	
     public static void main(String[] args) {
-    	
+    	/*
     	String archivoPrueba="/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/ArchivoPrueba/Prueba0";
 
 		try {
-			Lexico l = new Lexico(archivoPrueba);
+			/*
+			//Lexico l = new Lexico(archivoPrueba);
 			int v = 1;
         	while(v!=0) {
         		v = l.yylex();
@@ -22,11 +23,13 @@ public class Main {
         	System.out.println("");
         	System.out.println("---Tabla Simbolo---");
         	System.out.println("");
-        	l.getTablaSimbolos().imprimirTS();
-			
+			*/
+    	/*
 		} catch (IOException e) {
+			
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
     }
 }

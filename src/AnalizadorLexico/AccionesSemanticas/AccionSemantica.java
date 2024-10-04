@@ -6,6 +6,8 @@ import AnalizadorLexico.TablaSimbolos;
 import java.io.IOException;
 import java.util.Optional;
 
+import java.util.ArrayList;
+
 public abstract class AccionSemantica {
     //CONSTANTES LITERALES TOKENS
     public final static int MENORIGUAL=257;
@@ -17,6 +19,11 @@ public abstract class AccionSemantica {
     public final static int ENTERO_UNSIGNED = 263;
     public final static int OCTAL = 264;
     public final static int MULTILINEA = 265; //Valor provisional, no se como tomar la multilinea
+    
+    //---
+    
+    public final static int TIPO_UNSIGNED = 1;
+    public final static int  TIPO_SINGLE = 2;
     
     public abstract Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException;
 

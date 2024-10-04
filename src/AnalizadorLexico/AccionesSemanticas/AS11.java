@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -27,10 +28,12 @@ public class AS11 extends AccionSemantica {
 			System.out.println("Warning: sentencia de inequidad incompleta. Línea: "+lexico.getContadorLinea());
 		}
 		
+		ArrayList<Integer> atributos = new ArrayList<Integer>(DISTINTO);
+		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, DISTINTO);
+			TS.agregarToken(token, atributos);
 		}
-		lexico.setYyval(token);
+		lexico.setYylval(token);
 		
 		return Optional.of(DISTINTO);
 	}

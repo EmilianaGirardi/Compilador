@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -27,10 +28,12 @@ public class AS10 extends AccionSemantica {
 			System.out.println("Warning: asignación incompleta. Línea: "+lexico.getContadorLinea());
 		}
 		
+		ArrayList<Integer> atributos = new ArrayList<Integer>(ASIGNACION);
+		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, ASIGNACION);
+			TS.agregarToken(token, atributos);
 		}
-		lexico.setYyval(token);
+		lexico.setYylval(token);
 		
 		return Optional.of(ASIGNACION);
 	}

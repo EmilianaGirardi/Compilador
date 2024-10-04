@@ -1,50 +1,25 @@
 package AnalizadorLexico.AccionesSemanticas;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
 import AnalizadorLexico.TablaSimbolos;
 
 public class AS3 extends AccionSemantica{
-    private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
-    private final Float supPositivo = (float) Math.pow(3.40282347, 38);
-    //private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
-    //private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
-
-
-    private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
-    	// Reemplazar 's' por 'e' para convertir a notación científica y parsear el float
-        cte = cte.replace('s', 'e');
-        Float result = Float.parseFloat(cte);
-        
-        if (infPositivo > result) {
-        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-            String nuevaCte = infPositivo.toString().replace('E', 's');
-            return nuevaCte;
-            	
-        }else if(supPositivo < result) {
-        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-            String nuevaCte = supPositivo.toString().replace('E', 's');
-            return nuevaCte;
-        }
-        
-        cte = cte.replace('e', 's');
-        return cte;
-    }
- 
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) {
     	TablaSimbolos TS = lexico.getTablaSimbolos();
     	
     	String token = lexico.getToken();
     	
-    	token = truncarFueraRango(token, lexico.getContadorLinea());
+    	ArrayList<Integer> atributos = new ArrayList<Integer>(SINGLE_CONSTANTE);
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, SINGLE_CONSTANTE);
+			TS.agregarToken(token, atributos);
 		}
 		
-		lexico.setYyval(token);
+		lexico.setYylval(token);
         return Optional.of(SINGLE_CONSTANTE);
     }
 }

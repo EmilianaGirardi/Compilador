@@ -1,5 +1,6 @@
 package AnalizadorLexico.AccionesSemanticas;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -12,12 +13,15 @@ public class AS9 extends AccionSemantica {
 		// TODO Auto-generated method stub
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String token = lexico.getToken();
+		ArrayList<Integer> atributos = new ArrayList<Integer>(ID);
+		
+		atributos.add(TIPO_SINGLE);
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, ID);
+			TS.agregarToken(token, atributos);
 		}
 		
-		lexico.setYyval(token);
+		lexico.setYylval(token);
 		return Optional.of(ID);
 	}
 

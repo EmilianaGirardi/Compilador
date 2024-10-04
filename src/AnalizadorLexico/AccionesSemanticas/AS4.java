@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -19,6 +20,8 @@ public class AS4 extends AccionSemantica {
     	
     	String token = lexico.getToken();
     	
+    	ArrayList<Integer> atributos = new ArrayList<Integer>(ENTERO_UNSIGNED);
+    	
         if (Integer.valueOf(token) < 0 || Integer.valueOf(token) > limite){
             System.out.println("Warning: Entero se encuentra fuera de rango. Línea: "+lexico.getContadorLinea());
             token = truncaEntero(token);
@@ -26,9 +29,9 @@ public class AS4 extends AccionSemantica {
         
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
-            TS.agregarToken(token, ENTERO_UNSIGNED);
+            TS.agregarToken(token, atributos);
         }
-        lexico.setYyval(token);
+        lexico.setYylval(token);
         return Optional.of(ENTERO_UNSIGNED);
     }
 }

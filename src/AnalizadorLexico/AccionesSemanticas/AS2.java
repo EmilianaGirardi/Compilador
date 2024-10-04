@@ -1,5 +1,6 @@
 package AnalizadorLexico.AccionesSemanticas;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -12,12 +13,13 @@ public class AS2 extends AccionSemantica{
         lexico.addCharToken('0');
         String token = lexico.getToken();
         
+        ArrayList<Integer> atributos = new ArrayList<Integer>(SINGLE_CONSTANTE);
         
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)) {
-        	TS.agregarToken(token, SINGLE_CONSTANTE);
+        	TS.agregarToken(token, atributos);
         }
-        lexico.setYyval(token);
+        lexico.setYylval(token);
         return Optional.of(SINGLE_CONSTANTE);
     }
 }

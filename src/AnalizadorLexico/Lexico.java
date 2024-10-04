@@ -1,15 +1,12 @@
 package AnalizadorLexico;
 
 import AnalizadorLexico.AccionesSemanticas.*;
-//import AnalizadorLexico.AccionesSemanticas.AccionSemantica;
-
 import java.io.FileReader;
 import java.io.IOException;
-//import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.util.Iterator;
 import java.util.Optional;
-
+import AnalizadorSintactico.ParserVal;
 
 public class Lexico {
     private Par[][] matriz;
@@ -17,7 +14,7 @@ public class Lexico {
     private TablaSimbolos tablaSimbolos;
     private char caracterActual;
     private FileReader fr;
-    private String yyval;
+    private ParserVal yylval;
     private String token;
 
 	private static final int FILAS=18;
@@ -30,8 +27,22 @@ public class Lexico {
     public static final char RETORNO_CARRO = '\r';
     public static final char FINAL_ARCHIVO = '$';
 
-
-    public Lexico(String archivo) throws IOException{
+    private static volatile Lexico instance;
+    
+    public static Lexico getInstance(String archivo) throws IOException {
+    	Lexico result = instance;
+    	if (result == null) {
+    		result = instance;
+    		if (result == null) {
+    			instance = result = new Lexico(archivo);
+    		}
+    	 }
+    	return result;
+    }
+    
+  
+    
+    private Lexico(String archivo) throws IOException{
         crearMatriz();
         this.tablaSimbolos = new TablaSimbolos();
         this.contadorLinea=0;
@@ -233,8 +244,8 @@ public class Lexico {
     	}
     }
 
-    public void setYyval(String yyval) {
-        this.yyval = yyval;
+    public void setYylval(String yylval) {
+        this.yylval = new ParserVal(yylval);
     }
 
     public TablaSimbolos getTablaSimbolos() {
@@ -401,6 +412,5 @@ public class Lexico {
 	public char getCaracterActual() {
 		return caracterActual;
 	}
-
-	
+    
 }

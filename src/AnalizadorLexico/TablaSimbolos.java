@@ -1,11 +1,12 @@
 package AnalizadorLexico;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class TablaSimbolos {
-    private Map<String, Integer> map; 
+    private Map<String, ArrayList<Integer>> map; 
     
     public TablaSimbolos() {
 		this.map =  new HashMap<>();
@@ -15,43 +16,67 @@ public class TablaSimbolos {
     
     private void agregarPalabras() {
 		// TODO Auto-generated method stub
+    	ArrayList<Integer> atributos;
+    	atributos = new ArrayList<>(265);
+    	map.put("REPEAT", atributos );
     	
-    	map.put("REPEAT",265);
-    	map.put("IF",266);
-    	map.put("THEN",267);
-    	map.put("ELSE",268);
-    	map.put("BEGIN",269);
-    	map.put("END",270);
-    	map.put("END_IF",271);
-    	map.put("OUTF",272);
-    	map.put("TYPEDEF",273);
-    	map.put("FUN",274);
-    	map.put("RET",275);
-    	map.put("GOTO",276);
-    	map.put("TRIPLE",277);
+    	atributos = new ArrayList<>(266);
+    	map.put("IF",atributos);
+    	
+    	atributos = new ArrayList<>(267);
+    	map.put("THEN",atributos);
+    	
+    	atributos = new ArrayList<>(268);
+    	map.put("ELSE",atributos);
+    	
+    	atributos = new ArrayList<>(269);
+    	map.put("BEGIN",atributos);
+    	
+    	atributos = new ArrayList<>(270);
+    	map.put("END",atributos);
+    	
+    	atributos = new ArrayList<>(271);
+    	map.put("END_IF",atributos);
+    	
+    	atributos = new ArrayList<>(272);
+    	map.put("OUTF",atributos);
+    	
+    	atributos = new ArrayList<>(273);
+    	map.put("TYPEDEF",atributos);
+    	
+    	atributos = new ArrayList<>(274);
+    	map.put("FUN",atributos);
+    	
+    	atributos = new ArrayList<>(275);
+    	map.put("RET",atributos);
+    	
+    	atributos = new ArrayList<>(276);
+    	map.put("GOTO",atributos);
+    	
+    	atributos = new ArrayList<>(277);
+    	map.put("TRIPLE",atributos);
     	
 	}
 
-	public void agregarToken(String lexema, Integer atributo){
-        map.put(lexema, atributo);
+	public void agregarToken(String lexema, ArrayList<Integer> atributos){
+		
+        map.put(lexema, atributos);
     }
 
 	public boolean estaToken(String lexema){
         return map.containsKey(lexema);
     }
 	
-	public Integer getValor(String lexema) {
+	public ArrayList<Integer> getValor(String lexema) {
 		return map.get(lexema);
 	}
 
-	public void imprimirTS() {
-		
-		for(Map.Entry<String, Integer> atrib : map.entrySet()) {
-			
-			System.out.println("Lexema: "+atrib.getKey()+" - Valor: "+atrib.getValue());
-			
-		}
-		
+	
+	public void editarLexema(String oldKey, String newKey) {
+		map.put(newKey, this.getValor(oldKey));
+		map.remove(oldKey);
 	}
+	
+	
 }
 

@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -12,10 +13,12 @@ public class AS12 extends AccionSemantica {
         lexico.addCharToken(caracterActual);
         String token = lexico.getToken();
         
+        ArrayList<Integer> atributos = new ArrayList<Integer>(MAYORIGUAL);
+        
         if (!lexico.getTablaSimbolos().estaToken(token)){
-            lexico.getTablaSimbolos().agregarToken(token, MAYORIGUAL);
+            lexico.getTablaSimbolos().agregarToken(token, atributos);
         }
-        lexico.setYyval(token); //puntero a la tabla de simbolos
+        lexico.setYylval(token); //puntero a la tabla de simbolos
         lexico.leerSiguiente();
 
         return Optional.of(MAYORIGUAL); //devuelve el token

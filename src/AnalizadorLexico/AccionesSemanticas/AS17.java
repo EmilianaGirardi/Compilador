@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -14,14 +15,15 @@ public class AS17 extends AccionSemantica{
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String token = lexico.getToken();
 		
-		lexico.setYyval(token);
+		ArrayList<Integer> atributos = new ArrayList<Integer>(ID);
+		
+		lexico.setYylval(token);
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, ID);
-			return Optional.of(ID);
-		}else {		
-			return Optional.of(TS.getValor(token));	
+			TS.agregarToken(token, atributos);		
 		}
+		
+		return Optional.of(ID);	
 	}
 	
 }

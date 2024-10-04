@@ -1,6 +1,7 @@
 package AnalizadorLexico.AccionesSemanticas;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import AnalizadorLexico.Lexico;
@@ -18,6 +19,9 @@ public class AS5 extends AccionSemantica {
     @Override
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	String token = lexico.getToken();
+    	
+    	ArrayList<Integer> atributos = new ArrayList<Integer>(OCTAL);
+    	
         int numero = Integer.parseInt(token, 8);
         if (numero < 0 || numero > limite){
             System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
@@ -25,9 +29,9 @@ public class AS5 extends AccionSemantica {
         }
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
-            TS.agregarToken(token, OCTAL);
+            TS.agregarToken(token, atributos);
         }
-        lexico.setYyval(token);
+        lexico.setYylval(token);
         return Optional.of(OCTAL);
     }
 }
