@@ -1,4 +1,4 @@
-prueba BEGIN
+BEGIN
 TIPO_OCTAL x;
 x:= 1;
 END ;
