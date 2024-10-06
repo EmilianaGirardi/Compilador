@@ -13,8 +13,8 @@ public class AS3 extends AccionSemantica{
     	
     	String token = lexico.getToken();
     	
-    	ArrayList<Integer> atributos = new ArrayList<Integer>(SINGLE_CONSTANTE);
-		
+    	ArrayList<Integer> atributos = new ArrayList<Integer>();
+		atributos.add(SINGLE_CONSTANTE);
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);
 		}

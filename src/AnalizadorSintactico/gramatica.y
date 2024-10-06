@@ -1,9 +1,11 @@
 %{
+        package AnalizadorSintactico;
     	import java.io.*;
+    	import AnalizadorLexico.Lexico;
     	//import Lex.Lex;
 %}
 
-%token MENORIGUAL ID ASIGNACION DISTINTO MAYORIGUAL SINGLE_CONSTANTE ENTERO_UNSIGNED OCTAL MULTILINEA REPEAT IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET GOTO TRIPLE OCTAL UNSIGNED  SINGLE TIPO_OCTAL UNTIL
+%token MENORIGUAL ID ASIGNACION DISTINTO MAYORIGUAL SINGLE_CONSTANTE ENTERO_UNSIGNED OCTAL MULTILINEA REPEAT IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET GOTO TRIPLE OCTAL TIPO_UNSIGNED TIPO_SINGLE TIPO_OCTAL UNTIL
 
 %left '+' '-'
 %left '/' '*'
@@ -49,8 +51,7 @@ declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de fun
 | def_triple {System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
 | declar_compuesto {System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
 ;
-declarvar : tipo lista_var ; {System.out.println("Se detecto: Declaración de lista de variables " + "en linea: " + lexico.getContadorLinea());}
-
+declarvar : tipo lista_var ;
 declar_compuesto : ID lista_var ; //tint t1,t2,t3 lo detecta el generador
 
 lista_var : ID
@@ -58,7 +59,7 @@ lista_var : ID
 	| error ID  {System.out.println("Error, falta ',' para diferenciar las variables");}
 	;
 
-tipo : TIPO_OCTAL | UNSIGNED | SINGLE  ;
+tipo : TIPO_OCTAL | TIPO_UNSIGNED | TIPO_SINGLE  ;
 
 declaracionFun : tipo FUN ID '(' parametro ')' BEGIN cuerpoFun END
 		| tipo FUN  '(' parametro ')' BEGIN cuerpoFun END {System.out.println("Error, Falta nombre de funcion");}
@@ -175,15 +176,17 @@ private final Float supPositivo = (float) Math.pow(3.40282347, 38);
 private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
 private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
 
-public int yylex() {
-    return lexico.yylex();
+public int yylex() throws IOException {
+    int token = lexico.yylex();
+    this.yylval = lexico.getYylval();
+    return token;
 }
 
 public void yyerror(String mensaje) {
-    System.out.println("Error: " + mensaje");
+    System.out.println("Error: " + mensaje);
 }
 
-public Parser(String archivo) {
+public Parser(String archivo) throws IOException {
     lexico = Lexico.getInstance(archivo);
 }
 
@@ -219,20 +222,20 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
        return cte;
    }
 
-public static void main(String[] args){
-    if(args.length > 1) {
-                String archivo = args[0];
-                try {
-                    Parser parser = new Parser(archivo);
-                    parser.run();
-                }
-                catch (IOException excepcion){
-                    excepcion.printStackTrace();
-                }
-            }
-            else {
-                System.out.println("Se debe ingresar un archivo a compilar");
-            }
+public static void main(String[] args) throws IOException {
+    if(args.length > 0) {
+          String archivo = args[0];
+          try {
+            Parser parser = new Parser(archivo);
+            parser.run();
+          }
+          catch (IOException excepcion){
+            excepcion.printStackTrace();
+          }
+        }
+        else {
+          System.out.println("Se debe ingresar un archivo a compilar");
+        }
 }
 
 

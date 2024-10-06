@@ -11,8 +11,8 @@ public class AS7 extends AccionSemantica{
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) {
     	String token = lexico.getToken();
     	
-    	ArrayList<Integer> atributos = new ArrayList<Integer>(MULTILINEA);
-    	
+    	ArrayList<Integer> atributos = new ArrayList<Integer>();
+    	atributos.add(MULTILINEA);
         if (caracterActual.equals(']')) {
             TablaSimbolos TS = lexico.getTablaSimbolos();
             TS.agregarToken(token, atributos);

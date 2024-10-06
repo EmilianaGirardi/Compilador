@@ -11,8 +11,8 @@ public class AS14 extends AccionSemantica{
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
         lexico.addCharToken(caracterActual);
         String token = lexico.getToken();
-        ArrayList<Integer> atributos = new ArrayList<Integer>(MENORIGUAL);
-        
+        ArrayList<Integer> atributos = new ArrayList<Integer>();
+        atributos.add(MENORIGUAL);
         if (!lexico.getTablaSimbolos().estaToken(token)){
             lexico.getTablaSimbolos().agregarToken(token, atributos);
         }

@@ -14,8 +14,8 @@ public class AS8 extends AccionSemantica{
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String token = lexico.getToken();
         
-        ArrayList<Integer> atributos = new ArrayList<Integer>(ID);
-        
+        ArrayList<Integer> atributos = new ArrayList<Integer>();
+        atributos.add(ID);
         atributos.add(TIPO_UNSIGNED);
         
         if(!TS.estaToken(token)) {

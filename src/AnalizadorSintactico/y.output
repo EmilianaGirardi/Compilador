@@ -44,8 +44,8 @@
   34            | error ID
 
   35  tipo : TIPO_OCTAL
-  36       | UNSIGNED
-  37       | SINGLE
+  36       | TIPO_UNSIGNED
+  37       | TIPO_SINGLE
 
   38  declaracionFun : tipo FUN ID '(' parametro ')' BEGIN cuerpoFun END
   39                 | tipo FUN '(' parametro ')' BEGIN cuerpoFun END
@@ -155,8 +155,8 @@ state 1
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -188,8 +188,8 @@ state 2
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -286,8 +286,8 @@ state 8
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -346,13 +346,13 @@ state 12
 
 
 state 13
-	tipo : UNSIGNED .  (36)
+	tipo : TIPO_UNSIGNED .  (36)
 
 	.  reduce 36
 
 
 state 14
-	tipo : SINGLE .  (37)
+	tipo : TIPO_SINGLE .  (37)
 
 	.  reduce 37
 
@@ -380,8 +380,8 @@ state 16
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	$end  reduce 5
 
@@ -416,8 +416,8 @@ state 17
 	TYPEDEF  reduce 7
 	RET  reduce 7
 	GOTO  reduce 7
-	UNSIGNED  reduce 7
-	SINGLE  reduce 7
+	TIPO_UNSIGNED  reduce 7
+	TIPO_SINGLE  reduce 7
 	TIPO_OCTAL  reduce 7
 
 
@@ -436,8 +436,8 @@ state 18
 	TYPEDEF  reduce 9
 	RET  reduce 9
 	GOTO  reduce 9
-	UNSIGNED  reduce 9
-	SINGLE  reduce 9
+	TIPO_UNSIGNED  reduce 9
+	TIPO_SINGLE  reduce 9
 	TIPO_OCTAL  reduce 9
 
 
@@ -537,8 +537,8 @@ state 31
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -614,8 +614,8 @@ state 36
 	SINGLE_CONSTANTE  shift 43
 	ENTERO_UNSIGNED  shift 44
 	OCTAL  shift 45
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -642,8 +642,8 @@ state 37
 	TYPEDEF  reduce 31
 	RET  reduce 31
 	GOTO  reduce 31
-	UNSIGNED  reduce 31
-	SINGLE  reduce 31
+	TIPO_UNSIGNED  reduce 31
+	TIPO_SINGLE  reduce 31
 	TIPO_OCTAL  reduce 31
 	';'  reduce 31
 
@@ -750,8 +750,8 @@ state 42
 	TYPEDEF  reduce 59
 	RET  reduce 59
 	GOTO  reduce 59
-	UNSIGNED  reduce 59
-	SINGLE  reduce 59
+	TIPO_UNSIGNED  reduce 59
+	TIPO_SINGLE  reduce 59
 	TIPO_OCTAL  reduce 59
 	'+'  reduce 59
 	'-'  reduce 59
@@ -859,8 +859,8 @@ state 49
 	TYPEDEF  reduce 52
 	RET  reduce 52
 	GOTO  reduce 52
-	UNSIGNED  reduce 52
-	SINGLE  reduce 52
+	TIPO_UNSIGNED  reduce 52
+	TIPO_SINGLE  reduce 52
 	TIPO_OCTAL  reduce 52
 	'+'  reduce 52
 	'-'  reduce 52
@@ -914,8 +914,8 @@ state 53
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	$end  reduce 4
 
@@ -1029,8 +1029,8 @@ state 62
 	TYPEDEF  reduce 11
 	RET  reduce 11
 	GOTO  reduce 11
-	UNSIGNED  reduce 11
-	SINGLE  reduce 11
+	TIPO_UNSIGNED  reduce 11
+	TIPO_SINGLE  reduce 11
 	TIPO_OCTAL  reduce 11
 
 
@@ -1049,8 +1049,8 @@ state 63
 	TYPEDEF  reduce 13
 	RET  reduce 13
 	GOTO  reduce 13
-	UNSIGNED  reduce 13
-	SINGLE  reduce 13
+	TIPO_UNSIGNED  reduce 13
+	TIPO_SINGLE  reduce 13
 	TIPO_OCTAL  reduce 13
 
 
@@ -1091,8 +1091,8 @@ state 67
 	TYPEDEF  reduce 30
 	RET  reduce 30
 	GOTO  reduce 30
-	UNSIGNED  reduce 30
-	SINGLE  reduce 30
+	TIPO_UNSIGNED  reduce 30
+	TIPO_SINGLE  reduce 30
 	TIPO_OCTAL  reduce 30
 	';'  reduce 30
 
@@ -1138,8 +1138,8 @@ state 71
 	TYPEDEF  reduce 48
 	RET  reduce 48
 	GOTO  reduce 48
-	UNSIGNED  reduce 48
-	SINGLE  reduce 48
+	TIPO_UNSIGNED  reduce 48
+	TIPO_SINGLE  reduce 48
 	TIPO_OCTAL  reduce 48
 	';'  reduce 48
 
@@ -1505,8 +1505,8 @@ state 102
 state 103
 	def_triple : TYPEDEF tipo_compuesto '<' . tipo '>' ID  (97)
 
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -1566,8 +1566,8 @@ state 111
 	declaracionFun : tipo FUN '(' . parametro ')' BEGIN cuerpoFun END  (39)
 
 	ID  shift 142
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -1785,8 +1785,8 @@ state 128
 	TYPEDEF  reduce 49
 	RET  reduce 49
 	GOTO  reduce 49
-	UNSIGNED  reduce 49
-	SINGLE  reduce 49
+	TIPO_UNSIGNED  reduce 49
+	TIPO_SINGLE  reduce 49
 	TIPO_OCTAL  reduce 49
 	'+'  reduce 49
 	'-'  reduce 49
@@ -1823,8 +1823,8 @@ state 129
 	TYPEDEF  reduce 50
 	RET  reduce 50
 	GOTO  reduce 50
-	UNSIGNED  reduce 50
-	SINGLE  reduce 50
+	TIPO_UNSIGNED  reduce 50
+	TIPO_SINGLE  reduce 50
 	TIPO_OCTAL  reduce 50
 	'+'  reduce 50
 	'-'  reduce 50
@@ -1885,8 +1885,8 @@ state 134
 	TYPEDEF  reduce 69
 	RET  reduce 69
 	GOTO  reduce 69
-	UNSIGNED  reduce 69
-	SINGLE  reduce 69
+	TIPO_UNSIGNED  reduce 69
+	TIPO_SINGLE  reduce 69
 	TIPO_OCTAL  reduce 69
 	';'  reduce 69
 
@@ -1933,8 +1933,8 @@ state 141
 	declaracionFun : tipo FUN ID '(' . ')' BEGIN cuerpoFun END  (40)
 
 	ID  shift 142
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	')'  shift 157
 	.  error
@@ -2032,8 +2032,8 @@ state 150
 	TYPEDEF  reduce 81
 	RET  reduce 81
 	GOTO  reduce 81
-	UNSIGNED  reduce 81
-	SINGLE  reduce 81
+	TIPO_UNSIGNED  reduce 81
+	TIPO_SINGLE  reduce 81
 	TIPO_OCTAL  reduce 81
 	';'  reduce 81
 
@@ -2229,8 +2229,8 @@ state 168
 	TYPEDEF  reduce 71
 	RET  reduce 71
 	GOTO  reduce 71
-	UNSIGNED  reduce 71
-	SINGLE  reduce 71
+	TIPO_UNSIGNED  reduce 71
+	TIPO_SINGLE  reduce 71
 	TIPO_OCTAL  reduce 71
 	';'  reduce 71
 
@@ -2252,8 +2252,8 @@ state 170
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -2293,8 +2293,8 @@ state 172
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -2398,8 +2398,8 @@ state 180
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -2432,8 +2432,8 @@ state 181
 	TYPEDEF  reduce 17
 	RET  reduce 17
 	GOTO  reduce 17
-	UNSIGNED  reduce 17
-	SINGLE  reduce 17
+	TIPO_UNSIGNED  reduce 17
+	TIPO_SINGLE  reduce 17
 	TIPO_OCTAL  reduce 17
 	';'  reduce 17
 
@@ -2456,8 +2456,8 @@ state 183
 	TYPEDEF  shift 10
 	RET  shift 11
 	GOTO  shift 12
-	UNSIGNED  shift 13
-	SINGLE  shift 14
+	TIPO_UNSIGNED  shift 13
+	TIPO_SINGLE  shift 14
 	TIPO_OCTAL  shift 15
 	.  error
 
@@ -2537,8 +2537,8 @@ state 190
 	TYPEDEF  reduce 17
 	RET  reduce 17
 	GOTO  reduce 17
-	UNSIGNED  reduce 17
-	SINGLE  reduce 17
+	TIPO_UNSIGNED  reduce 17
+	TIPO_SINGLE  reduce 17
 	TIPO_OCTAL  reduce 17
 	';'  reduce 17
 
@@ -2584,8 +2584,8 @@ state 195
 	TYPEDEF  reduce 79
 	RET  reduce 79
 	GOTO  reduce 79
-	UNSIGNED  reduce 79
-	SINGLE  reduce 79
+	TIPO_UNSIGNED  reduce 79
+	TIPO_SINGLE  reduce 79
 	TIPO_OCTAL  reduce 79
 	';'  reduce 79
 

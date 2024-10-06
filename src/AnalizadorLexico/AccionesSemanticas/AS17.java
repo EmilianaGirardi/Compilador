@@ -14,16 +14,19 @@ public class AS17 extends AccionSemantica{
 		// TODO Auto-generated method stub
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String token = lexico.getToken();
-		
-		ArrayList<Integer> atributos = new ArrayList<Integer>(ID);
-		
+
 		lexico.setYylval(token);
 		
 		if(!TS.estaToken(token)) {
-			TS.agregarToken(token, atributos);		
+			ArrayList<Integer> atributos = new ArrayList<Integer>();
+			atributos.add(ID);
+			TS.agregarToken(token, atributos);
+			return Optional.of(ID);
+		}else{
+			return Optional.of(TS.getValor(token).get(0));
 		}
 		
-		return Optional.of(ID);	
+
 	}
 	
 }

@@ -28,8 +28,8 @@ public class AS10 extends AccionSemantica {
 			System.out.println("Warning: asignación incompleta. Línea: "+lexico.getContadorLinea());
 		}
 		
-		ArrayList<Integer> atributos = new ArrayList<Integer>(ASIGNACION);
-		
+		ArrayList<Integer> atributos = new ArrayList<Integer>();
+		atributos.add(ASIGNACION);
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);
 		}

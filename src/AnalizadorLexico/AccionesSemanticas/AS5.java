@@ -20,8 +20,8 @@ public class AS5 extends AccionSemantica {
     public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
     	String token = lexico.getToken();
     	
-    	ArrayList<Integer> atributos = new ArrayList<Integer>(OCTAL);
-    	
+    	ArrayList<Integer> atributos = new ArrayList<Integer>();
+    	atributos.add(OCTAL);
         int numero = Integer.parseInt(token, 8);
         if (numero < 0 || numero > limite){
             System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());

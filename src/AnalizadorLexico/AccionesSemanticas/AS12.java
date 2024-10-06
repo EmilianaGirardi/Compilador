@@ -13,8 +13,8 @@ public class AS12 extends AccionSemantica {
         lexico.addCharToken(caracterActual);
         String token = lexico.getToken();
         
-        ArrayList<Integer> atributos = new ArrayList<Integer>(MAYORIGUAL);
-        
+        ArrayList<Integer> atributos = new ArrayList<Integer>();
+        atributos.add(MAYORIGUAL);
         if (!lexico.getTablaSimbolos().estaToken(token)){
             lexico.getTablaSimbolos().agregarToken(token, atributos);
         }

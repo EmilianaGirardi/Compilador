@@ -53,8 +53,8 @@ public class Lexico {
     private void crearMatriz(){
         this.matriz = new Par[FILAS][COLUMNAS];
 
-        String archivoAccionesCSV = "/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/Matriz/AccionesSemanticas-MatrizEstados.csv";
-        String archivoEstadosCSV = "/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/Matriz/TransicionEstados-MatrizEstados.csv";
+        String archivoAccionesCSV = "./src/AnalizadorLexico/Matriz/AccionesSemanticas-MatrizEstados.csv";
+        String archivoEstadosCSV = "./src/AnalizadorLexico/Matriz/TransicionEstados-MatrizEstados.csv";
         String lineaAccSem = "";
         String lineaEstados = "";
         String separador = ",";
@@ -237,7 +237,7 @@ public class Lexico {
             }else if(caracterActual == SALTO_LINEA){
                 this.contadorLinea++;
             }
-            
+
             /*
             if (caracterActual == TAB || caracterActual == BLANK)
                 leerSiguiente();*/	

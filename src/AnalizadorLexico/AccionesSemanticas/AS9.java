@@ -13,8 +13,8 @@ public class AS9 extends AccionSemantica {
 		// TODO Auto-generated method stub
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String token = lexico.getToken();
-		ArrayList<Integer> atributos = new ArrayList<Integer>(ID);
-		
+		ArrayList<Integer> atributos = new ArrayList<Integer>();
+		atributos.add(ID);
 		atributos.add(TIPO_SINGLE);
 		
 		if(!TS.estaToken(token)) {
