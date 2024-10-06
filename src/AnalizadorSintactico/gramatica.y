@@ -13,14 +13,14 @@
 
 %%
 programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto: Programa");}
-      | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa " + "en linea: " + lexico.getContadorLinea());}
-      | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
-      | ID BEGIN conjunto_sentencias {System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
-      | ID conjunto_sentencias {System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
+      | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa");}
+      | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
+      | ID BEGIN conjunto_sentencias {System.out.println("Error de delimitador de programa ");}
+      | ID conjunto_sentencias {System.out.println("Error de delimitador de programa ");}
       ;
 conjunto_sentencias : declarativa ';'
 			| declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
-			| ejecutable ';'
+			| ejecutable ';' {System.out.println("Se detecto el conjunto de sentencias");}
 			| ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 			| conjunto_sentencias declarativa ';'
 			| conjunto_sentencias declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
@@ -28,16 +28,17 @@ conjunto_sentencias : declarativa ';'
 			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 			;
 
-ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if" + "en linea: " + lexico.getContadorLinea());}
+ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
     |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + "en linea: " + lexico.getContadorLinea());}
     |asig  {System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
-    | retorno {System.out.println("Se detecto: Retorno " + "en linea: " + lexico.getContadorLinea());}
     | repeat_until {System.out.println("Se detecto: Ciclo repeat until " + "en linea: " + lexico.getContadorLinea());}
     | goto {System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
     | salida {System.out.println("Se detecto: Salida " + "en linea: " + lexico.getContadorLinea());}
     ;
 
 bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
+                                | BEGIN sentencias_ejecutables retorno END
+                                | BEGIN retorno END
 					;
 
 sentencias_ejecutables : ejecutable ';'
@@ -76,12 +77,13 @@ cuerpoFun : retorno
 | conjunto_sentencias retorno
 ;
 
-retorno : RET '(' exp_arit ')'
-	| error '(' exp_arit ')' {System.out.println("Falta, la palabra ret que indica retorno");}
+retorno : RET '(' exp_arit ')' ';'
+	| error '(' exp_arit ')' ';' {System.out.println("Falta, la palabra ret que indica retorno");}
  ;
 
 
 asig : ID ASIGNACION exp_arit
+    | ID '{' constante '}' ASIGNACION exp_arit
  ;
 
 exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
@@ -103,17 +105,18 @@ termino : termino '*' factor {System.out.println("Se detecto: Multiplicación " 
 	| error factor {System.out.println("Error en termino" + "en linea: " + lexico.getContadorLinea());}
 	;
 
-factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + "en linea: " + lexico.getContadorLinea());}
+factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
+    | ID '{' constante '}'
 	| constante
 	| invocacion_fun {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 	;
 etiqueta : ID '@'
 ;
 
-constante : SINGLE_CONSTANTE
+constante : SINGLE_CONSTANTE {lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
     |ENTERO_UNSIGNED
     |OCTAL
-    /* |   '-' SINGLE_CONSTANTE   %prec menos */
+    /* |   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, trucarFueraRango($2.sval+$1.sval));} */
 ;
 
 
@@ -121,7 +124,7 @@ invocacion_fun : ID '(' exp_arit ')'
 		| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
 		;
 
-sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
+sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
 	| IF  condicion  THEN bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 		| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
 		| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
@@ -162,6 +165,7 @@ repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion
  ;
 
 def_triple : TYPEDEF tipo_compuesto '<' tipo '>'  ID;
+
 tipo_compuesto : TRIPLE
 			;
 
