@@ -623,7 +623,7 @@ private final Float supPositivo = (float) Math.pow(3.40282347, 38);
 private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
 private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
   public static void main(String[] args){
-    if(args.length > 1) {
+    if(args.length > 0) {
       String archivo = args[0];
       try {
         Parser parser = new Parser(archivo);
