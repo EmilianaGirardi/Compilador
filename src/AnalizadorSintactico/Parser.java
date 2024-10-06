@@ -1,4 +1,6 @@
-//### This file created by BYACC 1.8(/Java extension  1.15)
+package AnalizadorSintactico;
+
+/*### This file created by BYACC 1.8(/Java extension  1.15)
 //### Java capabilities added 7 Jan 97, Bob Jamison
 //### Updated : 27 Nov 97  -- Bob Jamison, Joe Nieten
 //###           01 Jan 98  -- Bob Jamison -- fixed generic semantic constructor
@@ -9,16 +11,13 @@
 //###           04 Mar 02  -- Yuval Oren  -- improved java performance, added options
 //###           14 Mar 02  -- Tomas Hurka -- -d support, static initializer workaround
 //### Please send bug reports to tom@hukatronic.cz
-//### static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";
-
-
-
-
-
+//### static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";*/
 
 //#line 2 "gramatica.y"
     	import java.io.*;
-    	/*import Lex.Lex;*/
+    	import AnalizadorLexico.Lexico;
+
+    	
 //#line 20 "Parser.java"
 
 
@@ -31,6 +30,7 @@ boolean yydebug;        //do I want debug output?
 int yynerrs;            //number of errors so far
 int yyerrflag;          //was there an error?
 int yychar;             //the current working character
+Lexico lexico;
 
 //########## MESSAGES ##########
 //###############################################################
@@ -459,7 +459,7 @@ String yys;    //current token string
 //###############################################################
 // method: yyparse : parse input and execute indicated items
 //###############################################################
-int yyparse()
+int yyparse() throws IOException
 {
 boolean doaction;
   init_stacks();
@@ -479,7 +479,7 @@ boolean doaction;
       if (yydebug) debug("yyn:"+yyn+"  state:"+yystate+"  yychar:"+yychar);
       if (yychar < 0)      //we want a char?
         {
-        yychar = yylex();  //get next token
+        yychar = lexico.yylex();  //get next token
         if (yydebug) debug(" next yychar:"+yychar);
         //#### ERROR CHECK ####
         if (yychar < 0)    //it it didn't work/error
@@ -600,7 +600,7 @@ boolean doaction;
       val_push(yyval);           //also save the semantic value of parsing
       if (yychar < 0)            //we want another character?
         {
-        yychar = yylex();        //get next character
+        yychar = lexico.yylex();        //get next character
         if (yychar<0) yychar=0;  //clean, if necessary
         if (yydebug)
           yylexdebug(yystate,yychar);
@@ -627,13 +627,18 @@ boolean doaction;
 
 
 
+private void yyerror(String string) {
+	// TODO Auto-generated method stub
+	
+}
 //## run() --- for Thread #######################################
 /**
  * A default run method, used for operating this parser
  * object in the background.  It is intended for extending Thread
  * or implementing Runnable.  Turn off with -Jnorun .
+ * @throws IOException 
  */
-public void run()
+public void run() throws IOException
 {
   yyparse();
 }
@@ -644,11 +649,14 @@ public void run()
 //## Constructors ###############################################
 /**
  * Default constructor.  Turn off with -Jnoconstruct .
+ * @throws IOException 
 
  */
-public Parser()
+public Parser(String arg) throws IOException
 {
   //nothing to do
+	this.lexico = Lexico.getInstance(arg);
+	
 }
 
 

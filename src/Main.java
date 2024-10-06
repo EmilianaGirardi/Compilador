@@ -5,14 +5,17 @@ import java.io.IOException;
 
 import AnalizadorLexico.Lexico;
 import AnalizadorLexico.TablaSimbolos;
+import AnalizadorSintactico.Parser;
 
 public class Main {
 	
-    public static void main(String[] args) {
-    	/*
-    	String archivoPrueba="/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/ArchivoPrueba/Prueba0";
-
+    public static void main(String[] args) throws IOException {
+    	
+    	String archivoPrueba="/home/roman7978/Documentos/Workspace_Compilador/Compilador/src/AnalizadorLexico/ArchivoPrueba/Prueba1";
 		try {
+			Lexico lexico = Lexico.getInstance(archivoPrueba);
+			Parser parser = new Parser(archivoPrueba);
+			parser.run();
 			/*
 			//Lexico l = new Lexico(archivoPrueba);
 			int v = 1;
@@ -24,12 +27,11 @@ public class Main {
         	System.out.println("---Tabla Simbolo---");
         	System.out.println("");
 			*/
-    	/*
 		} catch (IOException e) {
 			
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		
     }
 }
