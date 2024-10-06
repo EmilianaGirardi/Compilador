@@ -1,4 +1,4 @@
-//### This file created by BYACC 1.8(/Java extension  1.15)
+package AnalizadorSintactico;//### This file created by BYACC 1.8(/Java extension  1.15)
 //### Java capabilities added 7 Jan 97, Bob Jamison
 //### Updated : 27 Nov 97  -- Bob Jamison, Joe Nieten
 //###           01 Jan 98  -- Bob Jamison -- fixed generic semantic constructor
@@ -17,12 +17,11 @@
 
 
 //#line 2 "gramatica.y"
-    	import java.io.*;
+    	import AnalizadorLexico.Lexico;
+
+        import java.io.*;
     	/*import Lex.Lex;*/
 //#line 20 "Parser.java"
-
-
-
 
 public class Parser
 {
@@ -616,6 +615,76 @@ final static String yyrule[] = {
 "goto : GOTO error ';'",
 };
 
+//#line 171 "gramatica.y"
+
+private Lexico lexico;
+private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
+private final Float supPositivo = (float) Math.pow(3.40282347, 38);
+private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
+private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
+  public static void main(String[] args){
+    if(args.length > 1) {
+      String archivo = args[0];
+      try {
+        Parser parser = new Parser(archivo);
+        parser.run();
+      }
+      catch (IOException excepcion){
+        excepcion.printStackTrace();
+      }
+    }
+    else {
+      System.out.println("Se debe ingresar un archivo a compilar");
+    }
+  }
+public int yylex() throws IOException {
+  int token = lexico.yylex();
+  this.yylval = lexico.getYylval();
+  return token;
+}
+
+public void yyerror(String mensaje) {
+    System.out.println("Error: " + mensaje);
+}
+
+public Parser(String archivo) throws IOException {
+    lexico = Lexico.getInstance(archivo);
+}
+
+private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
+   	// Reemplazar 's' por 'e' para convertir a notación científica y parsear el float
+       cte = cte.replace('s', 'e');
+       Float result = Float.parseFloat(cte);
+
+       if(result>0.0f) {
+	        if (infPositivo > result) {
+	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	            String nuevaCte = infPositivo.toString().replace('E', 's');
+	            return nuevaCte;
+
+	        }else if(supPositivo < result) {
+	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	            String nuevaCte = supPositivo.toString().replace('E', 's');
+	            return nuevaCte;
+	        }
+       }else {
+       	if(infNegativo > result) {
+       		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	            String nuevaCte = infNegativo.toString().replace('E', 's');
+	            return nuevaCte;
+	        }else if(supNegativo < result) {
+	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	            String nuevaCte = supNegativo.toString().replace('E', 's');
+	            return nuevaCte;
+	        }
+       }
+
+       cte = cte.replace('e', 's');
+       return cte;
+   }
+
+
+//#line 617 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -644,8 +713,7 @@ String yys;    //current token string
 //###############################################################
 // method: yyparse : parse input and execute indicated items
 //###############################################################
-int yyparse()
-{
+int yyparse() throws IOException {
 boolean doaction;
   init_stacks();
   yynerrs = 0;
@@ -769,147 +837,231 @@ boolean doaction;
     switch(yyn)
       {
 //########## USER-SUPPLIED ACTIONS ##########
+case 1:
+//#line 13 "gramatica.y"
+{System.out.println("Se detecto: Programa");}
+break;
 case 2:
 //#line 14 "gramatica.y"
-{System.out.println(“Error, Falta nombre de programa”);}
+{System.out.println("Error, Falta nombre de programa " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 3:
 //#line 15 "gramatica.y"
-{System.out.println(“Error de delimitador de programa”);}
+{System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 4:
 //#line 16 "gramatica.y"
-{System.out.println(“Error de delimitador de programa”);}
+{System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 5:
 //#line 17 "gramatica.y"
-{System.out.println(“Error de delimitador de programa”);}
+{System.out.println("Error de delimitador de programa " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 7:
 //#line 20 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 9:
 //#line 22 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 11:
 //#line 24 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 13:
 //#line 26 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 14:
+//#line 29 "gramatica.y"
+{System.out.println("Se detecto: Sentencia if" + "en linea: " + lexico.getContadorLinea());}
+break;
+case 15:
+//#line 30 "gramatica.y"
+{System.out.println("Se detecto: Invocacion a funcion " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 16:
+//#line 31 "gramatica.y"
+{System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 17:
+//#line 32 "gramatica.y"
+{System.out.println("Se detecto: Retorno " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 18:
+//#line 33 "gramatica.y"
+{System.out.println("Se detecto: Ciclo repeat until " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 19:
+//#line 34 "gramatica.y"
+{System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 20:
+//#line 35 "gramatica.y"
+{System.out.println("Se detecto: Salida " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 24:
 //#line 43 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ;");}
 break;
 case 25:
 //#line 44 "gramatica.y"
-{System.out.println(“Falta ;”);}
+{System.out.println("Falta ;");}
+break;
+case 26:
+//#line 47 "gramatica.y"
+{System.out.println("Se detecto: Declaracion de funcion " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 27:
+//#line 48 "gramatica.y"
+{System.out.println("Se detecto: Declaración de variable " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 28:
+//#line 49 "gramatica.y"
+{System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 29:
+//#line 50 "gramatica.y"
+{System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 30:
+//#line 52 "gramatica.y"
+{System.out.println("Se detecto: Declaración de lista de variables " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 34:
 //#line 58 "gramatica.y"
-{System.out.println(“Error, falta ',' para diferenciar las variables);}
+{System.out.println("Error, falta ',' para diferenciar las variables");}
 break;
 case 39:
 //#line 64 "gramatica.y"
-{System.out.println(“Error, Falta nombre de funcion”);}
+{System.out.println("Error, Falta nombre de funcion");}
 break;
 case 40:
 //#line 65 "gramatica.y"
-{System.out.println(“Error, Falta parametro de funcion”);}
+{System.out.println("Error, Falta parametro de funcion");}
 break;
 case 42:
 //#line 70 "gramatica.y"
-{System.out.println(“Error, falta nombre del parametro formal”);}
+{System.out.println("Error, falta nombre del parametro formal");}
 break;
 case 43:
 //#line 71 "gramatica.y"
-{System.out.println(“Error, falta tipo del parametro formal”);}
+{System.out.println("Error, falta tipo del parametro formal");}
 break;
 case 47:
 //#line 79 "gramatica.y"
-{System.out.println(“Falta, la palabra ret que indica retorno”);}
+{System.out.println("Falta, la palabra ret que indica retorno");}
+break;
+case 49:
+//#line 86 "gramatica.y"
+{System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 50:
+//#line 87 "gramatica.y"
+{System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 51:
 //#line 88 "gramatica.y"
 {System.out.println("Error en expresion aritmetica");}
 break;
+case 55:
+//#line 99 "gramatica.y"
+{System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 56:
+//#line 100 "gramatica.y"
+{System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
+break;
 case 58:
 //#line 102 "gramatica.y"
-{System.out.println("Error en termino");}
+{System.out.println("Error en termino" + "en linea: " + lexico.getContadorLinea());}
+break;
+case 59:
+//#line 105 "gramatica.y"
+{System.out.println("Se detecto: Identificador " + val_peek(0).sval + "en linea: " + lexico.getContadorLinea());}
+break;
+case 61:
+//#line 107 "gramatica.y"
+{System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 68:
+//#line 123 "gramatica.y"
+{System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 69:
 //#line 124 "gramatica.y"
-{System.out.println(“Error, Falta END_IF de cierre”);}
+{System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+break;
+case 70:
+//#line 125 "gramatica.y"
+{System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 71:
 //#line 126 "gramatica.y"
-{System.out.println(“Error, Falta END_IF de cierre”);}
+{System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 72:
 //#line 127 "gramatica.y"
-{System.out.println(“Error, Falta de contenido en el bloque then”);}
+{System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 73:
 //#line 128 "gramatica.y"
-{System.out.println(“Error, Falta de contenido en el bloque else”);}
+{System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 76:
 //#line 134 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 77:
 //#line 135 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 78:
 //#line 136 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 79:
 //#line 137 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 80:
 //#line 138 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 81:
 //#line 139 "gramatica.y"
-{System.out.println(“Error, falta de parentesis en la condicion”);}
+{System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 82:
 //#line 140 "gramatica.y"
-{System.out.println(“Error, falta de comparador);}
+{System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );}
 break;
 case 83:
 //#line 141 "gramatica.y"
-{System.out.println(“Error, falta de comparador);}
+{System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 92:
 //#line 154 "gramatica.y"
-{System.out.println(“Error, falta tipo del parametro formal”);}
+{System.out.println("Error, falta tipo del parametro formal " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 93:
 //#line 155 "gramatica.y"
-{System.out.println(“Error, parametro invalido”);}
+{System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 95:
 //#line 159 "gramatica.y"
-{System.out.println(“Error, falta cuerpo en la iteracion”);}
+{System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 96:
 //#line 160 "gramatica.y"
-{System.out.println(“Error, falta de until en la iteracion repeat”);}
+{System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
 break;
 case 100:
 //#line 168 "gramatica.y"
-{System.out.println(“Error, falta de etiqueta en la sentencia GOTO”);}
+{System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 break;
-//#line 836 "Parser.java"
+//#line 990 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
@@ -959,8 +1111,7 @@ break;
  * object in the background.  It is intended for extending Thread
  * or implementing Runnable.  Turn off with -Jnorun .
  */
-public void run()
-{
+public void run() throws IOException {
   yyparse();
 }
 //## end of method run() ########################################

@@ -412,5 +412,8 @@ public class Lexico {
 	public char getCaracterActual() {
 		return caracterActual;
 	}
-    
+
+    public ParserVal getYylval() {
+        return this.yylval;
+    }
 }
