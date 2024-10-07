@@ -20,7 +20,7 @@ programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto:
       ;
 conjunto_sentencias : declarativa ';'
 			| declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
-			| ejecutable ';' {System.out.println("Se detecto el conjunto de sentencias");}
+			| ejecutable ';'
 			| ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 			| conjunto_sentencias declarativa ';'
 			| conjunto_sentencias declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
@@ -28,11 +28,11 @@ conjunto_sentencias : declarativa ';'
 			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
 			;
 
-ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
+ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
     |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + "en linea: " + lexico.getContadorLinea());}
     |asig  {System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
-    | repeat_until {System.out.println("Se detecto: Ciclo repeat until " + "en linea: " + lexico.getContadorLinea());}
-    | goto {System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
+    | repeat_until {System.out.println("Se detecto: Ciclo repeat until ");}
+    | goto {System.out.println("Se detecto: Sentencia GOTO " + "en linea: " + lexico.getContadorLinea());}
     | salida {System.out.println("Se detecto: Salida " + "en linea: " + lexico.getContadorLinea());}
     ;
 
@@ -47,17 +47,19 @@ sentencias_ejecutables : ejecutable ';'
  | sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
 ;
 
-declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de funcion " + "en linea: " + lexico.getContadorLinea());}
+declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de funcion ");}
 | declarvar {System.out.println("Se detecto: Declaración de variable " + "en linea: " + lexico.getContadorLinea());}
 | def_triple {System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
 | declar_compuesto {System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
 ;
-declarvar : tipo lista_var ;
-declar_compuesto : ID lista_var ; //tint t1,t2,t3 lo detecta el generador
+
+declarvar : tipo lista_var
+    ;
+
+declar_compuesto : ID lista_var ;
 
 lista_var : ID
 	| lista_var ',' ID
-	| error ID  {System.out.println("Error, falta ',' para diferenciar las variables");}
 	;
 
 tipo : TIPO_OCTAL | TIPO_UNSIGNED | TIPO_SINGLE  ;
@@ -88,7 +90,10 @@ asig : ID ASIGNACION exp_arit
 
 exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
 	| exp_arit '-' termino {System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
-	| error ';' {System.out.println("Error en expresion aritmetica");}
+	| exp_arit '+' error ';' {System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
+    | exp_arit '-' error ';'  {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
+    //| exp_arit error ';' {System.out.println("Error: Falta operando en expresión aritmetica en línea: " + lexico.getContadorLinea());}
+    //| exp_arit error ';' conjunto_sentencias {System.out.println("Error: Falta operando en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	| termino
 	;
 
@@ -102,7 +107,8 @@ lista_exp_arit : exp_arit
 termino : termino '*' factor {System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
 	| termino '/' factor {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 	| factor
-	| error factor {System.out.println("Error en termino" + "en linea: " + lexico.getContadorLinea());}
+	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
+    | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	;
 
 factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
@@ -122,6 +128,7 @@ constante : SINGLE_CONSTANTE {lexico.getTablaSimbolos().editarLexema($1.sval, tr
 
 invocacion_fun : ID '(' exp_arit ')'
 		| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
+		| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
 		;
 
 sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
@@ -133,8 +140,8 @@ sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
 		;
 
 
-condicion : '(' exp_arit comparador exp_arit ')'
-	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')'
+condicion : '(' exp_arit comparador exp_arit ')' {System.out.println("Se detecto: comparación");}
+	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Se detecto: comparación múltiple");}
     | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
     | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
     | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
@@ -143,6 +150,7 @@ condicion : '(' exp_arit comparador exp_arit ')'
 	| '(' exp_arit comparador exp_arit  {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 	|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );}
 	| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
+	| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
 	;
 
 
