@@ -1,0 +1,17 @@
+prueba BEGIN
+TIPO_OCTAL x;
+x:= 1;
+TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+    BEGIN
+        IF ( x = 1)  THEN
+            BEGIN
+                RET (x);
+            END
+        END_IF;
+
+        RET (123+22);
+    END;
+funcion1();
+END ;
+
+## Debería lanzar error de parámetro en invocación a función

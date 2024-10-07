@@ -1,0 +1,15 @@
+prueba BEGIN
+ REPEAT BEGIN
+    IF ( x != 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x >= 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x <= 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x < 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x > 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x/2+y = 1 ) THEN BEGIN x := 2; END END_IF;
+ END
+ UNTIL
+ ( (x, y, z) = (1, 2, 3) );
+
+  IF ( (x, y, x = (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+  IF ( (x, y, x)  (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+END;

@@ -1,0 +1,5 @@
+prueba BEGIN
+TIPO_OCTAL x
+x:= 1
+END ;
+## se debe visualizar en que lineas falta el ';' pero debe poder seguir compilando

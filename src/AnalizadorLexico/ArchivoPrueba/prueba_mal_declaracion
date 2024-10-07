@@ -1,0 +1,5 @@
+prueba BEGIN
+TIPO_OCTAL x, y, x;
+TIPO_SINGLE w q;
+END;
+##Debería lanzar error de falta de ; luego de w y error de sintaxis en q

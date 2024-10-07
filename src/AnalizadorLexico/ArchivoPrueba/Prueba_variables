@@ -1,6 +1,6 @@
 variables BEGIN
 
-    semi:=012.2554s-39
+    semi:=012.2554s-39 ##cte fuera de rango
     snico:=12.2554s;
     snahu:=12.
 
