@@ -18,7 +18,7 @@ public class Lexico {
     private String token;
 
 	private static final int FILAS=18;
-    private static final int COLUMNAS=31;
+    private static final int COLUMNAS=32;
     public static final int ESTADO_FINAL=50;
 
     public static final char TAB = '\t';
@@ -358,6 +358,9 @@ public class Lexico {
 
         case '}':
             return 30;
+
+            case '@':
+                return 31;
 
             case RETORNO_CARRO :
 			return 26;
