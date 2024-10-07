@@ -80,7 +80,7 @@ cuerpoFun : retorno
 ;
 
 retorno : RET '(' exp_arit ')' ';'
-	| error '(' exp_arit ')' ';' {System.out.println("Falta, la palabra ret que indica retorno");}
+	| error ';' {System.out.println("Falta el retorno en funcion ");}
  ;
 
 
@@ -163,12 +163,12 @@ comparador : MAYORIGUAL
 ;
 
 salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
-    |OUTF '(' ')'  {System.out.println("Error, falta tipo del parametro formal " + "en linea: " + lexico.getContadorLinea());}
+    |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
     |OUTF '(' error ')' {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
 ;
 
 repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion
-|REPEAT UNTIL  condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
+|REPEAT UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
 | REPEAT bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
  ;
 
