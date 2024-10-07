@@ -19,6 +19,7 @@ public class AS7 extends AccionSemantica{
             TS.agregarToken(token, atributos);
             lexico.leerSiguiente();
         }
+        lexico.setYylval(token);
         return Optional.of(MULTILINEA);
     }
 }
