@@ -106,7 +106,15 @@ public class TablaSimbolos {
 		map.put(newKey, this.getValor(oldKey));
 		map.remove(oldKey);
 	}
-	
+
+	public void imprimirTabla(){
+		System.out.println("Tabla de Simbolos");
+		for (String i: map.keySet() ){
+			System.out.println("Lexema: " + i);
+			System.out.println("Token: " + map.get(i).get(0));
+			System.out.println("----------------------");
+		}
+	}
 	
 }
 
