@@ -1,9 +1,8 @@
 package AnalizadorLexico;
 
 import AnalizadorLexico.AccionesSemanticas.*;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.BufferedReader;
+
+import java.io.*;
 import java.util.Iterator;
 import java.util.Optional;
 import AnalizadorSintactico.ParserVal;
@@ -50,32 +49,40 @@ public class Lexico {
         this.abrirArchivo(archivo);
     }
 
-    private void crearMatriz(){
+    private void crearMatriz() {
         this.matriz = new Par[FILAS][COLUMNAS];
 
-        String archivoAccionesCSV = "./src/AnalizadorLexico/Matriz/AccionesSemanticas-MatrizEstados.csv";
-        String archivoEstadosCSV = "./src/AnalizadorLexico/Matriz/TransicionEstados-MatrizEstados.csv";
+        String archivoAccionesCSV = "/AnalizadorLexico/Matriz/AccionesSemanticas-MatrizEstados.csv";
+        String archivoEstadosCSV = "/AnalizadorLexico/Matriz/TransicionEstados-MatrizEstados.csv";
         String lineaAccSem = "";
         String lineaEstados = "";
         String separador = ",";
 
         try {
-            BufferedReader accSem = new BufferedReader(new FileReader(archivoAccionesCSV));
-            BufferedReader estados = new BufferedReader(new FileReader(archivoEstadosCSV));
+            // Cargar archivo de acciones semánticas desde el classpath
+            InputStream accionesStream = getClass().getResourceAsStream(archivoAccionesCSV);
+            InputStream estadosStream = getClass().getResourceAsStream(archivoEstadosCSV);
 
-            for (int lineaActual=0 ; lineaActual<FILAS ; lineaActual++){
-                // Dividir la línea en columna
-                lineaAccSem=accSem.readLine();
-                lineaEstados=estados.readLine();
+            if (accionesStream == null || estadosStream == null) {
+                throw new IOException("No se pudo encontrar uno de los archivos CSV en el classpath");
+            }
+
+            BufferedReader accSem = new BufferedReader(new InputStreamReader(accionesStream));
+            BufferedReader estados = new BufferedReader(new InputStreamReader(estadosStream));
+
+            for (int lineaActual = 0; lineaActual < FILAS; lineaActual++) {
+                // Leer y procesar cada línea de los archivos
+                lineaAccSem = accSem.readLine();
+                lineaEstados = estados.readLine();
 
                 String[] columnasAccSem = lineaAccSem.split(separador);
                 String[] columnaEstados = lineaEstados.split(separador);
 
-                // Imprimir cada columna de la fila
-                for (int simboloActual=0 ; simboloActual<COLUMNAS ; simboloActual++) {
-                    matriz[lineaActual][simboloActual]=new Par();
-                    switch (columnasAccSem[simboloActual]){
-                    	
+                for (int simboloActual = 0; simboloActual < COLUMNAS; simboloActual++) {
+                    matriz[lineaActual][simboloActual] = new Par();
+
+                    // Asignar acción semántica
+                    switch (columnasAccSem[simboloActual]) {
                         case "1":
                             matriz[lineaActual][simboloActual].setAs(new AS1());
                             break;
@@ -132,7 +139,8 @@ public class Lexico {
                             break;
                     }
 
-                    switch (columnaEstados[simboloActual]){
+                    // Asignar estado
+                    switch (columnaEstados[simboloActual]) {
                         case "1":
                             matriz[lineaActual][simboloActual].setEstado(1);
                             break;
@@ -185,29 +193,16 @@ public class Lexico {
                             matriz[lineaActual][simboloActual].setEstado(17);
                             break;
                         case "50":
-                        	matriz[lineaActual][simboloActual].setEstado(50);
+                            matriz[lineaActual][simboloActual].setEstado(50);
                             break;
                     }
-
                 }
             }
-            /*
-            for (int i = 0; i<FILAS; i++) {
-				for (int j = 0; j<COLUMNAS; j++) {
-					System.out.println("");
-					System.out.println("Estado: "+i+" - Simbolo: "+j);
-					System.out.println("Matriz estado: "+matriz[i][j].getEstado());
-					System.out.println("Matriz accionSemantica: "+matriz[i][j].getAs());
-					System.out.println("------------------------------------");
-				}
-				
-			}
-			*/
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
 
     public int getContadorLinea() {
         return contadorLinea;
