@@ -1,11 +1,13 @@
+##En este codigo verifica el funcionamiento de las expresiones
+
 prueba BEGIN
     x := 1 + 2;
     x := 1 + 2 / 2 + 7;
     x := 1 + 2 * 3;
     y := x;
-    ##sigueinte linea: error falta de operando en expresion
+    ##siguiente linea: error falta de operando en expresion
     x := 1 + ;
-    ##sigueinte linea: error falta de operando en expresion
+    ##siguiente linea: error falta de operando en expresion
     x := 1 * 2;
     x := 3 *;
 END;

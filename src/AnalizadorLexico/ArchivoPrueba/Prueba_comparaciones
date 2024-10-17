@@ -1,3 +1,5 @@
+##En este codigo se verifica el funcionamiento de las comparaciones.
+
 prueba BEGIN
  REPEAT BEGIN
     IF ( x != 1 ) THEN BEGIN x := 2; END END_IF;
@@ -8,6 +10,7 @@ prueba BEGIN
     IF ( x/2+y = 1 ) THEN BEGIN x := 2; END END_IF;
  END
  UNTIL
+ 
  ##siguiente linea: error falta de parentesis en la comparación
  ( (x, y, z) = (1, 2, 3) );
 

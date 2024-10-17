@@ -1,0 +1,37 @@
+##En el siguiente codigo contiene un conjunto de sentencias posibles con algunos errores involucrados. 
+
+prueba 
+BEGIN
+	TIPO_OCTAL x;
+	x:= 1;
+	
+	TIPO_UNSIGNED FUN funcion1 (TIPO_SINGLE s)
+		BEGIN
+			TIPO_SINGLE a;
+			x:=s;
+			a:=x
+			
+			TIPO_OCTAL FUN funcion1_1() 
+				BEGIN
+					IF(x>a)THEN
+						BEGIN
+							REPEAT
+								BEGIN						
+									x:=x+a;
+									a:=1;
+								END
+							UNTIL(x=2);
+						END
+					RET(x);
+				END;
+		END;
+		
+		TIPO_SINGLE ts;
+		ts:=12.244s;
+		sprueba:=12.;
+		wprueba:=12.s21
+		
+		funcion1();
+		funcion1(ts);
+		funcion1_1(wprueba);
+END;

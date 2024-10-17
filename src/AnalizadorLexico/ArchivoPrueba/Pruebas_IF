@@ -1,5 +1,18 @@
-reconocimiento_errores_IF
+##En este codigo se verifico el funcionamiento de la sentencia IF.
+reconocimiento_IF
 BEGIN
+	
+	IF(x>2)THEN
+		BEGIN
+			x:=2;
+			x:=2+7;
+		END
+	ELSE
+		BEGIN
+			x:=2;
+		END
+	END_IF;
+
     IF(x<9 THEN
         BEGIN
             x:=2;
