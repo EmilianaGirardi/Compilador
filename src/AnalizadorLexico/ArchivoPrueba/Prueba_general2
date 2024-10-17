@@ -1,0 +1,88 @@
+prueba BEGIN
+    semi:=012.2554s-39 ##cte fuera de rango
+    snico:=12.2554s;
+    snahu:=12.;
+
+    semi := snico + snahu;
+    x := 3;
+    x := y / z;
+    x := 2 * 5 - z;
+
+    ##siguiente linea: error falta de parentesis en la comparación
+    IF ( (x, y, x = (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+    IF ( x, y, x) = (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+    IF ( (x, y, x) = (1, 2, 3)  THEN BEGIN x := 2; END END_IF;
+    IF ( (x, y, x) = 1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+    IF  x > 1 ) THEN BEGIN x := 2; END END_IF;
+    IF ( x > 1  THEN BEGIN x := 2; END END_IF;
+
+    ##siguiente linea: error falta de comparador
+    IF ( (x, y, x)  (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+    IF ( x 3 ) THEN BEGIN x := 2; END END_IF;
+
+    ##siguiente linea: error falta de lista de expresion aritmetica en comparación
+    IF ( (x, y, x) ) THEN BEGIN x := 2; END END_IF;
+    END;
+
+    TIPO_OCTAL x;
+
+    ##siguiente linea: error caracter invalido
+    x:=#1;
+
+    TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+        BEGIN
+            IF ( x = 1)  THEN
+            ##siguiente linea: error caracter invalido
+                BEGIN %
+                    RET (x);
+                END
+            END_IF;
+
+            RET (123+22);
+
+        ##siguiente linea: error caracter invalido
+        END; ^
+
+    funcion1(x+3-2*3);
+
+    ##siguiente linea: error falta de parametro
+    funcion();
+
+    GOTO etiqueta@;
+
+    IF(X<9)THEN
+
+        END_IF;
+
+        IF(X<9)THEN
+            BEGIN
+                x:=2;
+            END
+
+          IF X=8)THEN
+               BEGIN
+                   x:=2;
+               END
+          ELSE
+               BEGIN
+                   X:=9;
+               END
+
+    OUTF ( [Esto es una cadena ] );
+    OUTF ([x+2]);
+    ##siguiente linea: error parametro invalido
+    OUTF (7);
+    ##siguiente linea: error parametro invalido
+    OUTF();
+    ##siguiente linea: error parametro invalido
+    OUTF(aaa);
+    ##siguiente linea: error parametro invalido
+    OUTF(x=3);
+
+    IF(x<9 THEN
+        BEGIN
+            x:=2;
+        END
+    END_IF;
+
+END;
