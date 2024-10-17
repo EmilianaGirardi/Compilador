@@ -1,0 +1,26 @@
+##Este programa deb efuncionar correctamente sin errores
+
+gral3 BEGIN
+
+    uvar:= 50;
+
+    IF(uvar = 50) THEN BEGIN uvar := 1; END END_IF;
+
+    svar:= 11.589s12;
+
+    TIPO_UNSIGNED FUN funcion(TIPO_UNSIGNED uvar)
+    BEGIN
+        uvar:= 1;
+        saux:= 12.58s1;
+        REPEAT BEGIN
+            uvar:= uvar + 1;
+        END
+        UNTIL (uvar = 10);
+        RET(uvar);
+    END;
+
+    funcion(uvar);
+
+    uaux:= uvar + 55 *78;
+    uvar:= uaux/3;
+END;

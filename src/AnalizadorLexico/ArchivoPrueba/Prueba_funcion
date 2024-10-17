@@ -17,11 +17,22 @@ prueba BEGIN
 	funcion1(x+3-2*3);
 
 
+##Siguiente linea error falta retorno en funcion
+    TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+            BEGIN
+                IF ( x = 1)  THEN
+                    BEGIN
+                        RET (x);
+                    END
+                END_IF;
+            END;
+
 ##Siguiente linea error falta de nombre en la funcion
 
 	TIPO_OCTAL FUN  ( TIPO_UNSIGNED )
 		BEGIN 
-			x:=2;	
+			x:=2;
+			RET (x);
 		END;
 	
 	
@@ -29,6 +40,7 @@ prueba BEGIN
 	TIPO_SINGLE FUN funcion2 ( )
 		BEGIN 
 			x:=2;
+			RET(x);
 		END;
 	
 ##Siguiente linea error en invocacion

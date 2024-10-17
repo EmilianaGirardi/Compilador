@@ -22,7 +22,6 @@ prueba BEGIN
 
     ##siguiente linea: error falta de lista de expresion aritmetica en comparación
     IF ( (x, y, x) ) THEN BEGIN x := 2; END END_IF;
-    END;
 
     TIPO_OCTAL x;
 

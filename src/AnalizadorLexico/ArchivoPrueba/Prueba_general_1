@@ -29,7 +29,7 @@ BEGIN
 		TIPO_SINGLE ts;
 		ts:=12.244s;
 		sprueba:=12.;
-		wprueba:=12.s21
+		wprueba:=12.0s21;
 		
 		funcion1();
 		funcion1(ts);

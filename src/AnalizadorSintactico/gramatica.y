@@ -15,8 +15,6 @@
 programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto: Programa");}
       | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa");}
       | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
-      | ID BEGIN conjunto_sentencias {System.out.println("Error de delimitador de programa ");}
-      | ID conjunto_sentencias {System.out.println("Error de delimitador de programa ");}
       ;
 conjunto_sentencias : declarativa ';'
 			| declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
@@ -64,9 +62,13 @@ lista_var : ID
 
 tipo : TIPO_OCTAL | TIPO_UNSIGNED | TIPO_SINGLE  ;
 
-declaracionFun : tipo FUN ID '(' parametro ')' BEGIN cuerpoFun END
-		| tipo FUN  '(' parametro ')' BEGIN cuerpoFun END {System.out.println("Error, Falta nombre de funcion");}
-		|tipo FUN ID '(' ')' BEGIN cuerpoFun END {System.out.println("Error, Falta parametro de funcion");}
+declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
+        |  tipo FUN ID '(' parametro ')' BEGIN retorno END
+        | tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
+		| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
+		| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
+		|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
+		|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
 		;
 
 
@@ -75,12 +77,8 @@ parametro : tipo ID
 		| ID {System.out.println("Error, falta tipo del parametro formal");}
 	;
 
-cuerpoFun : retorno
-| conjunto_sentencias retorno
-;
 
 retorno : RET '(' exp_arit ')' ';'
-	| error ';' {System.out.println("Falta el retorno en funcion ");}
  ;
 
 
@@ -92,8 +90,6 @@ exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en li
 	| exp_arit '-' termino {System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
 	| exp_arit '+' error ';' {System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | exp_arit '-' error ';'  {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
-    //| exp_arit error ';' {System.out.println("Error: Falta operando en expresión aritmetica en línea: " + lexico.getContadorLinea());}
-    //| exp_arit error ';' conjunto_sentencias {System.out.println("Error: Falta operando en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	| termino
 	;
 
