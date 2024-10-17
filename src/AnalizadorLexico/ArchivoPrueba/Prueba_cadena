@@ -2,8 +2,13 @@ prueba BEGIN
 
 OUTF ( [Esto es una cadena ] );
 OUTF ([x+2]);
+##siguiente linea: error parametro invalido
 OUTF (7);
+##siguiente linea: error parametro invalido
+OUTF();
+##siguiente linea: error parametro invalido
+OUTF(aaa);
+##siguiente linea: error parametro invalido
+OUTF(x=3);
 
 END ;
-
-##Debería detectar las dos primeras salidas, y lanzar error de parámetro invalido en OUTF(7)

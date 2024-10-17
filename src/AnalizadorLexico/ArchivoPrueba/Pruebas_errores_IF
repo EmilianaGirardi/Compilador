@@ -1,0 +1,27 @@
+reconocimiento_errores_IF
+BEGIN
+    IF(x<9 THEN
+        BEGIN
+            x:=2;
+        END
+    END_IF;
+
+
+    IF(X<9)THEN
+
+    END_IF;
+
+    IF(X<9)THEN
+        BEGIN
+            x:=2;
+        END
+
+      IF X=8)THEN
+           BEGIN
+               x:=2;
+           END
+      ELSE
+           BEGIN
+               X:=9;
+           END
+END;

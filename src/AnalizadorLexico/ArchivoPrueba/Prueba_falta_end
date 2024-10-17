@@ -1,4 +1,4 @@
-prueba BEGIN
+prueba
 TIPO_OCTAL x;
 x:= 1;
 TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
@@ -11,7 +11,5 @@ TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
 
         RET (123+22);
     END;
-funcion1();
-END ;
-
-## Debería lanzar error de parámetro en invocación a función
+funcion1(x+3-2*3);
+##Se debe visualizar: "Error de deliminitador de programa" al finalizar la compilación

@@ -1,15 +1,18 @@
 prueba BEGIN&
 TIPO_OCTAL x;
+##siguiente linea: error caracter invalido
 x:=#1;
 TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
     BEGIN
         IF ( x = 1)  THEN
+        ##siguiente linea: error caracter invalido
             BEGIN %
                 RET (x);
             END
         END_IF;
 
         RET (123+22);
+    ##siguiente linea: error caracter invalido
     END; ^
 funcion1(x+3-2*3);
 END ;

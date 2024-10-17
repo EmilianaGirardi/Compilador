@@ -8,8 +8,21 @@ prueba BEGIN
     IF ( x/2+y = 1 ) THEN BEGIN x := 2; END END_IF;
  END
  UNTIL
+ ##siguiente linea: error falta de parentesis en la comparación
  ( (x, y, z) = (1, 2, 3) );
 
+##siguiente linea: error falta de parentesis en la comparación
   IF ( (x, y, x = (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+  IF ( x, y, x) = (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+  IF ( (x, y, x) = (1, 2, 3)  THEN BEGIN x := 2; END END_IF;
+  IF ( (x, y, x) = 1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+  IF  x > 1 ) THEN BEGIN x := 2; END END_IF;
+  IF ( x > 1  THEN BEGIN x := 2; END END_IF;
+
+##siguiente linea: error falta de comparador
   IF ( (x, y, x)  (1, 2, 3) ) THEN BEGIN x := 2; END END_IF;
+  IF ( x 3 ) THEN BEGIN x := 2; END END_IF;
+
+##siguiente linea: error falta de lista de expresion aritmetica en comparación
+IF ( (x, y, x) ) THEN BEGIN x := 2; END END_IF;
 END;
