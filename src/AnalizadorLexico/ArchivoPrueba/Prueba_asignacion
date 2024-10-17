@@ -1,0 +1,22 @@
+##El siguiente codigo muestra la asignacion de valores a variables
+
+variables BEGIN
+
+	x:=1;
+	
+	TYPEDEF TRIPLE < TIPO_UNSIGNED >  var_triple;
+    
+    var_triple x1, x2, x3;
+    
+    x1{2} := 1;
+	
+	##Siguiente linea: constante fuera de rango
+    semi:=012.2554s-39;
+    
+    ##Siguiente linea: error de constante mal escrita
+    snico:=12.2554s;
+    
+    ##Siguiente linea: error de constante mal escrita
+    snahu:=12.
+	
+END;

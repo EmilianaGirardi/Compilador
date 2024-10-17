@@ -1,0 +1,14 @@
+##El siguiente codigo muestra la utilizacion de declaraciones con un correcto funcionamiento y con errores.
+
+prueba BEGIN
+	
+	TIPO_UNSIGNED x;
+	
+	TIPO_OCTAL x, y, x;
+	
+	##Siguiente linea: error de falta de ; luego de w y error de sintaxis en q
+	TIPO_SINGLE w q;
+	
+	#Siguiente linea: error de falta de ;
+	TIPO_UNSIGNED z
+END;
