@@ -1,3 +1,5 @@
+##Verifica la deteccion del error de falta de programa
+
 BEGIN
 TIPO_OCTAL x;
 x:= 1;

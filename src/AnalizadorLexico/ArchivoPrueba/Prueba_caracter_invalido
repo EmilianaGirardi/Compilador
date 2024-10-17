@@ -1,3 +1,5 @@
+##En este codigo se verifica la deteccion de caracteres invalidos.
+
 prueba BEGIN&
 TIPO_OCTAL x;
 ##siguiente linea: error caracter invalido

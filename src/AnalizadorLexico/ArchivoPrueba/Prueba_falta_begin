@@ -1,3 +1,5 @@
+##Este codigo verifica la falta de begin y end
+
 prueba
 TIPO_OCTAL x;
 x:= 1;

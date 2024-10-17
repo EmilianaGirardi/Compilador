@@ -1,3 +1,6 @@
 prueba BEGIN
     GOTO etiqueta@;
+    
+    ##Siguiente linea: error falta de etiqueta.
+    GOTO ;
 END ;

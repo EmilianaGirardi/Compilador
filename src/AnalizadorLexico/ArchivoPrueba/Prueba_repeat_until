@@ -8,15 +8,15 @@ prueba BEGIN
     REPEAT
     BEGIN
         t:= 0;
-        IF (x > 0) THEN BEGIN x:= x+1; END; END_IF;
-    END;
+        IF (x > 0) THEN BEGIN x:= x+1; END END_IF;
+    END
     UNTIL (x = 5);
 
     ##Error falta de until
     REPEAT
     BEGIN
         variable:=50;
-    END;
+    END
     (x > 10);
 
 END;
