@@ -44,7 +44,7 @@ public class Lexico {
     private Lexico(String archivo) throws IOException{
         crearMatriz();
         this.tablaSimbolos = new TablaSimbolos();
-        this.contadorLinea=0;
+        this.contadorLinea=1;
         defaultToken();
         this.abrirArchivo(archivo);
     }
@@ -214,29 +214,19 @@ public class Lexico {
     }
 
     public void leerSiguiente() throws IOException {
+    	if(caracterActual == SALTO_LINEA)
+            this.contadorLinea++;
+            
     	int valor_fr = fr.read();
-    	
-    	//Verifico si lo leído es final de archivo y lo mapeo con el simbolo '$'
+    	this.caracterActual = (char) valor_fr;
     	
     	if(valor_fr == -1) {
     		this.caracterActual = FINAL_ARCHIVO;
-    	}else {
-    		this.caracterActual = (char) valor_fr;
-            
-            if (caracterActual == RETORNO_CARRO) {
-            	
-                this.caracterActual = (char) fr.read();
-                if (caracterActual == SALTO_LINEA)
-                    this.contadorLinea++;
-                
-            }else if(caracterActual == SALTO_LINEA){
-                this.contadorLinea++;
-            }
+    	}
 
             /*
             if (caracterActual == TAB || caracterActual == BLANK)
                 leerSiguiente();*/
-    	}
     }
 
     public void setYylval(String yylval) {

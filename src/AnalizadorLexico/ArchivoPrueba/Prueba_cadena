@@ -1,7 +1,17 @@
+
+
+
+
+
+
+
+
 ##En este codigo se verifica el funcionamiento de la cadena de texto
 
 prueba BEGIN
-
+OUTF([Esto es una cadena 
+	aa 
+	aa])
 OUTF ( [Esto es una cadena ] );
 OUTF ([x+2]);
 ##siguiente linea: error parametro invalido

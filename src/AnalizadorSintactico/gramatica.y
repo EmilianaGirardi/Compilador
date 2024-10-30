@@ -17,21 +17,21 @@ programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto:
       | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
       ;
 conjunto_sentencias : declarativa ';'
-			| declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
+			| declarativa {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			| ejecutable ';'
-			| ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
+			| ejecutable {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			| conjunto_sentencias declarativa ';'
-			| conjunto_sentencias declarativa {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
+			| conjunto_sentencias declarativa {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			| conjunto_sentencias ejecutable ';'
-			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "en linea: " + lexico.getContadorLinea());}
+			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			;
 
 ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
-    |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + "en linea: " + lexico.getContadorLinea());}
-    |asig  {System.out.println("Se detecto: Asignacion " + "en linea: " + lexico.getContadorLinea());}
+    |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + " en linea: " + lexico.getContadorLinea());}
+    |asig  {System.out.println("Se detecto: Asignacion " + " en linea: " + lexico.getContadorLinea());}
     | repeat_until {System.out.println("Se detecto: Ciclo repeat until ");}
-    | goto {System.out.println("Se detecto: Sentencia GOTO " + "en linea: " + lexico.getContadorLinea());}
-    | salida {System.out.println("Se detecto: Salida " + "en linea: " + lexico.getContadorLinea());}
+    | goto {System.out.println("Se detecto: Sentencia GOTO " + " en linea: " + lexico.getContadorLinea());}
+    | salida {System.out.println("Se detecto: Salida " + " en linea: " + lexico.getContadorLinea());}
     ;
 
 bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
