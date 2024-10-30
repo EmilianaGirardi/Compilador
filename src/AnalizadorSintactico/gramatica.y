@@ -82,7 +82,10 @@ retorno : RET '(' exp_arit ')' ';'
  ;
 
 
-asig : ID ASIGNACION exp_arit
+asig : ID ASIGNACION exp_arit {
+    $$.sval = generador.addTerceto(":=", $1.sval, $2.sval);
+    }
+
     | ID '{' constante '}' ASIGNACION exp_arit
  ;
 
@@ -92,9 +95,6 @@ exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en li
     | exp_arit '-' error ';'  {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	| termino
 	;
-
-
-
 
 lista_exp_arit : exp_arit
 		| lista_exp_arit ',' exp_arit
