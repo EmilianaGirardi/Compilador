@@ -15,6 +15,8 @@ public class AS3 extends AccionSemantica{
     	
     	ArrayList<Integer> atributos = new ArrayList<Integer>();
 		atributos.add(SINGLE_CONSTANTE);
+		atributos.add(TIPO_SINGLE);
+		
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);
 		}

@@ -22,6 +22,7 @@ public class AS5 extends AccionSemantica {
     	
     	ArrayList<Integer> atributos = new ArrayList<Integer>();
     	atributos.add(OCTAL);
+    	atributos.add(TIPO_OCTAL);
         int numero = Integer.parseInt(token, 8);
         if (numero < 0 || numero > limite){
             System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());

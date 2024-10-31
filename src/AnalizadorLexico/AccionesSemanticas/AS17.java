@@ -20,6 +20,8 @@ public class AS17 extends AccionSemantica{
 		if(!TS.estaToken(token)) {
 			ArrayList<Integer> atributos = new ArrayList<Integer>();
 			atributos.add(ID);
+			atributos.add(TIPO_DESCONOCIDO);
+			
 			TS.agregarToken(token, atributos);
 			return Optional.of(ID);
 		}else{

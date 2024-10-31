@@ -22,6 +22,7 @@ public class AS4 extends AccionSemantica {
     	
     	ArrayList<Integer> atributos = new ArrayList<Integer>();
         atributos.add(ENTERO_UNSIGNED);
+        atributos.add(TIPO_UNSIGNED);
     	
         if (Integer.valueOf(token) < 0 || Integer.valueOf(token) > limite){
             System.out.println("Warning: Entero se encuentra fuera de rango. Línea: "+lexico.getContadorLinea());

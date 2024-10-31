@@ -987,7 +987,7 @@ case 64:
 break;
 case 65:
 //#line 114 "gramatica.y"
-{lexico.getTablaSimbolos().editarLexema(val_peek(0).sval, truncarFueraRango(val_peek(0).sval+val_peek(1).sval));}
+{lexico.getTablaSimbolos().editarLexema(val_peek(0).sval, truncarFueraRango(val_peek(0).sval+val_peek(1).sval, lexico.getContadorLinea()));}
 break;
 case 66:
 //#line 115 "gramatica.y"

@@ -15,6 +15,8 @@ public class AS2 extends AccionSemantica{
         
         ArrayList<Integer> atributos = new ArrayList<Integer>();
         atributos.add(SINGLE_CONSTANTE);
+        atributos.add(TIPO_SINGLE);
+        
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)) {
         	TS.agregarToken(token, atributos);
