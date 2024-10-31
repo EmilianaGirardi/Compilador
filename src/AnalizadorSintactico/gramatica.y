@@ -12,10 +12,14 @@
 %right menos
 
 %%
+
+/*---Programa---*/
+
 programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto: Programa");}
       | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa");}
       | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
       ;
+      
 conjunto_sentencias : declarativa ';'
 			| declarativa {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			| ejecutable ';'
@@ -25,6 +29,9 @@ conjunto_sentencias : declarativa ';'
 			| conjunto_sentencias ejecutable ';'
 			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
 			;
+/*------*/
+
+/*---EJECUTABLE---*/
 
 ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
     |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + " en linea: " + lexico.getContadorLinea());}
@@ -37,57 +44,85 @@ ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
 bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
                                 | BEGIN sentencias_ejecutables retorno END
                                 | BEGIN retorno END
-					;
+								;
 
 sentencias_ejecutables : ejecutable ';'
- | sentencias_ejecutables ejecutable ';'
- | ejecutable {System.out.println("Falta ;");}
- | sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
-;
+ 	| sentencias_ejecutables ejecutable ';'
+ 	| ejecutable {System.out.println("Falta ;");}
+ 	| sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
+	;
+
+
+/*------*/
+
+/*---DECLARATIVA---*/
 
 declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de funcion ");}
-| declarvar {System.out.println("Se detecto: Declaración de variable " + "en linea: " + lexico.getContadorLinea());}
-| def_triple {System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
-| declar_compuesto {System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
-;
+	| declarvar {System.out.println("Se detecto: Declaración de variable " + "en linea: " + lexico.getContadorLinea());}
+	| def_triple {System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
+	| declar_compuesto {System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
+	;
 
 declarvar : tipo lista_var
     ;
 
-declar_compuesto : ID lista_var ;
+declar_compuesto : ID lista_var 
+	;
+
+declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
+	|  tipo FUN ID '(' parametro ')' BEGIN retorno END
+	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
+	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
+	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
+	|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
+	|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
+	;
+		
+/*------*/
+
+/*---VARIABLES---*/
 
 lista_var : ID
 	| lista_var ',' ID
 	;
 
-tipo : TIPO_OCTAL | TIPO_UNSIGNED | TIPO_SINGLE  ;
+tipo : TIPO_OCTAL 
+	| TIPO_UNSIGNED 
+	| TIPO_SINGLE  
+	;
+
+
+/*------*/
+
+/*---FUNCION---*/
 
 declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
-        |  tipo FUN ID '(' parametro ')' BEGIN retorno END
-        | tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
-		| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
-		| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
-		|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
-		|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
-		;
+	|  tipo FUN ID '(' parametro ')' BEGIN retorno END
+	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
+	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
+	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
+	|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
+	|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
+	;
 
 
 parametro : tipo ID
-		| tipo {System.out.println("Error, falta nombre del parametro formal");}
-		| ID {System.out.println("Error, falta tipo del parametro formal");}
+	| tipo {System.out.println("Error, falta nombre del parametro formal");}
+	| ID {System.out.println("Error, falta tipo del parametro formal");}
 	;
 
 
 retorno : RET '(' exp_arit ')' ';'
- ;
+	;
 
+invocacion_fun : ID '(' exp_arit ')'
+	| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
+	| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
+	;
 
-asig : ID ASIGNACION exp_arit {
-    $$.sval = generador.addTerceto(":=", $1.sval, $2.sval);
-    }
+/*------*/
 
-    | ID '{' constante '}' ASIGNACION exp_arit
- ;
+/*---EXPRESION ARITMETICA---*/
 
 exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
 	| exp_arit '-' termino {System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
@@ -97,8 +132,8 @@ exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en li
 	;
 
 lista_exp_arit : exp_arit
-		| lista_exp_arit ',' exp_arit
-		;
+	| lista_exp_arit ',' exp_arit
+	;
 
 termino : termino '*' factor {System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
 	| termino '/' factor {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
@@ -112,28 +147,47 @@ factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + " en li
 	| constante
 	| invocacion_fun {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 	;
-etiqueta : ID '@'
-;
+
+/*------*/
+
+/*---ASIGNACION ; ETIQUETA ; CONSTANTE ; SALIDA---*/
+
+asig : ID ASIGNACION exp_arit {
+    $$.sval = generador.addTerceto(":=", $1.sval, $2.sval);
+    }
+
+    | ID '{' constante '}' ASIGNACION exp_arit
+ ;	
 
 constante : SINGLE_CONSTANTE {lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
     |ENTERO_UNSIGNED
     |OCTAL
-    /* |   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, trucarFueraRango($2.sval+$1.sval));} */
+    /* |   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, truncarFueraRango($2.sval+$1.sval, , lexico.getContadorLinea()));} */
+	;
+
+etiqueta : ID '@'
+	;
+
+goto : GOTO etiqueta
+	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
+	;
+
+salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
+    |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
+    |OUTF '(' error ')' {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
 ;
 
+/*------*/
 
-invocacion_fun : ID '(' exp_arit ')'
-		| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
-		| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
-		;
+/*---CONDICIONALES---*/
 
 sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
 	| IF  condicion  THEN bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
-		| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
-		| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
-		| IF  condicion  THEN END_IF {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
-		|IF condicion THEN bloque_sentencias_ejecutables ELSE END_IF {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
-		;
+	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
+	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+	| IF  condicion  THEN END_IF {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
+	|IF condicion THEN bloque_sentencias_ejecutables ELSE END_IF {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
+	;
 
 
 condicion : '(' exp_arit comparador exp_arit ')' {System.out.println("Se detecto: comparación");}
@@ -153,29 +207,28 @@ condicion : '(' exp_arit comparador exp_arit ')' {System.out.println("Se detecto
 comparador : MAYORIGUAL
 	| MENORIGUAL
 	| DISTINTO
-| '='
-| '>'
-| '<'
-;
-
-salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
-    |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
-    |OUTF '(' error ')' {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
-;
+	| '='
+	| '>'
+	| '<'
+	;
 
 repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion
-|REPEAT UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
-| REPEAT bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
- ;
+	|REPEAT UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
+	| REPEAT bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
+ 	;	
+/*-----*/
 
-def_triple : TYPEDEF tipo_compuesto '<' tipo '>'  ID;
+/*---TIPO COMPUESTO---*/
+
+def_triple : TYPEDEF tipo_compuesto '<' tipo '>'  ID
+	;
 
 tipo_compuesto : TRIPLE
-			;
-
-goto : GOTO etiqueta
-	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 	;
+
+/*-----*/		
+
+/*--CODIGO---*/
 %%
 
 private Lexico lexico;
