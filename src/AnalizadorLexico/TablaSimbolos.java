@@ -131,7 +131,7 @@ public class TablaSimbolos {
 		for (String i: map.keySet() ){
 			System.out.println("Lexema: " + i);
 			System.out.println("Token: " + map.get(i).get(0));
-			System.out.println("Tipo: " + map.get(i).get(1));
+			//System.out.println("Tipo: " + map.get(i).get(1));
 			
 			System.out.println("----------------------");
 		}
