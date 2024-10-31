@@ -8,4 +8,9 @@ public class Terceto {
         this.operando1=operando1;
         this.operando2=operando2;
     }
+
+    @Override
+    public String toString() {
+        return "(" + operador +", " + operando1 + ", " + operando2 + ")";
+    }
 }
