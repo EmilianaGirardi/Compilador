@@ -2,6 +2,7 @@
         package AnalizadorSintactico;
     	import java.io.*;
     	import AnalizadorLexico.Lexico;
+    	import GeneradorCodigo.Generador;
     	//import Lex.Lex;
 %}
 
@@ -69,14 +70,6 @@ declarvar : tipo lista_var
 declar_compuesto : ID lista_var 
 	;
 
-declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
-	|  tipo FUN ID '(' parametro ')' BEGIN retorno END
-	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
-	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
-	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
-	|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
-	|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
-	;
 		
 /*------*/
 
@@ -124,8 +117,12 @@ invocacion_fun : ID '(' exp_arit ')'
 
 /*---EXPRESION ARITMETICA---*/
 
-exp_arit : exp_arit '+' termino {System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
-	| exp_arit '-' termino {System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
+exp_arit : exp_arit '+' termino {
+    $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
+    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
+	| exp_arit '-' termino {
+	$$.sval = generador.addTerceto("-", $1.sval, $3.sval);
+	System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
 	| exp_arit '+' error ';' {System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | exp_arit '-' error ';'  {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	| termino
@@ -135,16 +132,22 @@ lista_exp_arit : exp_arit
 	| lista_exp_arit ',' exp_arit
 	;
 
-termino : termino '*' factor {System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
-	| termino '/' factor {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
-	| factor
+termino : termino '*' factor {
+        $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
+        System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
+	| termino '/' factor {
+	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
+	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
+	| factor {$$.sval = $1.sval;}
 	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	;
 
-factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
+factor : ID {
+    $$.sval = $1.sval;
+    System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
     | ID '{' constante '}'
-	| constante
+	| constante {$$.sval = $1.sval;}
 	| invocacion_fun {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 	;
 
@@ -153,22 +156,24 @@ factor : ID {System.out.println("Se detecto: Identificador " + $1.sval + " en li
 /*---ASIGNACION ; ETIQUETA ; CONSTANTE ; SALIDA---*/
 
 asig : ID ASIGNACION exp_arit {
-    $$.sval = generador.addTerceto(":=", $1.sval, $2.sval);
+    $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
     }
 
     | ID '{' constante '}' ASIGNACION exp_arit
  ;	
 
-constante : SINGLE_CONSTANTE {lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
-    |ENTERO_UNSIGNED
-    |OCTAL
+constante : SINGLE_CONSTANTE {
+    $$.sval = $1.sval;
+    lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
+    |ENTERO_UNSIGNED {$$.sval = $1.sval;}
+    |OCTAL {$$.sval = $1.sval;}
     /* |   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, truncarFueraRango($2.sval+$1.sval, , lexico.getContadorLinea()));} */
 	;
 
 etiqueta : ID '@'
 	;
 
-goto : GOTO etiqueta
+goto : GOTO etiqueta {$$.sval = generador.addTerceto("GOTO", $2.sval, null);}
 	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 	;
 
@@ -232,6 +237,7 @@ tipo_compuesto : TRIPLE
 %%
 
 private Lexico lexico;
+private Generador generador;
 private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
 private final Float supPositivo = (float) Math.pow(3.40282347, 38);
 private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
@@ -249,6 +255,7 @@ public void yyerror(String mensaje) {
 
 public Parser(String archivo) throws IOException {
     lexico = Lexico.getInstance(archivo);
+    generador = Generador.getInstance();
 }
 
 private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
