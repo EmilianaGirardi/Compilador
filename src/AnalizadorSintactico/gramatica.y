@@ -186,7 +186,9 @@ salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
 
 /*---CONDICIONALES---*/
 
-sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
+sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF {
+
+}
 	| IF  condicion  THEN bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
 	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
@@ -195,7 +197,10 @@ sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF
 	;
 
 
-condicion : '(' exp_arit comparador exp_arit ')' {System.out.println("Se detecto: comparación");}
+condicion : '(' exp_arit comparador exp_arit ')' {
+        $$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
+        $$.sval = generador.addTerceto("BF", $$.sval, null);
+        System.out.println("Se detecto: comparación");}
 	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Se detecto: comparación múltiple");}
     | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
     | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}

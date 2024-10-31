@@ -8,6 +8,8 @@ public class Generador {
     private ArrayList<Terceto> tercetos;
     private static volatile Generador instance;
 
+    //Generar pila acaaaaaaa
+
     public String addTerceto(String operador, String operando1, String operando2){
         Terceto terceto = new Terceto(operador, operando1, operando2);
         this.tercetos.add(terceto);
