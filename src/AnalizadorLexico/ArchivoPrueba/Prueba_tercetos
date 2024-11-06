@@ -1,6 +1,6 @@
 prueba BEGIN
-x := 1;
-x := 1 + 2;
-y := 1*2 + 33 / 4 -1;
-IF ((1, 2, 3) = (1, 2, 3)) THEN BEGIN x:=1; END END_IF;
+##prueba triple
+var_triple{1} := 2;
+x := var_triple{3} + 2;
+x := var_triple{4};
 END;

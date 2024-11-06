@@ -27,6 +27,7 @@ public abstract class AccionSemantica {
     public final static int  TIPO_SINGLE = 2;
     public final static int  TIPO_OCTAL = 3;
     public final static int  TIPO_MULTILINEA = 4;
+    public final static int TIPO_TRIPLE = 5;
     public final static int  TIPO_DESCONOCIDO = 50;
     
     public abstract Optional<Integer> ejecutar(Character caracterActual) throws IOException;

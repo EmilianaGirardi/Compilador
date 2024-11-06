@@ -3,7 +3,8 @@
     	import java.io.*;
     	import AnalizadorLexico.Lexico;
     	import GeneradorCodigo.Generador;
-    	//import Lex.Lex;
+    	import java.util.ArrayList;
+    	import AnalizadorLexico.TablaSimbolos;
 %}
 
 %token MENORIGUAL ID ASIGNACION DISTINTO MAYORIGUAL SINGLE_CONSTANTE ENTERO_UNSIGNED OCTAL MULTILINEA REPEAT IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET GOTO TRIPLE OCTAL TIPO_UNSIGNED TIPO_SINGLE TIPO_OCTAL UNTIL
@@ -155,7 +156,7 @@ cte_negativa : '-' SINGLE_CONSTANTE %prec UMINUS{
 */
 lista_exp_arit : exp_arit {$$.sval = $1.sval;}
 	| lista_exp_arit ',' exp_arit {
-	$$.sval = $1.sval.concat(",").concat($3.sval);); }
+	$$.sval = $1.sval.concat(",").concat($3.sval);}
 	;
 
 termino : termino '*' factor {
@@ -172,10 +173,34 @@ termino : termino '*' factor {
 factor : ID {
     $$.sval = $1.sval;
     System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
-    | ID '{' constante '}'
 	| constante {$$.sval = $1.sval;}
 	| invocacion_fun {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
+	| triple
 	;
+
+triple : ID '{' ENTERO_UNSIGNED '}' {
+    String token = $1.sval+'{'+$3.sval+'}';
+    //verificar que constante sea 1, 2 o 3
+    if ($3.sval.equals("1") || $3.sval.equals("2") || $3.sval.equals("3")){
+        ArrayList<Integer> atributos = new ArrayList<Integer>();
+        atributos.add(258);
+        atributos.add(5);
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        TS.agregarToken(token, atributos);
+        $$.sval = token;
+    }
+    else {
+        System.out.println("Intento de acceso a una posición de triple inexistente en linea " + lexico.getContadorLinea());
+        $$.sval = token;
+        /*en este punto, los tercetos se generan igual,
+        aunque se intente acceder a un valor invalido del tercerto.
+        El generador de assembler deberia volver a verificar si la constante es 1, 2 o 3
+        y solo generar codigo en ese caso, de lo contrario lanzar error.
+        */
+    }
+}
+;
+
 
 /*------*/
 
@@ -184,12 +209,8 @@ factor : ID {
 asig : ID ASIGNACION exp_arit {
     $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
     }
-    | ID '{' constante '}' ASIGNACION exp_arit{
-    //String indexAccess = generador.addTerceto("INDEX", $1.sval, $3.sval);
-    // acceso al indice
-    //$$.sval = generador.addTerceto(":=", indexAccess, $6.sval)
-    //esto esta bien o seria mejor guardar cada variable del triple como una variable comun en la TS?
-    // esto seria: guardar los lexemas ID{1}, ID{2}, ID{3} y luego accederlas como variables comunes.
+    | triple ASIGNACION exp_arit {
+    $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
     }
  ;	
 
