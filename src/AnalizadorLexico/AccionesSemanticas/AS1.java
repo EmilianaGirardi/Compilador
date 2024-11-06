@@ -8,7 +8,8 @@ import AnalizadorLexico.Lexico;
 public class AS1 extends AccionSemantica{
 
     @Override
-    public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
+    public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
+    	Lexico lexico = Lexico.getInstance();
         lexico.addCharToken(caracterActual);
         lexico.leerSiguiente();
         return null;

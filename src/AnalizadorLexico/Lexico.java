@@ -39,7 +39,10 @@ public class Lexico {
     	return result;
     }
     
-  
+    public static Lexico getInstance() throws IOException {
+    	Lexico result = instance;
+    	return result;
+    }
     
     private Lexico(String archivo) throws IOException{
         crearMatriz();
@@ -251,7 +254,7 @@ public class Lexico {
         	int columna = mapeoCaracter(caracterActual);
         	
         	if (matriz[estadoActual][columna].getAs()!=null) {
-        		t = matriz[estadoActual][columna].getAs().ejecutar(caracterActual, this);
+        		t = matriz[estadoActual][columna].getAs().ejecutar(caracterActual);
         	}
             estadoActual=matriz[estadoActual][columna].getEstado();
             

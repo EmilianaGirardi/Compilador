@@ -1,5 +1,6 @@
 package AnalizadorLexico.AccionesSemanticas;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -9,7 +10,8 @@ import AnalizadorLexico.TablaSimbolos;
 public class AS8 extends AccionSemantica{
 
     @Override
-    public Optional<Integer>  ejecutar(Character caracterActual, Lexico lexico) {
+    public Optional<Integer>  ejecutar(Character caracterActual) throws IOException {
+    	Lexico lexico = Lexico.getInstance();
         // TODO Auto-generated method stub
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String token = lexico.getToken();

@@ -29,7 +29,7 @@ public abstract class AccionSemantica {
     public final static int  TIPO_MULTILINEA = 4;
     public final static int  TIPO_DESCONOCIDO = 50;
     
-    public abstract Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException;
+    public abstract Optional<Integer> ejecutar(Character caracterActual) throws IOException;
 
 }
 

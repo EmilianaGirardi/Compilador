@@ -10,7 +10,8 @@ import AnalizadorLexico.TablaSimbolos;
 public class AS17 extends AccionSemantica{
 
 	@Override
-	public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
+	public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
+		Lexico lexico = Lexico.getInstance();
 		// TODO Auto-generated method stub
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String token = lexico.getToken();

@@ -10,7 +10,9 @@ import AnalizadorLexico.Lexico;
 public class AS6 extends AccionSemantica {
 
     @Override
-    public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
+    public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
+    	
+    	Lexico lexico = Lexico.getInstance();
     	
         if (caracterActual.equals('\r')) {
         	lexico.leerSiguiente();

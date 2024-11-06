@@ -9,7 +9,9 @@ import AnalizadorLexico.TablaSimbolos;
 
 public class AS7 extends AccionSemantica{
     @Override
-    public Optional<Integer> ejecutar(Character caracterActual, Lexico lexico) throws IOException {
+    public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
+    	Lexico lexico = Lexico.getInstance();
+    	
     	String token = lexico.getToken();
     	
     	ArrayList<Integer> atributos = new ArrayList<Integer>();
