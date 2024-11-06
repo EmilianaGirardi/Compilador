@@ -106,10 +106,14 @@ parametro : tipo ID
 	;
 
 
-retorno : RET '(' exp_arit ')' ';'
+retorno : RET '(' exp_arit ')' ';'{
+            $$.sval = generador.addTerceto("RETORNO", $3.sval, null);
+        }
 	;
 
-invocacion_fun : ID '(' exp_arit ')'
+invocacion_fun : ID '(' exp_arit ')'{
+    $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
+    }
 	| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
 	| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
 	;
@@ -154,27 +158,39 @@ cte_negativa : '-' SINGLE_CONSTANTE %prec UMINUS{
     lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval));
 }
 */
-lista_exp_arit : exp_arit {$$.sval = $1.sval;}
+
+lista_exp_arit : exp_arit {
+        $$.sval = $1.sval;
+    }
 	| lista_exp_arit ',' exp_arit {
-	$$.sval = $1.sval.concat(",").concat($3.sval);}
+	    $$.sval = $1.sval.concat(",").concat($3.sval);
+	}
 	;
 
 termino : termino '*' factor {
         $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
-        System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
+        System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
+    }
 	| termino '/' factor {
-	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
-	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
-	| factor {$$.sval = $1.sval;}
+        $$.sval = generador.addTerceto("/", $1.sval, $3.sval);
+        System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
+	}
+	| factor {
+	    $$.sval = $1.sval;
+	}
+
 	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 	;
 
 factor : ID {
-    $$.sval = $1.sval;
-    System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());}
-	| constante {$$.sval = $1.sval;}
-	| invocacion_fun {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
+            $$.sval = $1.sval;
+            System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());
+        }
+	| constante {
+	    $$.sval = $1.sval;
+	}
+	| invocacion_fun {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
 	| triple
 	;
 
@@ -207,28 +223,44 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
 /*---ASIGNACION ; ETIQUETA ; CONSTANTE ; SALIDA---*/
 
 asig : ID ASIGNACION exp_arit {
-    $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
-    }
+            $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
+        }
     | triple ASIGNACION exp_arit {
-    $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
+        $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
     }
  ;	
 
 constante : SINGLE_CONSTANTE {
+            $$.sval = $1.sval;
+            lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));
+        }
+    |ENTERO_UNSIGNED {
+        $$.sval = $1.sval;
+    }
+    |OCTAL {
+        $$.sval = $1.sval;
+    }
+	;
+
+etiqueta : ID '@' {
     $$.sval = $1.sval;
-    lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
-    |ENTERO_UNSIGNED {$$.sval = $1.sval;}
-    |OCTAL {$$.sval = $1.sval;}
+    }
 	;
 
-etiqueta : ID '@'
-	;
-
-goto : GOTO etiqueta {$$.sval = generador.addTerceto("GOTO", $2.sval, null);}
+goto : GOTO etiqueta {
+        $$.sval = generador.addTerceto("GOTO", $2.sval, null);
+       }
 	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 	;
 
-salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
+salida : OUTF '(' MULTILINEA ')' {
+        $$.sval = generador.addTercetos("SALIDA", $3.sval, null);
+        }
+
+        | OUTF '(' exp_arit ') ' {
+        $$.sval = generador.addTercetos("SALIDA", $3.sval, null);
+        }
+
     |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
     |OUTF '(' error ')' {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
 ;
