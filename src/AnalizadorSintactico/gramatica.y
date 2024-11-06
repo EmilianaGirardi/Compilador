@@ -128,8 +128,9 @@ exp_arit : exp_arit '+' termino {
 	| termino
 	;
 
-lista_exp_arit : exp_arit
-	| lista_exp_arit ',' exp_arit
+lista_exp_arit : exp_arit {$$.sval = $1.sval;}
+	| lista_exp_arit ',' exp_arit {
+	$$.sval = $1.sval.concat(",").concat($3.sval);); }
 	;
 
 termino : termino '*' factor {
@@ -158,8 +159,13 @@ factor : ID {
 asig : ID ASIGNACION exp_arit {
     $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
     }
-
-    | ID '{' constante '}' ASIGNACION exp_arit
+    | ID '{' constante '}' ASIGNACION exp_arit{
+    //String indexAccess = generador.addTerceto("INDEX", $1.sval, $3.sval);
+    // acceso al indice
+    //$$.sval = generador.addTerceto(":=", indexAccess, $6.sval)
+    //esto esta bien o seria mejor guardar cada variable del triple como una variable comun en la TS?
+    // esto seria: guardar los lexemas ID{1}, ID{2}, ID{3} y luego accederlas como variables comunes.
+    }
  ;	
 
 constante : SINGLE_CONSTANTE {
@@ -167,7 +173,7 @@ constante : SINGLE_CONSTANTE {
     lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
     |ENTERO_UNSIGNED {$$.sval = $1.sval;}
     |OCTAL {$$.sval = $1.sval;}
-    /* |   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, truncarFueraRango($2.sval+$1.sval, , lexico.getContadorLinea()));} */
+    /*|   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, truncarFueraRango($2.sval+$1.sval, , lexico.getContadorLinea()));} */
 	;
 
 etiqueta : ID '@'
@@ -201,7 +207,29 @@ condicion : '(' exp_arit comparador exp_arit ')' {
         $$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
         $$.sval = generador.addTerceto("BF", $$.sval, null);
         System.out.println("Se detecto: comparación");}
-	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Se detecto: comparación múltiple");}
+
+	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
+        String[] lista1 = $3.sval.split(",");
+        String[] lista2 = $7.sval.split(",");
+        if (lista1.length != lista2.length){
+            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
+        }else{
+            if(lista1.length==1){
+                $$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
+            }else{
+                $$.sval= generador.addTerceto($5.sval, lista1[0], lista2[0]);
+                String auxTerceto;
+
+                for (i = 1; i<lista1.length; i++){
+                    auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
+                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
+                }
+            }
+
+        }
+	    System.out.println("Se detecto: comparación múltiple");
+	  }
+
     | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
     | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
     | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}

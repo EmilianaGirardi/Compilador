@@ -3,12 +3,13 @@ package GeneradorCodigo;
 import AnalizadorLexico.Lexico;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Generador {
     private ArrayList<Terceto> tercetos;
     private static volatile Generador instance;
+    private Stack<String> pila;
 
-    //Generar pila acaaaaaaa
 
     public String addTerceto(String operador, String operando1, String operando2){
         Terceto terceto = new Terceto(operador, operando1, operando2);

@@ -606,7 +606,7 @@ final static String yyrule[] = {
 "tipo_compuesto : TRIPLE",
 };
 
-//#line 238 "gramatica.y"
+//#line 271 "gramatica.y"
 
 private Lexico lexico;
 private Generador generador;
@@ -960,153 +960,201 @@ case 53:
 //#line 127 "gramatica.y"
 {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 break;
+case 55:
+//#line 131 "gramatica.y"
+{yyval.sval = val_peek(0).sval;}
+break;
+case 56:
+//#line 132 "gramatica.y"
+{
+	yyval.sval = val_peek(2).sval.concat(",").concat(val_peek(0).sval); }
+break;
 case 57:
-//#line 135 "gramatica.y"
+//#line 136 "gramatica.y"
 {
         yyval.sval = generador.addTerceto("*", val_peek(2).sval, val_peek(0).sval);
         System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 58:
-//#line 138 "gramatica.y"
+//#line 139 "gramatica.y"
 {
 	yyval.sval = generador.addTerceto("/", val_peek(2).sval, val_peek(0).sval);
 	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 59:
-//#line 141 "gramatica.y"
+//#line 142 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 60:
-//#line 142 "gramatica.y"
+//#line 143 "gramatica.y"
 {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
 break;
 case 61:
-//#line 143 "gramatica.y"
+//#line 144 "gramatica.y"
 {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
 break;
 case 62:
-//#line 146 "gramatica.y"
+//#line 147 "gramatica.y"
 {
     yyval.sval = val_peek(0).sval;
     System.out.println("Se detecto: Identificador " + val_peek(0).sval + " en linea: " + lexico.getContadorLinea());}
 break;
 case 64:
-//#line 150 "gramatica.y"
+//#line 151 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 65:
-//#line 151 "gramatica.y"
+//#line 152 "gramatica.y"
 {System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 66:
-//#line 158 "gramatica.y"
+//#line 159 "gramatica.y"
 {
     yyval.sval = generador.addTerceto(":=", val_peek(2).sval, val_peek(0).sval);
     }
 break;
+case 67:
+//#line 162 "gramatica.y"
+{
+    /*String indexAccess = generador.addTerceto("INDEX", $1.sval, $3.sval);*/
+    /* acceso al indice*/
+    /*$$.sval = generador.addTerceto(":=", indexAccess, $6.sval)*/
+    /*esto esta bien o seria mejor guardar cada variable del triple como una variable comun en la TS?*/
+    /* esto seria: guardar los lexemas ID{1}, ID{2}, ID{3} y luego accederlas como variables comunes.*/
+    }
+break;
 case 68:
-//#line 165 "gramatica.y"
+//#line 171 "gramatica.y"
 {
     yyval.sval = val_peek(0).sval;
     lexico.getTablaSimbolos().editarLexema(val_peek(0).sval, truncarFueraRango(val_peek(0).sval, lexico.getContadorLinea()));}
 break;
 case 69:
-//#line 168 "gramatica.y"
+//#line 174 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 70:
-//#line 169 "gramatica.y"
+//#line 175 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 72:
-//#line 176 "gramatica.y"
+//#line 182 "gramatica.y"
 {yyval.sval = generador.addTerceto("GOTO", val_peek(0).sval, null);}
 break;
 case 73:
-//#line 177 "gramatica.y"
+//#line 183 "gramatica.y"
 {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 break;
 case 76:
-//#line 181 "gramatica.y"
+//#line 187 "gramatica.y"
 {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 77:
-//#line 182 "gramatica.y"
+//#line 188 "gramatica.y"
 {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
 break;
+case 78:
+//#line 195 "gramatica.y"
+{
+
+}
+break;
 case 79:
-//#line 190 "gramatica.y"
+//#line 198 "gramatica.y"
 {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 80:
-//#line 191 "gramatica.y"
+//#line 199 "gramatica.y"
 {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 81:
-//#line 192 "gramatica.y"
+//#line 200 "gramatica.y"
 {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 82:
-//#line 193 "gramatica.y"
+//#line 201 "gramatica.y"
 {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 83:
-//#line 194 "gramatica.y"
+//#line 202 "gramatica.y"
 {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 84:
-//#line 198 "gramatica.y"
-{System.out.println("Se detecto: comparación");}
+//#line 206 "gramatica.y"
+{
+        yyval.sval = generador.addTerceto(val_peek(2).sval, val_peek(3).sval, val_peek(1).sval);
+        yyval.sval = generador.addTerceto("BF", yyval.sval, null);
+        System.out.println("Se detecto: comparación");}
 break;
 case 85:
-//#line 199 "gramatica.y"
-{System.out.println("Se detecto: comparación múltiple");}
+//#line 211 "gramatica.y"
+{
+        String[] lista1 = val_peek(6).sval.split(",");
+        String[] lista2 = val_peek(2).sval.split(",");
+        if (lista1.length != lista2.length){
+            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
+        }else{
+            if(lista1.length==1){
+                yyval.sval = generador.addTerceto(val_peek(4).sval, lista1[0], lista2[0]);
+            }else{
+                yyval.sval= generador.addTerceto(val_peek(4).sval, lista1[0], lista2[0]);
+                String auxTerceto;
+
+                for (int i = 1; i<lista1.length; i++){
+                    auxTerceto= generador.addTerceto(val_peek(4).sval, lista1[i], lista2[i]);
+                    yyval.sval =generador.addTerceto("AND", yyval.sval, auxTerceto);
+                }
+            }
+
+        }
+	    System.out.println("Se detecto: comparación múltiple");
+	  }
 break;
 case 86:
-//#line 200 "gramatica.y"
+//#line 233 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 87:
-//#line 201 "gramatica.y"
+//#line 234 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 88:
-//#line 202 "gramatica.y"
+//#line 235 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 89:
-//#line 203 "gramatica.y"
+//#line 236 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 90:
-//#line 204 "gramatica.y"
+//#line 237 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 91:
-//#line 205 "gramatica.y"
+//#line 238 "gramatica.y"
 {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 92:
-//#line 206 "gramatica.y"
+//#line 239 "gramatica.y"
 {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );}
 break;
 case 93:
-//#line 207 "gramatica.y"
+//#line 240 "gramatica.y"
 {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 94:
-//#line 208 "gramatica.y"
+//#line 241 "gramatica.y"
 {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 102:
-//#line 221 "gramatica.y"
+//#line 254 "gramatica.y"
 {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 103:
-//#line 222 "gramatica.y"
+//#line 255 "gramatica.y"
 {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
 break;
-//#line 1034 "Parser.java"
+//#line 1082 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
