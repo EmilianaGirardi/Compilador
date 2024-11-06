@@ -1,0 +1,7 @@
+prueba BEGIN
+##x:= - 2;
+y:= 7 + -5;
+
+##IF(g< -2)THEN BEGIN x:=6; END END_IF;
+
+END;

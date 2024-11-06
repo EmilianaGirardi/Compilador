@@ -10,7 +10,7 @@
 
 %left '+' '-'
 %left '/' '*'
-%right menos
+%right UMINUS
 
 %%
 
@@ -118,16 +118,41 @@ invocacion_fun : ID '(' exp_arit ')'
 /*---EXPRESION ARITMETICA---*/
 
 exp_arit : exp_arit '+' termino {
-    $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
-    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());}
-	| exp_arit '-' termino {
-	$$.sval = generador.addTerceto("-", $1.sval, $3.sval);
-	System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());}
-	| exp_arit '+' error ';' {System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
-    | exp_arit '-' error ';'  {System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
-	| termino
-	;
+                    $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
+                    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
+           }
 
+	       | exp_arit '-' termino {
+	                $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
+	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+	       }
+
+           /*| exp_arit '+' cte_negativa{
+                    $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
+                    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
+           }
+
+           | exp_arit '-' cte_negativa {
+                    $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
+                    System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+           }
+            */
+           | exp_arit '+' error ';' {
+                    System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());
+           }
+
+           | exp_arit '-' error ';'  {
+                    System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());
+           }
+           | termino
+           ;
+
+/*
+cte_negativa : '-' SINGLE_CONSTANTE %prec UMINUS{
+    $$.sval = truncarFueraRango($1.sval+$2.sval, lexico.getContadorLinea());
+    lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval));
+}
+*/
 lista_exp_arit : exp_arit {$$.sval = $1.sval;}
 	| lista_exp_arit ',' exp_arit {
 	$$.sval = $1.sval.concat(",").concat($3.sval);); }
@@ -173,7 +198,6 @@ constante : SINGLE_CONSTANTE {
     lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));}
     |ENTERO_UNSIGNED {$$.sval = $1.sval;}
     |OCTAL {$$.sval = $1.sval;}
-    /*|   '-' SINGLE_CONSTANTE    %prec menos {lexico.getTablaSimbolos().editarLexema($2.sval, truncarFueraRango($2.sval+$1.sval, , lexico.getContadorLinea()));} */
 	;
 
 etiqueta : ID '@'
@@ -220,7 +244,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
                 $$.sval= generador.addTerceto($5.sval, lista1[0], lista2[0]);
                 String auxTerceto;
 
-                for (i = 1; i<lista1.length; i++){
+                for (int i = 1; i<lista1.length; i++){
                     auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
                     $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
                 }
