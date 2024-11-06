@@ -43,6 +43,14 @@ public class Generador {
         }
     }
 
+    public Terceto getTerceto(int pos) {
+        return tercetos.get(pos);
+    }
+
+    public int obtenerTamanioTercetos(){
+        return this.tercetos.size();
+    }
+
     public void agregarPila(String p){
         pila.push(p);
     }

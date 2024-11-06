@@ -9,6 +9,18 @@ public class Terceto {
         this.operando2=operando2;
     }
 
+    public void setPrimerParametro (String operador) {
+        this.operador = operador;
+    }
+
+    public void setSegundoParamtero(String operando1) {
+        this.operando1 = operando1;
+    }
+
+    public void setTercerPArametro(String operando2) {
+        this.operando2 = operando2;
+    }
+
     @Override
     public String toString() {
         return "(" + operador +", " + operando1 + ", " + operando2 + ")";
