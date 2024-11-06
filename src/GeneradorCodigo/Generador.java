@@ -42,4 +42,16 @@ public class Generador {
             System.out.println(terceto.toString());
         }
     }
+
+    public void agregarPila(String p){
+        pila.push(p);
+    }
+
+    public void eliminarPila(){
+        pila.pop();
+    }
+
+    public String obtenerElementoPila(){
+        return pila.peek();
+    }
 }
