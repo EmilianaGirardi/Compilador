@@ -1,0 +1,18 @@
+prueba BEGIN
+ REPEAT
+    BEGIN
+        t:= 0;
+        IF (x > 0) THEN
+            BEGIN
+                x:= x+1;
+                REPEAT
+                    BEGIN
+                        x:= x+1;
+                    END
+                UNTIL(x<8);
+            END
+        END_IF;
+    END
+ UNTIL (x = 5);
+
+END;

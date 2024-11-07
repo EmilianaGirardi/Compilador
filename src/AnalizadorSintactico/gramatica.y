@@ -387,10 +387,19 @@ comparador : MAYORIGUAL {$$.sval = ">=";}
 	| '<' {$$.sval = "<";}
 	;
 
-repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion
-	|REPEAT UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
-	| REPEAT bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
- 	;	
+repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {$$.sval = generador.addTerceto("BT", $4.sval, generador.obtenerElementoPila());
+    generador.eliminarPila();
+}
+
+	| sentencia_repeat UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
+	| sentencia_repeat bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
+ 	;
+
+
+sentencia_repeat: REPEAT {
+    $$.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
+    generador.agregarPila('E' + $$.sval);
+}
 /*-----*/
 
 /*---TIPO COMPUESTO---*/
