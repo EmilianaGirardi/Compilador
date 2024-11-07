@@ -18,8 +18,13 @@ public class Generador {
         return "T" + pos;
     }
 
+    public int getSizeTercetos(){
+        return tercetos.size();
+    }
+
     private Generador(){
         this.tercetos = new ArrayList<Terceto>();
+        this.pila = new Stack<>();
     }
 
     public static Generador getInstance(){

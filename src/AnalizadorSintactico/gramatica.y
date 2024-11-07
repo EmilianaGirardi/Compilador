@@ -5,6 +5,8 @@
     	import GeneradorCodigo.Generador;
     	import java.util.ArrayList;
     	import AnalizadorLexico.TablaSimbolos;
+    	import GeneradorCodigo.Terceto;
+
 %}
 
 %token MENORIGUAL ID ASIGNACION DISTINTO MAYORIGUAL SINGLE_CONSTANTE ENTERO_UNSIGNED OCTAL MULTILINEA REPEAT IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET GOTO TRIPLE OCTAL TIPO_UNSIGNED TIPO_SINGLE TIPO_OCTAL UNTIL
@@ -273,11 +275,11 @@ goto : GOTO etiqueta {
 	;
 
 salida : OUTF '(' MULTILINEA ')' {
-        $$.sval = generador.addTercetos("SALIDA", $3.sval, null);
+        $$.sval = generador.addTerceto("SALIDA", $3.sval, null);
         }
 
         | OUTF '(' exp_arit ') ' {
-        $$.sval = generador.addTercetos("SALIDA", $3.sval, null);
+        $$.sval = generador.addTerceto("SALIDA", $3.sval, null);
         }
 
     |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
@@ -289,24 +291,23 @@ salida : OUTF '(' MULTILINEA ')' {
 /*---CONDICIONALES---*/
 
 sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
-							/*generador.eliminarElementoPila();*/
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+							generador.eliminarPila();
 							Terceto t = generador.getTerceto(pos);
-							String label = "ET"+generador.getSize();
+							String label = "ET"+generador.getSizeTercetos();
 
-							/*t.setOperador3(label);*/
+							t.setTercerParametro(label);
 							$$.sval=generador.addTerceto(label, null, null);
-
-
 			}
+
 	| condicion_if bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables END_IF {
 		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
-		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
-		/*generador.eliminarElementoPila();*/
+		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+		generador.eliminarPila();
 		Terceto t = generador.getTerceto(pos);
-		String label = "ET"+generador.getSize();
-		/*t.setOperador3(label);*/
+		String label = "ET"+generador.getSizeTercetos();
+		t.setTercerParametro(label);
 		
 		$$.sval=generador.addTerceto(label, null, null);
 	 }
@@ -322,12 +323,13 @@ condicion_if : IF condicion THEN{
 			 ;
 
 condicion_else	: ELSE {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
-							/*generador.eliminarElementoPila();*/
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+							generador.eliminarPila();
 							Terceto t = generador.getTerceto(pos);
-							String label = "ET"+generador.getSize()+1;
+							int tam = generador.getSizeTercetos()+1;
+							String label = "ET"+tam;
 							
-							/*t.setOperador3(label);*/
+							t.setTercerParametro(label);
 							$$.sval = generador.addTerceto("BI", null, null);
 							generador.agregarPila($$.sval);
 
@@ -377,12 +379,12 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 	;
 
 
-comparador : MAYORIGUAL
-	| MENORIGUAL
-	| DISTINTO
-	| '='
-	| '>'
-	| '<'
+comparador : MAYORIGUAL {$$.sval = ">=";}
+	| MENORIGUAL {$$.sval = "<=";}
+	| DISTINTO {$$.sval = "!=";}
+	| '=' {$$.sval = "=";}
+	| '>' {$$.sval = ">";}
+	| '<' {$$.sval = "<";}
 	;
 
 repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion

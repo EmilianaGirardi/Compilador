@@ -1,0 +1,23 @@
+prueba BEGIN
+IF (x = 2) THEN
+   BEGIN
+    y:=2;
+    y:=x;
+   END
+ELSE
+    BEGIN
+        y:=2;
+        y:=x;
+        IF(x=2)THEN
+            BEGIN
+                Z:=8;
+            END
+        ELSE
+            BEGIN
+                Z:=6;
+            END
+        END_IF;
+    END
+END_IF;
+
+END;

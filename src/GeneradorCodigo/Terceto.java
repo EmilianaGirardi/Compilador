@@ -17,7 +17,7 @@ public class Terceto {
         this.operando1 = operando1;
     }
 
-    public void setTercerPArametro(String operando2) {
+    public void setTercerParametro(String operando2) {
         this.operando2 = operando2;
     }
 
