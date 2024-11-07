@@ -11,9 +11,6 @@
 
 %token MENORIGUAL ID ASIGNACION DISTINTO MAYORIGUAL SINGLE_CONSTANTE ENTERO_UNSIGNED OCTAL MULTILINEA REPEAT IF THEN ELSE BEGIN END END_IF OUTF TYPEDEF FUN RET GOTO TRIPLE OCTAL TIPO_UNSIGNED TIPO_SINGLE TIPO_OCTAL UNTIL
 
-%left '+' '-'
-%left '/' '*'
-%right UMINUS
 
 %%
 
@@ -134,35 +131,7 @@ exp_arit : exp_arit '+' termino {
 	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
 	       }
 
-           /*| exp_arit '+' cte_negativa{
-                    $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
-                    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
-           }
-
-           | exp_arit '-' cte_negativa {
-                    $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
-                    System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
-           }
-            
-           | exp_arit '-' '-' SINGLE_CONSTANTE{
-
-					String nuevoValor = truncarFueraRango($3.sval+$4.sval, lexico.getContadorLinea());
-					lexico.getTablaSimbolos().editarLexema($4.sval, nuevo_valor));
-
-
-                    $$.sval = generador.addTerceto("-", $1.sval, nuevo_valor);
-                    System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
-           }
-
-           | exp_arit '+' '-' SINGLE_CONSTANTE {
-           			String nuevoValor = truncarFueraRango($3.sval+$4.sval, lexico.getContadorLinea());
-					lexico.getTablaSimbolos().editarLexema($4.sval, nuevo_valor));
-
-                    $$.sval = generador.addTerceto("+", $1.sval, nuevo_valor);
-                    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
-           }
-
-            */
+            /*
            | exp_arit '+' error ';' {
                     System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());
            }
@@ -170,15 +139,11 @@ exp_arit : exp_arit '+' termino {
            | exp_arit '-' error ';'  {
                     System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());
            }
+           */
            | termino
            ;
 
-/*
-cte_negativa : '-' SINGLE_CONSTANTE %prec UMINUS{
-    $$.sval = truncarFueraRango($1.sval+$2.sval, lexico.getContadorLinea());
-    lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval));
-}
-*/
+
 
 lista_exp_arit : exp_arit {
         $$.sval = $1.sval;
@@ -200,20 +165,37 @@ termino : termino '*' factor {
 	    $$.sval = $1.sval;
 	}
 
-	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
+	/*| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
+	*/
 	;
 
 factor : ID {
             $$.sval = $1.sval;
             System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());
         }
-	| constante {
+	/*| constante {
 	    $$.sval = $1.sval;
 	}
+	*/
 	| invocacion_fun {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
 	| triple
-	;
+	| SINGLE_CONSTANTE {
+                $$.sval = $1.sval;
+                lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));
+            }
+        |ENTERO_UNSIGNED {
+            $$.sval = $1.sval;
+        }
+        |OCTAL {
+            $$.sval = $1.sval;
+        }
+        | '-' SINGLE_CONSTANTE {
+        $$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
+        lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval));
+        }
+    	;
+
 
 triple : ID '{' ENTERO_UNSIGNED '}' {
     String token = $1.sval+'{'+$3.sval+'}';
@@ -251,17 +233,6 @@ asig : ID ASIGNACION exp_arit {
     }
  ;	
 
-constante : SINGLE_CONSTANTE {
-            $$.sval = $1.sval;
-            lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));
-        }
-    |ENTERO_UNSIGNED {
-        $$.sval = $1.sval;
-    }
-    |OCTAL {
-        $$.sval = $1.sval;
-    }
-	;
 
 etiqueta : ID '@' {
     $$.sval = $1.sval;
@@ -373,7 +344,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
     | '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 	| exp_arit comparador exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
 	| '(' exp_arit comparador exp_arit  {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );}
+	/*|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );} */
 	| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
 	| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
 	;
