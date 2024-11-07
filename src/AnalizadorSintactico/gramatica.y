@@ -136,6 +136,25 @@ exp_arit : exp_arit '+' termino {
                     $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
                     System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
            }
+            
+           | exp_arit '-' '-' SINGLE_CONSTANTE{
+
+					String nuevoValor = truncarFueraRango($3.sval+$4.sval, lexico.getContadorLinea());
+					lexico.getTablaSimbolos().editarLexema($4.sval, nuevo_valor));
+
+
+                    $$.sval = generador.addTerceto("-", $1.sval, nuevo_valor);
+                    System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+           }
+
+           | exp_arit '+' '-' SINGLE_CONSTANTE {
+           			String nuevoValor = truncarFueraRango($3.sval+$4.sval, lexico.getContadorLinea());
+					lexico.getTablaSimbolos().editarLexema($4.sval, nuevo_valor));
+
+                    $$.sval = generador.addTerceto("+", $1.sval, nuevo_valor);
+                    System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
+           }
+
             */
            | exp_arit '+' error ';' {
                     System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());
@@ -216,20 +235,56 @@ salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
 
 /*---CONDICIONALES---*/
 
-sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF {
+sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+							/*generador.eliminarElementoPila();*/
+							Terceto t = generador.getTerceto(pos);
+							String label = "ET"+generador.getSize();
 
-}
-	| IF  condicion  THEN bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
-	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF {System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());}
-	| IF condicion THEN bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
-	| IF  condicion  THEN END_IF {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
-	|IF condicion THEN bloque_sentencias_ejecutables ELSE END_IF {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
+							/*t.setOperador3(label);*/
+							$$.sval=generador.addTerceto(label, null, null);
+
+
+			}
+	| condicion_if bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables END_IF {
+		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
+		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+		/*generador.eliminarElementoPila();*/
+		Terceto t = generador.getTerceto(pos);
+		String label = "ET"+generador.getSize();
+		/*t.setOperador3(label);*/
+		
+		$$.sval=generador.addTerceto(label, null, null);
+	 }
+	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if END_IF {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if condicion_else END_IF {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
 	;
 
+condicion_if : IF condicion THEN{
+							$$.sval = generador.addTerceto("BF", $2.sval, null);
+							generador.agregarPila($$.sval);
+				} 
+			 ;
+
+condicion_else	: ELSE {
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+							/*generador.eliminarElementoPila();*/
+							Terceto t = generador.getTerceto(pos);
+							String label = "ET"+generador.getSize()+1;
+							
+							/*t.setOperador3(label);*/
+							$$.sval = generador.addTerceto("BI", null, null);
+							generador.agregarPila($$.sval);
+
+							generador.addTerceto(label, null, null);
+				  }
+				;
+	
 
 condicion : '(' exp_arit comparador exp_arit ')' {
         $$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
-        $$.sval = generador.addTerceto("BF", $$.sval, null);
         System.out.println("Se detecto: comparación");}
 
 	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
@@ -248,6 +303,9 @@ condicion : '(' exp_arit comparador exp_arit ')' {
                     auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
                     $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
                 }
+
+                $$.sval = generador.addTerceto("BF", $$.sval, null);
+                /*generador.addPila($$.sval);*/
             }
 
         }
