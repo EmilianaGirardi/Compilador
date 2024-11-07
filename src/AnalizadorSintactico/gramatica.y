@@ -229,7 +229,7 @@ sentencia_if : IF  condicion  THEN bloque_sentencias_ejecutables END_IF {
 
 condicion : '(' exp_arit comparador exp_arit ')' {
         $$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
-        $$.sval = generador.addTerceto("BF", $$.sval, null);
+
         System.out.println("Se detecto: comparación");}
 
 	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
@@ -265,19 +265,30 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 	| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
 	;
 
-
-comparador : MAYORIGUAL
-	| MENORIGUAL
-	| DISTINTO
-	| '='
-	| '>'
-	| '<'
+comparador : MAYORIGUAL {$$.sval = ">=";}
+	| MENORIGUAL {$$.sval = "<=";}
+	| DISTINTO {$$.sval = "!=";}
+	| '=' {$$.sval = "=";}
+	| '>' {$$.sval = ">";}
+	| '<' {$$.sval = "<";}
 	;
 
-repeat_until : REPEAT bloque_sentencias_ejecutables UNTIL  condicion
-	|REPEAT UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
-	| REPEAT bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
- 	;	
+
+repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {$$.sval = generador.addTerceto("BI", $4.sval, generador.obtenerElementoPila());
+    generador.eliminarPila();
+}
+
+	| sentencia_repeat UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
+	| sentencia_repeat bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
+ 	;
+
+
+sentencia_repeat: REPEAT {
+    $$.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
+    generador.agregarPila('E' + $$.sval);
+}
+
+
 /*-----*/
 
 /*---TIPO COMPUESTO---*/
