@@ -236,7 +236,7 @@ salida : OUTF '(' MULTILINEA ')' | OUTF '(' exp_arit ') '
 /*---CONDICIONALES---*/
 
 sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
 							/*generador.eliminarElementoPila();*/
 							Terceto t = generador.getTerceto(pos);
 							String label = "ET"+generador.getSize();
@@ -247,14 +247,15 @@ sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
 
 			}
 	| condicion_if bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables END_IF {
 		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
-		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
 		/*generador.eliminarElementoPila();*/
 		Terceto t = generador.getTerceto(pos);
 		String label = "ET"+generador.getSize();
 		/*t.setOperador3(label);*/
-		
+
 		$$.sval=generador.addTerceto(label, null, null);
 	 }
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
@@ -269,7 +270,7 @@ condicion_if : IF condicion THEN{
 			 ;
 
 condicion_else	: ELSE {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[0]);
+							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
 							/*generador.eliminarElementoPila();*/
 							Terceto t = generador.getTerceto(pos);
 							String label = "ET"+generador.getSize()+1;
