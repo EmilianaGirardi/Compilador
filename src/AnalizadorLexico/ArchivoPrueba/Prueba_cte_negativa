@@ -1,6 +1,6 @@
 prueba BEGIN
 ##x:= - 2;
-y:= 7 + -5;
+y:= 7.0s+39 + -5.0s+39;
 
 ##IF(g< -2)THEN BEGIN x:=6; END END_IF;
 

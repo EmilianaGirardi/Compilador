@@ -613,10 +613,10 @@ final static String yyrule[] = {
 
 private Lexico lexico;
 private Generador generador;
-private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
-private final Float supPositivo = (float) Math.pow(3.40282347, 38);
-private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
-private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
+private final Float infPositivo = 1.17549435e-38f;
+private final Float supPositivo = 3.40282347e38f;
+private final Float infNegativo = -3.40282347e38f;
+private final Float supNegativo = -1.17549435e-38f;
 
 public int yylex() throws IOException {
     int token = lexico.yylex();
@@ -1015,8 +1015,8 @@ break;
 case 61:
 //#line 183 "gramatica.y"
 {
-                yyval.sval = val_peek(0).sval;
-                lexico.getTablaSimbolos().editarLexema(val_peek(0).sval, truncarFueraRango(val_peek(0).sval, lexico.getContadorLinea()));
+                yyval.sval = truncarFueraRango(val_peek(0).sval, lexico.getContadorLinea());
+                lexico.getTablaSimbolos().editarLexema(val_peek(0).sval, yyval.sval);
             }
 break;
 case 62:

@@ -90,12 +90,12 @@ tipo : TIPO_OCTAL
 /*---FUNCION---*/
 
 declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
-	|  tipo FUN ID '(' parametro ')' BEGIN retorno END
+	| tipo FUN ID '(' parametro ')' BEGIN retorno END
 	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
-	|tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
-	|tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
+	| tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
+	| tipo FUN ID '(' ')' BEGIN retorno END {System.out.println("Error, Falta parametro de funcion");}
 	;
 
 
@@ -131,7 +131,6 @@ exp_arit : exp_arit '+' termino {
 	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
 	       }
 
-            /*
            | exp_arit '+' error ';' {
                     System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());
            }
@@ -139,62 +138,58 @@ exp_arit : exp_arit '+' termino {
            | exp_arit '-' error ';'  {
                     System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());
            }
-           */
+           
            | termino
            ;
 
 
 
 lista_exp_arit : exp_arit {
-        $$.sval = $1.sval;
-    }
+        			$$.sval = $1.sval;
+    			}
 	| lista_exp_arit ',' exp_arit {
 	    $$.sval = $1.sval.concat(",").concat($3.sval);
 	}
 	;
 
 termino : termino '*' factor {
-        $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
-        System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
-    }
+       			 $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
+       			 System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
+   		 }
 	| termino '/' factor {
-        $$.sval = generador.addTerceto("/", $1.sval, $3.sval);
-        System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
-	}
+        	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
+        	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
+		}
 	| factor {
-	    $$.sval = $1.sval;
-	}
+	    	$$.sval = $1.sval;
+		}
 
-	/*| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
+	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
-	*/
+	
 	;
 
 factor : ID {
             $$.sval = $1.sval;
             System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());
         }
-	/*| constante {
-	    $$.sval = $1.sval;
-	}
-	*/
 	| invocacion_fun {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
 	| triple
 	| SINGLE_CONSTANTE {
-                $$.sval = $1.sval;
-                lexico.getTablaSimbolos().editarLexema($1.sval, truncarFueraRango($1.sval, lexico.getContadorLinea()));
-            }
-        |ENTERO_UNSIGNED {
+		 	$$.sval = truncarFueraRango($1.sval, lexico.getContadorLinea());
+            lexico.getTablaSimbolos().editarLexema($1.sval, $$.sval);
+        }
+    | ENTERO_UNSIGNED {
             $$.sval = $1.sval;
         }
-        |OCTAL {
+    | OCTAL {
             $$.sval = $1.sval;
         }
-        | '-' SINGLE_CONSTANTE {
-        $$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
-        lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval));
+    | '-' SINGLE_CONSTANTE {
+        	$$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
+        	lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval);
         }
-    	;
+    ;
 
 
 triple : ID '{' ENTERO_UNSIGNED '}' {
@@ -235,22 +230,22 @@ asig : ID ASIGNACION exp_arit {
 
 
 etiqueta : ID '@' {
-    $$.sval = $1.sval;
-    }
-	;
+    			$$.sval = $1.sval;
+    		}
+		;
 
 goto : GOTO etiqueta {
-        $$.sval = generador.addTerceto("GOTO", $2.sval, null);
+        	$$.sval = generador.addTerceto("GOTO", $2.sval, null);
        }
 	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 	;
 
 salida : OUTF '(' MULTILINEA ')' {
-        $$.sval = generador.addTerceto("SALIDA", $3.sval, null);
+        	$$.sval = generador.addTerceto("SALIDA", $3.sval, null);
         }
 
-        | OUTF '(' exp_arit ') ' {
-        $$.sval = generador.addTerceto("SALIDA", $3.sval, null);
+        | OUTF '(' exp_arit ')' {
+        	$$.sval = generador.addTerceto("SALIDA", $3.sval, null);
         }
 
     |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
@@ -310,76 +305,79 @@ condicion_else	: ELSE {
 	
 
 condicion : '(' exp_arit comparador exp_arit ')' {
-        $$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
-        System.out.println("Se detecto: comparación");}
+        		$$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
+        		System.out.println("Se detecto: comparación");
+        	}
 
-	| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
-        String[] lista1 = $3.sval.split(",");
-        String[] lista2 = $7.sval.split(",");
-        if (lista1.length != lista2.length){
-            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
-        }else{
-            if(lista1.length==1){
-                $$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
-            }else{
-                $$.sval= generador.addTerceto($5.sval, lista1[0], lista2[0]);
-                String auxTerceto;
+		| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
+	        String[] lista1 = $3.sval.split(",");
+	        String[] lista2 = $7.sval.split(",");
+	        if (lista1.length != lista2.length){
+	            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
+	        }else{
+	            if(lista1.length==1){
+	                $$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
+	            }else{
+	                $$.sval= generador.addTerceto($5.sval, lista1[0], lista2[0]);
+	                String auxTerceto;
 
-                for (int i = 1; i<lista1.length; i++){
-                    auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
-                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
-                }
+	                for (int i = 1; i<lista1.length; i++){
+	                    auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
+	                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
+	                }
 
-                $$.sval = generador.addTerceto("BF", $$.sval, null);
-                /*generador.addPila($$.sval);*/
-            }
+	                $$.sval = generador.addTerceto("BF", $$.sval, null);
+	                /*generador.addPila($$.sval);*/
+	            }
 
-        }
-	    System.out.println("Se detecto: comparación múltiple");
-	  }
+	        }
+		    System.out.println("Se detecto: comparación múltiple");
+		  }
 
-    | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-    | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-    | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-    | '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	| exp_arit comparador exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	| '(' exp_arit comparador exp_arit  {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	/*|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );} */
-	| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
-	| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
-	;
+	    | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+	    | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+	    | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+	    | '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+		| exp_arit comparador exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+		| '(' exp_arit comparador exp_arit  {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+		/*|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );} */
+		| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
+		| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
+		;
 
 
 comparador : MAYORIGUAL {$$.sval = ">=";}
-	| MENORIGUAL {$$.sval = "<=";}
-	| DISTINTO {$$.sval = "!=";}
-	| '=' {$$.sval = "=";}
-	| '>' {$$.sval = ">";}
-	| '<' {$$.sval = "<";}
-	;
+		| MENORIGUAL {$$.sval = "<=";}
+		| DISTINTO {$$.sval = "!=";}
+		| '=' {$$.sval = "=";}
+		| '>' {$$.sval = ">";}
+		| '<' {$$.sval = "<";}
+		;
 
-repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {$$.sval = generador.addTerceto("BT", $4.sval, generador.obtenerElementoPila());
-    generador.eliminarPila();
-}
+repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
+					$$.sval = generador.addTerceto("BT", $4.sval, generador.obtenerElementoPila());
+    				generador.eliminarPila();
+				}
 
-	| sentencia_repeat UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
-	| sentencia_repeat bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
- 	;
+		| sentencia_repeat UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
+		| sentencia_repeat bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
+ 		;
 
 
 sentencia_repeat: REPEAT {
-    $$.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
-    generador.agregarPila('E' + $$.sval);
-}
+				    $$.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
+				    generador.agregarPila('E' + $$.sval);
+				}
+				;
 /*-----*/
 
 /*---TIPO COMPUESTO---*/
 
 def_triple : TYPEDEF tipo_compuesto '<' tipo '>'  ID
-	;
+			;
 
 tipo_compuesto : TRIPLE
-	;
+				;
 
 /*-----*/		
 
@@ -388,10 +386,10 @@ tipo_compuesto : TRIPLE
 
 private Lexico lexico;
 private Generador generador;
-private final Float infPositivo = (float) Math.pow(1.1754943, -38 );
-private final Float supPositivo = (float) Math.pow(3.40282347, 38);
-private final Float infNegativo = (float) Math.pow(-3.40282347, 38);
-private final Float supNegativo = (float) Math.pow(-1.17549435, -38);
+private final Float infPositivo = 1.17549435e-38f;//(float) Math.pow(1.1754943, -38 )
+private final Float supPositivo = 3.40282347e38f;//(float) Math.pow(3.40282347, 38)
+private final Float infNegativo = -3.40282347e38f;//(float) Math.pow(-3.40282347, 38)
+private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.17549435, -38)
 
 public int yylex() throws IOException {
     int token = lexico.yylex();
