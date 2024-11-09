@@ -64,10 +64,44 @@ declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de fun
 	| declar_compuesto {System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
 	;
 
-declarvar : tipo lista_var
+declarvar : tipo lista_var {
+        String[] lista = $2.sval.split(",");
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        Integer tipo;
+        for (String var : lista){
+            tipo = Integer.parseInt($1.sval);
+            TS.editarTipo(var, tipo);
+        }
+    }
     ;
 
-declar_compuesto : ID lista_var 
+declar_compuesto : ID lista_var{
+        if (tiposUsuario.contains($1.sval)){
+            TablaSimbolos TS = lexico.getTablaSimbolos();
+            Integer t = TS.getTipo($1.sval);
+                switch(t){
+                    case(TIPO_TRIPLE_UNSIGNED):
+                        t = T_UNSIGNED;
+                        break;
+                    case(TIPO_TRIPLE_SINGLE):
+                        t = T_SINGLE;
+                        break;
+                    case(TIPO_TRIPLE_OCTAL):
+                         t = T_OCTAL;
+                         break;
+                }
+            String[] lista = $2.sval.split(",");
+            for (String var : lista){
+                for(int i=1; i<=3; i++){
+                    String token = var+'{'+i+'}';
+                    ArrayList<Integer> atributos = new ArrayList<Integer>();
+                    atributos.add(258);
+                    atributos.add(t);
+                    TS.agregarToken(token, atributos);
+                }
+            }
+        }
+    }
 	;
 
 		
@@ -75,13 +109,15 @@ declar_compuesto : ID lista_var
 
 /*---VARIABLES---*/
 
-lista_var : ID
-	| lista_var ',' ID
+lista_var : ID  {$$.sval = $1.sval;}
+	| lista_var ',' ID {
+	        $$.sval = $1.sval.concat(",").concat($3.sval);
+	    }
 	;
 
-tipo : TIPO_OCTAL 
-	| TIPO_UNSIGNED 
-	| TIPO_SINGLE  
+tipo : TIPO_OCTAL {$$.sval = String.valueOf(T_OCTAL);}
+	| TIPO_UNSIGNED {$$.sval = String.valueOf(T_UNSIGNED);}
+	| TIPO_SINGLE {$$.sval = String.valueOf(T_SINGLE);}
 	;
 
 
@@ -89,8 +125,25 @@ tipo : TIPO_OCTAL
 
 /*---FUNCION---*/
 
-declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END
-	| tipo FUN ID '(' parametro ')' BEGIN retorno END
+declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END{
+                TablaSimbolos TS = lexico.getTablaSimbolos();
+                Integer tipo = Integer.parseInt($1.sval);
+                TS.editarTipo($3.sval, tipo);
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($9.sval)).getTipo();
+                if (tipo != tipoRetorno){
+                    System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
+                }
+     }
+	| tipo FUN ID '(' parametro ')' BEGIN retorno END{
+	            TablaSimbolos TS = lexico.getTablaSimbolos();
+                Integer tipo = Integer.parseInt($1.sval);
+                TS.editarTipo($3.sval, tipo);
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($8.sval)).getTipo();
+                if (tipo != tipoRetorno){
+                     System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
+                }
+	}
+
 	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
@@ -107,8 +160,10 @@ parametro : tipo ID
 
 retorno : RET '(' exp_arit ')' ';'{
             $$.sval = generador.addTerceto("RETORNO", $3.sval, null);
+            Integer tipo = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+            generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
         }
-	;
+	    ;
 
 invocacion_fun : ID '(' exp_arit ')'{
     $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
@@ -174,7 +229,7 @@ factor : ID {
             System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());
         }
 	| invocacion_fun {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
-	| triple
+	| triple {$$.sval = $1.sval;}
 	| SINGLE_CONSTANTE {
 		 	$$.sval = truncarFueraRango($1.sval, lexico.getContadorLinea());
             lexico.getTablaSimbolos().editarLexema($1.sval, $$.sval);
@@ -194,13 +249,8 @@ factor : ID {
 
 triple : ID '{' ENTERO_UNSIGNED '}' {
     String token = $1.sval+'{'+$3.sval+'}';
-    //verificar que constante sea 1, 2 o 3
-    if ($3.sval.equals("1") || $3.sval.equals("2") || $3.sval.equals("3")){
-        ArrayList<Integer> atributos = new ArrayList<Integer>();
-        atributos.add(258);
-        atributos.add(5);
-        TablaSimbolos TS = lexico.getTablaSimbolos();
-        TS.agregarToken(token, atributos);
+    TablaSimbolos TS = lexico.getTablaSimbolos();
+    if (TS.estaToken(token)){
         $$.sval = token;
     }
     else {
@@ -373,11 +423,28 @@ sentencia_repeat: REPEAT {
 
 /*---TIPO COMPUESTO---*/
 
-def_triple : TYPEDEF tipo_compuesto '<' tipo '>'  ID
-			;
+def_triple : TYPEDEF TRIPLE '<' tipo '>'  ID{
+    Integer t = Integer.parseInt($4.sval);
+    switch(t){
+        case(T_UNSIGNED):
+            lexico.getTablaSimbolos().editarTipo($6.sval, TIPO_TRIPLE_UNSIGNED);
+            break;
+        case(T_SINGLE):
+            lexico.getTablaSimbolos().editarTipo($6.sval, TIPO_TRIPLE_SINGLE);
+            break;
 
-tipo_compuesto : TRIPLE
-				;
+        case(T_OCTAL):
+             lexico.getTablaSimbolos().editarTipo($6.sval, TIPO_TRIPLE_OCTAL);
+             break;
+
+        /*case(default):
+            System.out.printl("Se intentó definir un tipo Triple de un tipo invalido en linea: " + lexico.getContadorLinea());
+            break;
+         */
+    }
+        this.tiposUsuario.add($6.sval);
+    }
+	;
 
 /*-----*/		
 
@@ -390,6 +457,17 @@ private final Float infPositivo = 1.17549435e-38f;//(float) Math.pow(1.1754943, 
 private final Float supPositivo = 3.40282347e38f;//(float) Math.pow(3.40282347, 38)
 private final Float infNegativo = -3.40282347e38f;//(float) Math.pow(-3.40282347, 38)
 private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.17549435, -38)
+
+    public final static int T_UNSIGNED = 1;
+    public final static int  T_SINGLE = 2;
+    public final static int  T_OCTAL = 3;
+    public final static int  TIPO_MULTILINEA = 4;
+    public final static int  TIPO_DESCONOCIDO = 50;
+    public final static int TIPO_TRIPLE_UNSIGNED = 5;
+    public final static int TIPO_TRIPLE_SINGLE = 6;
+    public final static int TIPO_TRIPLE_OCTAL = 7;
+
+    public ArrayList<String> tiposUsuario;
 
 public int yylex() throws IOException {
     int token = lexico.yylex();
@@ -404,6 +482,7 @@ public void yyerror(String mensaje) {
 public Parser(String archivo) throws IOException {
     lexico = Lexico.getInstance(archivo);
     generador = Generador.getInstance();
+    this.tiposUsuario = new ArrayList<>();
 }
 
 private String truncarFueraRango(String cte, int linea) throws NumberFormatException{

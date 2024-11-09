@@ -124,6 +124,14 @@ public class TablaSimbolos {
 		map.remove(oldKey);
 	}
 
+	public void editarTipo(String lexema, Integer tipo){
+		map.get(lexema).set(1, tipo);
+	}
+
+	public Integer getTipo(String lexema){
+		return map.get(lexema).get(1);
+	}
+
 	public void imprimirTabla(){
 		System.out.println("----------------------");
 		System.out.println("Tabla de Simbolos");

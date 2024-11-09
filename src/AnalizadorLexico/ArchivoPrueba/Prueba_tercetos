@@ -1,6 +1,12 @@
 prueba BEGIN
 ##prueba triple
-var_triple{1} := 2;
-x := var_triple{3} + 2;
-x := var_triple{4};
+    TYPEDEF TRIPLE <TIPO_UNSIGNED>  tipo1;
+
+    tipo1 var_triple;
+
+    var_triple{1} := 2;
+
+    x := var_triple{3} + 2;
+    x := var_triple{4};
+
 END;
