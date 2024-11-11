@@ -152,7 +152,10 @@ declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno
 	;
 
 
-parametro : tipo ID
+parametro : tipo ID {
+                TablaSimbolos TS = lexico.getTablaSimbolos();
+                TS.editarTipo($2.sval, Integer.parseInt(tipo));
+            }
 	| tipo {System.out.println("Error, falta nombre del parametro formal");}
 	| ID {System.out.println("Error, falta tipo del parametro formal");}
 	;
@@ -166,7 +169,12 @@ retorno : RET '(' exp_arit ')' ';'{
 	    ;
 
 invocacion_fun : ID '(' exp_arit ')'{
-    $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
+        //TODO verificar que el uso de ID sea nombre de función.
+        //TODO verificar que el tipo del parametro formal sea igual al del parametro real.
+        $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        Integer tipo = TS.getTipo($1.sval);
+        generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
     }
 	| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
 	| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
@@ -177,11 +185,57 @@ invocacion_fun : ID '(' exp_arit ')'{
 /*---EXPRESION ARITMETICA---*/
 
 exp_arit : exp_arit '+' termino {
+                    //verificación de tipos
+                    Integer tipoExp, tipoTermino;
+                    TablaSimbolos TS = lexico.getTablaSimbolos();
+                    if (TS.estaToken($1.sval)){
+                        //exp es un token
+                        tipoExp = TS.getTipo($1.sval);
+                    }
+                    else {
+                        //exp es un terceto
+                        tipoExp = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                    }
+                    if (TS.estaToken($3.sval)){
+                        //termino es un token
+                        tipoTermino = TS.getTipo($3.sval);
+                    }
+                    else{
+                        //termino es un terceto
+                        tipoTermino = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                    }
+                    if(tipoExp != tipoTermino){
+                        System.out.println("Incompatibilidad de tipos en suma, en linea " + lexico.getContadorLinea());
+                    }
+
                     $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
                     System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
            }
 
 	       | exp_arit '-' termino {
+                    //verificación de tipos
+                    Integer tipoExp, tipoTermino;
+                    TablaSimbolos TS = lexico.getTablaSimbolos();
+                    if (TS.estaToken($1.sval)){
+                        //exp es un token
+                        tipoExp = TS.getTipo($1.sval);
+                    }
+                    else {
+                        //exp es un terceto
+                        tipoExp = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                    }
+                    if (TS.estaToken($3.sval)){
+                        //termino es un token
+                        tipoTermino = TS.getTipo($3.sval);
+                    }
+                    else{
+                        //termino es un terceto
+                        tipoTermino = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                    }
+                    if(tipoExp != tipoTermino){
+                        System.out.println("Incompatibilidad de tipos en resta, en linea " + lexico.getContadorLinea());
+                    }
+
 	                $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
 	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
 	       }
@@ -194,7 +248,7 @@ exp_arit : exp_arit '+' termino {
                     System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());
            }
            
-           | termino
+           | termino {$$.sval = $1.sval;}
            ;
 
 
@@ -208,10 +262,55 @@ lista_exp_arit : exp_arit {
 	;
 
 termino : termino '*' factor {
+                    //verificación de tipos
+                    Integer tipoTermino, tipoFactor;
+                    TablaSimbolos TS = lexico.getTablaSimbolos();
+                    if (TS.estaToken($1.sval)){
+                        //termino es un token
+                        tipoTermino = TS.getTipo($1.sval);
+                    }
+                    else {
+                        //termino es un terceto
+                        tipoTermino = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                    }
+                    if (TS.estaToken($3.sval)){
+                        //factor es un token
+                        tipoFactor = TS.getTipo($3.sval);
+                    }
+                    else{
+                        //factor es un terceto
+                        tipoFactor = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                    }
+                    if(tipoFactor != tipoTermino){
+                        System.out.println("Incompatibilidad de tipos en multiplicación, en linea " + lexico.getContadorLinea());
+                    }
+
        			 $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
        			 System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
    		 }
 	| termino '/' factor {
+                    //verificación de tipos
+                    Integer tipoTermino, tipoFactor;
+                    TablaSimbolos TS = lexico.getTablaSimbolos();
+                    if (TS.estaToken($1.sval)){
+                        //termino es un token
+                        tipoTermino = TS.getTipo($1.sval);
+                    }
+                    else {
+                        //termino es un terceto
+                        tipoTermino = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                    }
+                    if (TS.estaToken($3.sval)){
+                        //factor es un token
+                        tipoFactor = TS.getTipo($3.sval);
+                    }
+                    else{
+                        //factor es un terceto
+                        tipoFactor = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                    }
+                    if(tipoFactor != tipoTermino){
+                        System.out.println("Incompatibilidad de tipos en división, en linea " + lexico.getContadorLinea());
+                    }
         	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
         	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
 		}

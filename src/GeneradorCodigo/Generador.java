@@ -15,7 +15,7 @@ public class Generador {
         Terceto terceto = new Terceto(operador, operando1, operando2);
         this.tercetos.add(terceto);
         String pos = String.valueOf(this.tercetos.size()-1);
-        return "T" + pos;
+        return "[T" + pos + "]";
     }
 
     public int getSizeTercetos(){
