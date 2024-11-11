@@ -30,7 +30,7 @@ public class AS11 extends AccionSemantica {
 		}
 		
 		ArrayList<Integer> atributos = new ArrayList<Integer>(DISTINTO);
-		
+		atributos.add(TIPO_SIMBOLO);
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);
 		}

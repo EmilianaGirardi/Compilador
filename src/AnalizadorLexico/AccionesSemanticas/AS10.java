@@ -31,6 +31,7 @@ public class AS10 extends AccionSemantica {
 		
 		ArrayList<Integer> atributos = new ArrayList<Integer>();
 		atributos.add(ASIGNACION);
+		atributos.add(TIPO_SIMBOLO);
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);
 		}
