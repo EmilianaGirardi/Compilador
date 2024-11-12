@@ -326,9 +326,10 @@ asig : ID ASIGNACION exp_arit {
 etiqueta : ID '@' {
     			String etq = $1.sval+"@";
     			if(!generador.isEtiqueta(etq)){
-    				generador.putEtiqueta(etq, $$.sval);
-
     				$$.sval = generador.addTerceto("ET"+$1.sval+"@",null,null);
+
+    				generador.putEtiqueta(etq, Integer.parseInt($$.sval.replaceAll("\\D", "")));
+
     				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(TIPO_ETIQUETA);
     			}else{
     				System.out.println("Error: la etiqueta "+etq+" ya existe. Linea: "+lexico.getContadorLinea());
@@ -342,7 +343,8 @@ goto : GOTO ID '@' {
 				$$.sval = generador.addTerceto("BI", etq, generador.posicionEtiqueta(etq));	
 			}else{
 				$$.sval = generador.addTerceto("BI", etq, null);
-				//generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", ""), etq).setTipo(TIPO_SALTO); ¿Le agregamos un tipo a los saltos?
+
+				generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", ""), etq);//.setTipo(TIPO_SALTO); ¿Le agregamos un tipo a los saltos?
 			}
         	
        }
@@ -437,7 +439,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 				}
 
         		if(t_primer_exp_arit != t_segunda_exp_arit){
-        			System.out.println("Error: comparación entre dos expreiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+        			System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
         		}
         	}
 
@@ -497,7 +499,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 	                }
 
 	                if(error_comparacion){
-	                	System.out.println("Error: comparación entre dos expreiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+	                	System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
 	                }
 
 	                /*$$.sval = generador.addTerceto("BF", $$.sval, null);*/
@@ -586,6 +588,7 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int  T_SINGLE = 2;
     public final static int  T_OCTAL = 3;
     public final static int  TIPO_MULTILINEA = 4;
+    //¿sEtiqueta seria uso?
     public final static int  TIPO_ETIQUETA = 8;
     public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
