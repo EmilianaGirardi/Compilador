@@ -171,6 +171,8 @@ retorno : RET '(' exp_arit ')' ';'{
 invocacion_fun : ID '(' exp_arit ')'{
         //TODO verificar que el uso de ID sea nombre de función.
         //TODO verificar que el tipo del parametro formal sea igual al del parametro real.
+        /*podriamos poner en el nombre déla funcion en la TS como atributo el tipo del parametro que recibe,
+        entonces aca lo verificamos. */
         $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
         TablaSimbolos TS = lexico.getTablaSimbolos();
         Integer tipo = TS.getTipo($1.sval);
@@ -209,6 +211,7 @@ exp_arit : exp_arit '+' termino {
                     }
 
                     $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
+                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoExp);
                     System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
            }
 
@@ -237,6 +240,7 @@ exp_arit : exp_arit '+' termino {
                     }
 
 	                $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
+	                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoExp);
 	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
 	       }
 
@@ -286,6 +290,7 @@ termino : termino '*' factor {
                     }
 
        			 $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
+       			 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoFactor);
        			 System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
    		 }
 	| termino '/' factor {
@@ -312,6 +317,7 @@ termino : termino '*' factor {
                         System.out.println("Incompatibilidad de tipos en división, en linea " + lexico.getContadorLinea());
                     }
         	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
+        	generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoFactor);
         	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
 		}
 	| factor {
@@ -320,7 +326,6 @@ termino : termino '*' factor {
 
 	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
     | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
-	
 	;
 
 factor : ID {
@@ -343,7 +348,7 @@ factor : ID {
         	$$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
         	lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval);
         }
-    ;
+    ;0
 
 
 triple : ID '{' ENTERO_UNSIGNED '}' {
