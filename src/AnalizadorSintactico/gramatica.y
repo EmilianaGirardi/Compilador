@@ -71,10 +71,12 @@ declarvar : tipo lista_var {
         String[] lista = $2.sval.split(",");
         TablaSimbolos TS = lexico.getTablaSimbolos();
         Integer tipo;
+        String amb = TS.getAmbitos();
         for (String var : lista){
             tipo = Integer.parseInt($1.sval);
             TS.editarTipo(var, tipo);
             TS.agregarUso(var, NOMBRE_VAR);
+            TS.editarLexema(var, var + amb);
         }
     }
     ;
@@ -95,6 +97,7 @@ declar_compuesto : ID lista_var{
                          break;
                 }
             String[] lista = $2.sval.split(",");
+            String amb = TS.getAmbitos();
             for (String var : lista){
                 for(int i=1; i<=3; i++){
                     String token = var+'{'+i+'}';
@@ -103,6 +106,7 @@ declar_compuesto : ID lista_var{
                     atributos.add(t);
                     atributos.add(NOMBRE_VAR);
                     TS.agregarToken(token, atributos);
+                    TS.editarLexema(var, var + amb);
                 }
             }
         }
@@ -769,8 +773,11 @@ def_triple : TYPEDEF TRIPLE '<' tipo '>'  ID{
             break;
          */
     }
-        this.tiposUsuario.add($6.sval);
-        lexico.getTablaSimbolos().agregarUso($6.sval, NOMBRE_TIPO);
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        String amb = TS.getAmbitos();
+        this.tiposUsuario.add($6.sval + amb);
+        TS.agregarUso($6.sval, NOMBRE_TIPO);
+        TS.editarLexema($6.sval, $6.sval + amb);
     }
 	;
 

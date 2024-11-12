@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class TablaSimbolos {
-    private Map<String, ArrayList<Integer>> map; 
-    
+    private Map<String, ArrayList<Integer>> map;
+	String ambitos = ".global";
+
     public TablaSimbolos() {
 		this.map =  new HashMap<>();
 		this.agregarPalabras();
@@ -117,7 +118,24 @@ public class TablaSimbolos {
 	public ArrayList<Integer> getValor(String lexema) {
 		return map.get(lexema);
 	}
- 
+
+	public String getAmbitos() {
+		return ambitos;
+	}
+
+	public void addAmbitos(String ambitos) {
+		this.ambitos = this.ambitos + "."  + ambitos;
+	}
+
+	public void eliminarAmbito() {
+
+		if (!this.ambitos.equals(".global")) {
+			int posicionUltimoPunto = this.ambitos.lastIndexOf(".");
+
+			this.ambitos = (posicionUltimoPunto != -1) ? this.ambitos.substring(0, posicionUltimoPunto) : this.ambitos;
+
+		}
+	}
 	
 	public void editarLexema(String oldKey, String newKey) {
 		if(!oldKey.equals(newKey)){
