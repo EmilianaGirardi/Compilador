@@ -1,0 +1,33 @@
+prueba BEGIN
+    TIPO_UNSIGNED x;
+    x := 1;
+    TIPO_SINGLE y;
+    y := 4.987s+9;
+    TIPO_OCTAL z;
+    z := 01223;
+
+    etiqueta2@;
+
+    x := 1+x+x+2-4-4;
+    y := y +x;
+
+    z:= z/0123;
+    z:= x*x;
+
+    IF((2+1,4,x,y)<(x-x,8,4,y))THEN
+        BEGIN
+            z:=0122;
+            REPEAT
+                BEGIN
+                    x:=2;
+                END
+            UNTIL((x,y)=(z,y));
+        END
+    END_IF;
+
+    GOTO etiqueta1@;
+    GOTO etiqueta2@;
+    x:=1+2+3;
+
+    etiqueta1@;
+END;

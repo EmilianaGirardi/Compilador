@@ -155,7 +155,7 @@ declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno
 
 parametro : tipo ID {
                 TablaSimbolos TS = lexico.getTablaSimbolos();
-                TS.editarTipo($2.sval, Integer.parseInt(tipo));
+                TS.editarTipo($2.sval, Integer.parseInt($1.sval));
             }
 	| tipo {System.out.println("Error, falta nombre del parametro formal");}
 	| ID {System.out.println("Error, falta tipo del parametro formal");}
@@ -197,7 +197,7 @@ exp_arit : exp_arit '+' termino {
                     }
                     else {
                         //exp es un terceto
-                        tipoExp = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                        tipoExp = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if (TS.estaToken($3.sval)){
                         //termino es un token
@@ -205,14 +205,14 @@ exp_arit : exp_arit '+' termino {
                     }
                     else{
                         //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if(tipoExp != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en suma, en linea " + lexico.getContadorLinea());
                     }
 
                     $$.sval = generador.addTerceto("+", $1.sval, $3.sval);
-                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoExp);
+                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
                     System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
            }
 
@@ -226,7 +226,7 @@ exp_arit : exp_arit '+' termino {
                     }
                     else {
                         //exp es un terceto
-                        tipoExp = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                        tipoExp = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if (TS.estaToken($3.sval)){
                         //termino es un token
@@ -234,14 +234,14 @@ exp_arit : exp_arit '+' termino {
                     }
                     else{
                         //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if(tipoExp != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en resta, en linea " + lexico.getContadorLinea());
                     }
 
 	                $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
-	                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoExp);
+	                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
 	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
 	       }
 
@@ -276,7 +276,7 @@ termino : termino '*' factor {
                     }
                     else {
                         //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if (TS.estaToken($3.sval)){
                         //factor es un token
@@ -284,14 +284,14 @@ termino : termino '*' factor {
                     }
                     else{
                         //factor es un terceto
-                        tipoFactor = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                        tipoFactor = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if(tipoFactor != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en multiplicación, en linea " + lexico.getContadorLinea());
                     }
 
        			 $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
-       			 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoFactor);
+       			 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoFactor);
        			 System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
    		 }
 	| termino '/' factor {
@@ -304,7 +304,7 @@ termino : termino '*' factor {
                     }
                     else {
                         //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($1.sval)).getTipo();
+                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if (TS.estaToken($3.sval)){
                         //factor es un token
@@ -312,13 +312,13 @@ termino : termino '*' factor {
                     }
                     else{
                         //factor es un terceto
-                        tipoFactor = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
+                        tipoFactor = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
                     }
                     if(tipoFactor != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en división, en linea " + lexico.getContadorLinea());
                     }
         	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
-        	generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(tipoFactor);
+        	generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoFactor);
         	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
 		}
 	| factor {
@@ -349,7 +349,7 @@ factor : ID {
         	$$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
         	lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval);
         }
-    ;0
+    ;
 
 
 triple : ID '{' ENTERO_UNSIGNED '}' {
@@ -378,7 +378,7 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
 asig : ID ASIGNACION exp_arit {
             $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
             
-            int t_exp_arit;
+            Integer t_exp_arit;
 
             if ($3.sval.matches("\\[T\\d+\\]")) {
             	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
@@ -388,7 +388,7 @@ asig : ID ASIGNACION exp_arit {
 			}
 
             
-            int t_id = lexico.getTablaSimbolos().getTipo($1.sval);
+            Integer t_id = lexico.getTablaSimbolos().getTipo($1.sval);
 
             if(t_id==null){
             	System.out.println("Error: variable "+$1.sval+" no declarada. Linea: "+lexico.getContadorLinea());
@@ -397,14 +397,14 @@ asig : ID ASIGNACION exp_arit {
             	System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_id+" en la linea "+lexico.getContadorLinea());
             	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
             }else{
-				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(t_id);
+				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_id);
             }
         }
 
     | triple ASIGNACION exp_arit {
         $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
 
-        int t_exp_arit;    
+        Integer t_exp_arit;
         if ($3.sval.matches("\\[T\\d+\\]")) {
         	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
     		t_exp_arit = generador.getTerceto(pos).getTipo();
@@ -412,7 +412,7 @@ asig : ID ASIGNACION exp_arit {
     		t_exp_arit = lexico.getTablaSimbolos().getTipo($3.sval);;
 		}
         
-        int t_triple = lexico.getTablaSimbolos().getTipo($1.sval);
+        Integer t_triple = lexico.getTablaSimbolos().getTipo($1.sval);
 
         if(t_triple==null){
             	System.out.println("Error: variable "+$1.sval+" no existente. Linea: "+lexico.getContadorLinea());
@@ -421,7 +421,7 @@ asig : ID ASIGNACION exp_arit {
             System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_triple+" en la linea "+lexico.getContadorLinea());
             //generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
         }else{
-			generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(t_triple);
+			generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_triple);
         }
     }
  ;	
@@ -434,7 +434,7 @@ etiqueta : ID '@' {
 
     				generador.putEtiqueta(etq, Integer.parseInt($$.sval.replaceAll("\\D", "")));
 
-    				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(TIPO_ETIQUETA);
+    				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
     			}else{
     				System.out.println("Error: la etiqueta "+etq+" ya existe. Linea: "+lexico.getContadorLinea());
     			}
@@ -448,7 +448,7 @@ goto : GOTO ID '@' {
 			}else{
 				$$.sval = generador.addTerceto("BI", etq, null);
 
-				generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", ""), etq);//.setTipo(TIPO_SALTO); ¿Le agregamos un tipo a los saltos?
+				generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", "")), etq);//.setTipo(TIPO_SALTO); ¿Le agregamos un tipo a los saltos?
 			}
         	
        }
@@ -525,7 +525,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
         		System.out.println("Se detecto: comparación");
 
         		int pos;
-        		int t_primer_exp_arit;
+        		Integer t_primer_exp_arit;
 
         		if ($2.sval.matches("\\[T\\d+\\]")) {
         			pos = Integer.parseInt($2.sval.replaceAll("\\D", ""));
@@ -534,12 +534,12 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 		    		t_primer_exp_arit = lexico.getTablaSimbolos().getTipo($2.sval);;
 				}
 
-        		int t_segunda_exp_arit;
+        		Integer t_segunda_exp_arit;
         		if ($4.sval.matches("\\[T\\d+\\]")) {
         			pos = Integer.parseInt($4.sval.replaceAll("\\D", ""));
     				t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
 				} else {
-		    		t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo($4.sval);;
+		    		t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo($4.sval);;
 				}
 
         		if(t_primer_exp_arit != t_segunda_exp_arit){
@@ -558,7 +558,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 
 	        	boolean error_comparacion = false;
 	        	int pos;
-	            int t_primer_exp_arit;
+	            Integer t_primer_exp_arit;
 
 	        	if (lista1[0].matches("\\[T\\d+\\]")) {
 	        		pos = Integer.parseInt(lista1[0].replaceAll("\\D", ""));
@@ -567,12 +567,12 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 			    	t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[0]);;
 				}
 
-	        	int t_segunda_exp_arit;
+	        	Integer t_segunda_exp_arit;
 	        	if (lista2[0].matches("\\[T\\d+\\]")) {
 	        		pos = Integer.parseInt(lista2[0].replaceAll("\\D", ""));
 	    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
 				} else {
-			    	t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo(lista2[0]);;
+			    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[0]);;
 				}
 
 				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
@@ -596,7 +596,7 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 			        		pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
 			    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
 						} else {
-					    	t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo(lista2[i]);;
+					    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[i]);;
 						}
 
 						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;

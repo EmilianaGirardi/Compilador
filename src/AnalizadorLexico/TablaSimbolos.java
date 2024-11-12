@@ -120,8 +120,10 @@ public class TablaSimbolos {
  
 	
 	public void editarLexema(String oldKey, String newKey) {
-		map.put(newKey, this.getValor(oldKey));
-		map.remove(oldKey);
+		if(!oldKey.equals(newKey)){
+			map.put(newKey, this.getValor(oldKey));
+			map.remove(oldKey);
+		}
 	}
 
 	public void editarTipo(String lexema, Integer tipo){
@@ -129,7 +131,9 @@ public class TablaSimbolos {
 	}
 
 	public Integer getTipo(String lexema){
-		return map.get(lexema).get(1);
+		if (map.containsKey(lexema))
+			return map.get(lexema).get(1);
+		else return null;
 	}
 
 	public void imprimirTabla(){
