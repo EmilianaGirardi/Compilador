@@ -16,6 +16,7 @@ public class AS12 extends AccionSemantica {
         
         ArrayList<Integer> atributos = new ArrayList<Integer>();
         atributos.add(MAYORIGUAL);
+        atributos.add(TIPO_SIMBOLO);
         if (!lexico.getTablaSimbolos().estaToken(token)){
             lexico.getTablaSimbolos().agregarToken(token, atributos);
         }

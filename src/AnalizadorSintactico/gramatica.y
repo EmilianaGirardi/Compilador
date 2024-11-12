@@ -35,11 +35,12 @@ conjunto_sentencias : declarativa ';'
 /*---EJECUTABLE---*/
 
 ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
-    |invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + " en linea: " + lexico.getContadorLinea());}
-    |asig  {System.out.println("Se detecto: Asignacion " + " en linea: " + lexico.getContadorLinea());}
+    | invocacion_fun  {System.out.println("Se detecto: Invocacion a funcion " + " en linea: " + lexico.getContadorLinea());}
+    | asig  {System.out.println("Se detecto: Asignacion " + " en linea: " + lexico.getContadorLinea());}
     | repeat_until {System.out.println("Se detecto: Ciclo repeat until ");}
     | goto {System.out.println("Se detecto: Sentencia GOTO " + " en linea: " + lexico.getContadorLinea());}
     | salida {System.out.println("Se detecto: Salida " + " en linea: " + lexico.getContadorLinea());}
+    | etiqueta {System.out.println("Se detecto: Etiqueta " + " en linea: " + lexico.getContadorLinea());}
     ;
 
 bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
@@ -358,7 +359,7 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
         $$.sval = token;
     }
     else {
-        System.out.println("Intento de acceso a una posición de triple inexistente en linea " + lexico.getContadorLinea());
+        System.out.println("Variable inexistenet o Intento de acceso a una posición de triple inexistente en linea " + lexico.getContadorLinea());
         $$.sval = token;
         /*en este punto, los tercetos se generan igual,
         aunque se intente acceder a un valor invalido del tercerto.
@@ -376,20 +377,80 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
 
 asig : ID ASIGNACION exp_arit {
             $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
+            
+            int t_exp_arit;
+
+            if ($3.sval.matches("\\[T\\d+\\]")) {
+            	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
+    			t_exp_arit = generador.getTerceto(pos).getTipo();
+			} else {
+    			t_exp_arit = lexico.getTablaSimbolos().getTipo($3.sval);;
+			}
+
+            
+            int t_id = lexico.getTablaSimbolos().getTipo($1.sval);
+
+            if(t_id==null){
+            	System.out.println("Error: variable "+$1.sval+" no declarada. Linea: "+lexico.getContadorLinea());
+            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
+            }else if(t_id!=t_exp_arit){
+            	System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_id+" en la linea "+lexico.getContadorLinea());
+            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
+            }else{
+				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(t_id);
+            }
         }
+
     | triple ASIGNACION exp_arit {
         $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
+
+        int t_exp_arit;    
+        if ($3.sval.matches("\\[T\\d+\\]")) {
+        	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
+    		t_exp_arit = generador.getTerceto(pos).getTipo();
+		} else {
+    		t_exp_arit = lexico.getTablaSimbolos().getTipo($3.sval);;
+		}
+        
+        int t_triple = lexico.getTablaSimbolos().getTipo($1.sval);
+
+        if(t_triple==null){
+            	System.out.println("Error: variable "+$1.sval+" no existente. Linea: "+lexico.getContadorLinea());
+            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
+        }else if(t_triple!=t_exp_arit){
+            System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_triple+" en la linea "+lexico.getContadorLinea());
+            //generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
+        }else{
+			generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(t_triple);
+        }
     }
  ;	
 
 
 etiqueta : ID '@' {
-    			$$.sval = $1.sval;
+    			String etq = $1.sval+"@";
+    			if(!generador.isEtiqueta(etq)){
+    				$$.sval = generador.addTerceto("ET"+$1.sval+"@",null,null);
+
+    				generador.putEtiqueta(etq, Integer.parseInt($$.sval.replaceAll("\\D", "")));
+
+    				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", "")).setTipo(TIPO_ETIQUETA);
+    			}else{
+    				System.out.println("Error: la etiqueta "+etq+" ya existe. Linea: "+lexico.getContadorLinea());
+    			}
     		}
 		;
 
-goto : GOTO etiqueta {
-        	$$.sval = generador.addTerceto("GOTO", $2.sval, null);
+goto : GOTO ID '@' {
+			String etq = $2.sval+"@";
+			if(generador.isEtiqueta(etq)){
+				$$.sval = generador.addTerceto("BI", etq, generador.posicionEtiqueta(etq));	
+			}else{
+				$$.sval = generador.addTerceto("BI", etq, null);
+
+				generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", ""), etq);//.setTipo(TIPO_SALTO); ¿Le agregamos un tipo a los saltos?
+			}
+        	
        }
 	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
 	;
@@ -411,7 +472,7 @@ salida : OUTF '(' MULTILINEA ')' {
 /*---CONDICIONALES---*/
 
 sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+							int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 							generador.eliminarPila();
 							Terceto t = generador.getTerceto(pos);
 							String label = "ET"+generador.getSizeTercetos();
@@ -423,7 +484,7 @@ sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
 	| condicion_if bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables END_IF {
 		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
-		int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+		int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 		generador.eliminarPila();
 		Terceto t = generador.getTerceto(pos);
 		String label = "ET"+generador.getSizeTercetos();
@@ -443,7 +504,7 @@ condicion_if : IF condicion THEN{
 			 ;
 
 condicion_else	: ELSE {
-							int pos = Integer.parseInt(generador.obtenerElementoPila().split("T")[1]);
+							int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 							generador.eliminarPila();
 							Terceto t = generador.getTerceto(pos);
 							int tam = generador.getSizeTercetos()+1;
@@ -459,28 +520,93 @@ condicion_else	: ELSE {
 	
 
 condicion : '(' exp_arit comparador exp_arit ')' {
+
         		$$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
         		System.out.println("Se detecto: comparación");
+
+        		int pos;
+        		int t_primer_exp_arit;
+
+        		if ($2.sval.matches("\\[T\\d+\\]")) {
+        			pos = Integer.parseInt($2.sval.replaceAll("\\D", ""));
+    				t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+				} else {
+		    		t_primer_exp_arit = lexico.getTablaSimbolos().getTipo($2.sval);;
+				}
+
+        		int t_segunda_exp_arit;
+        		if ($4.sval.matches("\\[T\\d+\\]")) {
+        			pos = Integer.parseInt($4.sval.replaceAll("\\D", ""));
+    				t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+				} else {
+		    		t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo($4.sval);;
+				}
+
+        		if(t_primer_exp_arit != t_segunda_exp_arit){
+        			System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+        		}
         	}
 
 		| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
+
 	        String[] lista1 = $3.sval.split(",");
 	        String[] lista2 = $7.sval.split(",");
 	        if (lista1.length != lista2.length){
 	            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
 	        }else{
-	            if(lista1.length==1){
-	                $$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
-	            }else{
-	                $$.sval= generador.addTerceto($5.sval, lista1[0], lista2[0]);
+	        	$$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
+
+	        	boolean error_comparacion = false;
+	        	int pos;
+	            int t_primer_exp_arit;
+
+	        	if (lista1[0].matches("\\[T\\d+\\]")) {
+	        		pos = Integer.parseInt(lista1[0].replaceAll("\\D", ""));
+	    			t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+				} else {
+			    	t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[0]);;
+				}
+
+	        	int t_segunda_exp_arit;
+	        	if (lista2[0].matches("\\[T\\d+\\]")) {
+	        		pos = Integer.parseInt(lista2[0].replaceAll("\\D", ""));
+	    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+				} else {
+			    	t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo(lista2[0]);;
+				}
+
+				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
+
+
+	            if(lista1.length!=1){
 	                String auxTerceto;
 
 	                for (int i = 1; i<lista1.length; i++){
 	                    auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
 	                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
+	                    
+	                    if (lista1[i].matches("\\[T\\d+\\]")) {
+	        				pos = Integer.parseInt(lista1[i].replaceAll("\\D", ""));
+	    					t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+						} else {
+			    			t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[i]);;
+						}
+
+			        	if (lista2[i].matches("\\[T\\d+\\]")) {
+			        		pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
+			    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+						} else {
+					    	t_exp_t_segunda_exp_aritarit = lexico.getTablaSimbolos().getTipo(lista2[i]);;
+						}
+
+						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
 	                }
 
-	                $$.sval = generador.addTerceto("BF", $$.sval, null);
+	                if(error_comparacion){
+	                	System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+	                }
+
+	                /*$$.sval = generador.addTerceto("BF", $$.sval, null);*/
 	                /*generador.addPila($$.sval);*/
 	            }
 
@@ -521,7 +647,7 @@ repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
 sentencia_repeat: REPEAT {
 				    $$.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
 				    generador.agregarPila('E' + $$.sval);
-				}
+				} //Hay que cambiar esto...
 				;
 /*-----*/
 
@@ -566,6 +692,8 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int  T_SINGLE = 2;
     public final static int  T_OCTAL = 3;
     public final static int  TIPO_MULTILINEA = 4;
+    //¿sEtiqueta seria uso?
+    public final static int  TIPO_ETIQUETA = 8;
     public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;

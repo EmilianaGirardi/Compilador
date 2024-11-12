@@ -14,6 +14,7 @@ public class AS14 extends AccionSemantica{
         String token = lexico.getToken();
         ArrayList<Integer> atributos = new ArrayList<Integer>();
         atributos.add(MENORIGUAL);
+        atributos.add(TIPO_SIMBOLO);
         if (!lexico.getTablaSimbolos().estaToken(token)){
             lexico.getTablaSimbolos().agregarToken(token, atributos);
         }
