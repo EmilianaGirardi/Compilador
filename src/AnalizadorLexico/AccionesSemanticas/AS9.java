@@ -18,6 +18,7 @@ public class AS9 extends AccionSemantica {
 		ArrayList<Integer> atributos = new ArrayList<Integer>();
 		atributos.add(ID);
 		atributos.add(TIPO_SINGLE);
+		atributos.add(NOMBRE_VAR);
 		
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);

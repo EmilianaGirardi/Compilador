@@ -15,12 +15,33 @@ public class Generador {
     private HashMap<String, Integer> etiquetas;
     private HashMap<Integer, String> mapGoto; //Key: numero terceto, Value: etiqueta
 
+    private String[][] tablaComp;
+
 
     private Generador(){
         this.tercetos = new ArrayList<Terceto>();
         this.pila = new Stack<>();
         this.etiquetas = new HashMap<String, Integer>();
         this.mapGoto = new HashMap<Integer, String>();
+        this.tablaComp = this.crearTabla();
+    }
+
+    private String[][] crearTabla(){
+        String[][] result = new String[3][3];
+        result[0][0] = "itoI";
+        result[0][1] = "itoS";
+        result[0][2] = null;
+        result[1][0] = "stoI";
+        result[1][1] = "stoS";
+        result[1][2] = null;
+        result[2][0] = null;
+        result[2][1] = null;
+        result[2][2] = "otoO";
+        return  result;
+    }
+
+    public String getConversion(Integer tipo1, Integer tipo2){
+        return this.tablaComp[tipo1 - 1][tipo2 - 1];
     }
 
     public static Generador getInstance(){

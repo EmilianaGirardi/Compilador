@@ -30,6 +30,9 @@ public abstract class AccionSemantica {
     public final static int TIPO_TRIPLE = 5;
     public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_SIMBOLO = 60;
+
+    public final static int NOMBRE_VAR = 101;
+
     
     public abstract Optional<Integer> ejecutar(Character caracterActual) throws IOException;
 

@@ -19,6 +19,7 @@ public class AS8 extends AccionSemantica{
         ArrayList<Integer> atributos = new ArrayList<Integer>();
         atributos.add(ID);
         atributos.add(TIPO_UNSIGNED);
+        atributos.add(NOMBRE_VAR);
         
         if(!TS.estaToken(token)) {
             TS.agregarToken(token, atributos); 

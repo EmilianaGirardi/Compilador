@@ -130,6 +130,25 @@ public class TablaSimbolos {
 		map.get(lexema).set(1, tipo);
 	}
 
+	public void agregarUso(String lexema, Integer uso){
+		map.get(lexema).add(2, uso);
+	}
+	public Integer getUso(String lexema){
+		if (map.containsKey(lexema))
+			return map.get(lexema).get(2);
+		else return null;
+	}
+
+	public void agregarTipoParam(String lexema, Integer tipo){
+		map.get(lexema).add(3, tipo);
+	}
+
+	public Integer getTipoParam(String lexema){
+		if (map.containsKey(lexema))
+			return map.get(lexema).get(3);
+		else return null;
+	}
+
 	public Integer getTipo(String lexema){
 		if (map.containsKey(lexema))
 			return map.get(lexema).get(1);
@@ -144,7 +163,9 @@ public class TablaSimbolos {
 			System.out.println("Lexema: " + i);
 			System.out.println("Token: " + map.get(i).get(0));
 			System.out.println("Tipo: " + map.get(i).get(1));
-			
+			if (map.get(i).size()>2) {
+				System.out.println("Uso: " + map.get(i).get(2));
+			}
 			System.out.println("----------------------");
 		}
 	}

@@ -16,7 +16,9 @@
 
 /*---Programa---*/
 
-programa : ID BEGIN conjunto_sentencias END ';' {System.out.println("Se detecto: Programa");}
+programa : ID BEGIN conjunto_sentencias END ';' {
+        lexico.getTablaSimbolos().agregarUso($1.sval, NOMBRE_PROGRAMA);
+        System.out.println("Se detecto: Programa");}
       | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa");}
       | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
       ;
@@ -72,6 +74,7 @@ declarvar : tipo lista_var {
         for (String var : lista){
             tipo = Integer.parseInt($1.sval);
             TS.editarTipo(var, tipo);
+            TS.agregarUso(var, NOMBRE_VAR);
         }
     }
     ;
@@ -98,6 +101,7 @@ declar_compuesto : ID lista_var{
                     ArrayList<Integer> atributos = new ArrayList<Integer>();
                     atributos.add(258);
                     atributos.add(t);
+                    atributos.add(NOMBRE_VAR);
                     TS.agregarToken(token, atributos);
                 }
             }
@@ -130,7 +134,10 @@ declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 Integer tipo = Integer.parseInt($1.sval);
                 TS.editarTipo($3.sval, tipo);
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($9.sval)).getTipo();
+                TS.agregarUso($3.sval, NOMBRE_FUN);
+                Integer tipoParam = Integer.parseInt($5.sval);
+                TS.agregarTipoParam($3.sval, tipoParam);
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($9.sval.replaceAll("\\D", ""))).getTipo();
                 if (tipo != tipoRetorno){
                     System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
                 }
@@ -139,7 +146,7 @@ declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno
 	            TablaSimbolos TS = lexico.getTablaSimbolos();
                 Integer tipo = Integer.parseInt($1.sval);
                 TS.editarTipo($3.sval, tipo);
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($8.sval)).getTipo();
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($8.sval.replaceAll("\\D", ""))).getTipo();
                 if (tipo != tipoRetorno){
                      System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
                 }
@@ -156,6 +163,8 @@ declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno
 parametro : tipo ID {
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 TS.editarTipo($2.sval, Integer.parseInt($1.sval));
+                TS.agregarUso($2.sval, NOMBRE_PARAMETRO);
+                $$.sval = $1.sval; //guarda el tipo
             }
 	| tipo {System.out.println("Error, falta nombre del parametro formal");}
 	| ID {System.out.println("Error, falta tipo del parametro formal");}
@@ -164,22 +173,106 @@ parametro : tipo ID {
 
 retorno : RET '(' exp_arit ')' ';'{
             $$.sval = generador.addTerceto("RETORNO", $3.sval, null);
-            Integer tipo = generador.getTerceto(Integer.parseInt($3.sval)).getTipo();
-            generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
+
+            Integer tipo;
+            if($3.sval.matches("\\[T\\d+\\]")){
+                tipo = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
+            }else{
+                TablaSimbolos TS = lexico.getTablaSimbolos();
+                tipo = TS.getTipo($3.sval);
+            }
+
+            generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
         }
 	    ;
 
 invocacion_fun : ID '(' exp_arit ')'{
-        //TODO verificar que el uso de ID sea nombre de función.
-        //TODO verificar que el tipo del parametro formal sea igual al del parametro real.
-        /*podriamos poner en el nombre déla funcion en la TS como atributo el tipo del parametro que recibe,
-        entonces aca lo verificamos. */
-        $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
+        //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
+        if (TS.getUso($1.sval) != NOMBRE_FUN){
+            System.out.println("Invocación a una función inexistente en linea: " + lexico.getContadorLinea());
+        }
+        else { //es una función
+            //verificar que el tipo del parametro formal sea igual al del parametro real.
+            /* tenemos en la tabla de simbolos, para el lexema ID (nombre de la funcion) el tipo de su parametro,
+            entonces lo comparamos con el tipo de exp_arit.
+            */
+
+            Integer tipoExp;
+            if (TS.estaToken($3.sval)){
+              //exp es un token
+              tipoExp = TS.getTipo($3.sval);
+            }
+            else {
+              //exp es un terceto
+              tipoExp = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
+            }
+
+            if (tipoExp != TS.getTipoParam($1.sval)){
+                System.out.println("Invocación a una función con un parametro incorrecto en linea: " + lexico.getContadorLinea());
+            }
+        }
+        $$.sval = generador.addTerceto("INVOCACION", $1.sval, $3.sval);
         Integer tipo = TS.getTipo($1.sval);
-        generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
+        generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
     }
-	| ID '(' tipo '(' exp_arit ')' ')'  //para evitar conflictos si que hay una operación (suma, resta, etc)
+
+    | ID '(' tipo exp_arit ')'{
+        //verificar que el uso de ID sea nombre de función.
+        TablaSimbolos TS = lexico.getTablaSimbolos();
+        if (TS.getUso($1.sval) != NOMBRE_FUN){
+            System.out.println("Invocación a una función inexistente en linea: " + lexico.getContadorLinea());
+        }
+        else { //es una función
+            //verificar que el tipo del parametro formal sea igual al del parametro real.
+            /* tenemos en la tabla de simbolos, para el lexema ID (nombre de la funcion) el tipo de su parametro,
+            entonces lo comparamos con el tipo de exp_arit.
+            */
+
+            Integer tipoExp = Integer.parseInt($3.sval);
+            Integer tipoParam = TS.getTipoParam($1.sval);
+            if (tipoExp != tipoParam){
+                System.out.println("Invocación a una función con un parametro incorrecto en linea: " + lexico.getContadorLinea());
+            }
+
+            //crear terceto de conversion
+            String conversion = generador.getConversion(tipoExp, tipoParam);
+            if (conversion == null) {System.out.println("Error de conversion en linea: " + lexico.getContadorLinea());}
+            String terceto = generador.addTerceto(conversion, $4.sval, null);
+            $$.sval = generador.addTerceto("INVOCACION", $1.sval, terceto);
+            Integer tipo = TS.getTipo($1.sval);
+            generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
+        }
+
+    }
+	| ID '(' tipo '(' exp_arit ')' ')' {
+            //verificar que el uso de ID sea nombre de función.
+            TablaSimbolos TS = lexico.getTablaSimbolos();
+            if (TS.getUso($1.sval) != NOMBRE_FUN){
+                System.out.println("Invocación a una función inexistente en linea: " + lexico.getContadorLinea());
+            }
+            else { //es una función
+                //verificar que el tipo del parametro formal sea igual al del parametro real.
+                /* tenemos en la tabla de simbolos, para el lexema ID (nombre de la funcion) el tipo de su parametro,
+                entonces lo comparamos con el tipo de exp_arit.
+                */
+
+                Integer tipoExp = Integer.parseInt($3.sval);
+                Integer tipoParam = TS.getTipoParam($1.sval);
+                if (tipoExp != tipoParam){
+                    System.out.println("Invocación a una función con un parametro incorrecto en linea: " + lexico.getContadorLinea());
+                }
+
+                //crear terceto de conversion
+               String conversion = generador.getConversion(tipoExp, tipoParam);
+               if (conversion == null) {System.out.println("Error de conversion en linea: " + lexico.getContadorLinea());}
+                String terceto = generador.addTerceto(conversion, $5.sval, null);
+                $$.sval = generador.addTerceto("INVOCACION", $1.sval, terceto);
+                Integer tipo = TS.getTipo($1.sval);
+                generador.getTerceto(Integer.parseInt($$.sval)).setTipo(tipo);
+            }
+
+        }
 	| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
 	;
 
@@ -337,7 +430,8 @@ factor : ID {
 	| triple {$$.sval = $1.sval;}
 	| SINGLE_CONSTANTE {
 		 	$$.sval = truncarFueraRango($1.sval, lexico.getContadorLinea());
-            lexico.getTablaSimbolos().editarLexema($1.sval, $$.sval);
+		 	TablaSimbolos TS = lexico.getTablaSimbolos();
+            TS.editarLexema($1.sval, $$.sval);
         }
     | ENTERO_UNSIGNED {
             $$.sval = $1.sval;
@@ -347,7 +441,8 @@ factor : ID {
         }
     | '-' SINGLE_CONSTANTE {
         	$$.sval = truncarFueraRango("-"+$2.sval, lexico.getContadorLinea());
-        	lexico.getTablaSimbolos().editarLexema($2.sval, $$.sval);
+        	TablaSimbolos TS = lexico.getTablaSimbolos();
+        	TS.editarLexema($2.sval, $$.sval);
         }
     ;
 
@@ -428,6 +523,7 @@ asig : ID ASIGNACION exp_arit {
 
 
 etiqueta : ID '@' {
+                lexico.getTablaSimbolos().agregarUso($2.sval, NOMBRE_ETIQUETA);
     			String etq = $1.sval+"@";
     			if(!generador.isEtiqueta(etq)){
     				$$.sval = generador.addTerceto("ET"+$1.sval+"@",null,null);
@@ -442,6 +538,7 @@ etiqueta : ID '@' {
 		;
 
 goto : GOTO ID '@' {
+            lexico.getTablaSimbolos().agregarUso($2.sval, NOMBRE_ETIQUETA);
 			String etq = $2.sval+"@";
 			if(generador.isEtiqueta(etq)){
 				$$.sval = generador.addTerceto("BI", etq, generador.posicionEtiqueta(etq));	
@@ -673,6 +770,7 @@ def_triple : TYPEDEF TRIPLE '<' tipo '>'  ID{
          */
     }
         this.tiposUsuario.add($6.sval);
+        lexico.getTablaSimbolos().agregarUso($6.sval, NOMBRE_TIPO);
     }
 	;
 
@@ -698,6 +796,13 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
     public final static int TIPO_TRIPLE_OCTAL = 7;
+
+    public final static int NOMBRE_VAR = 101;
+    public final static int NOMBRE_FUN = 102;
+    public final static int NOMBRE_TIPO = 103;
+    public final static int NOMBRE_PARAMETRO = 104;
+    public final static int NOMBRE_ETIQUETA = 105;
+    public final static int NOMBRE_PROGRAMA = 106;
 
     public ArrayList<String> tiposUsuario;
 
