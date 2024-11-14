@@ -1,0 +1,23 @@
+ambito BEGIN
+
+    TIPO_UNSIGNED x;
+
+    TIPO_SINGLE FUN fun1( TIPO_OCTAL y )
+        BEGIN
+            y:= 902;
+
+            TIPO_SINGLE FUN fun2( TIPO_UNSIGNED z)
+                BEGIN
+                    z:=2*3*9;
+                    z:=z/z;
+                    RET (2.01);
+                END;
+            y:= fun2(TIPO_UNSIGNED 3.0);
+
+            RET (z);
+        END;
+
+    fun1 (TIPO_OCTAL(x));
+
+    fun2 ( x );
+END;

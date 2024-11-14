@@ -14,8 +14,9 @@ public class TablaSimbolos {
 		this.agregarPalabras();
 	}
 
-	public String nameMangling (String id, String ambito){
-		return id + this.ambitos + '.' + ambito;
+	public String nameMangling (String id){
+		return id + this.ambitos;
+				//+ ambito;
 	}
 
     
@@ -127,26 +128,41 @@ public class TablaSimbolos {
 		return ambitos;
 	}
 
-	public String buscarVar(String lexema){
+	public String buscarVariable(String lexema){
+		if (this.estaToken(lexema) && this.getTipo(lexema)<=3 ){
+			return lexema;
+		}
+
 		String ambito = this.ambitos;
 		String[] partes = ambito.split("\\.");
-		String variable;
-		for (int i = partes.length - 1; i>=0; i--) {
-			variable = lexema + '.' + i;
-			if (estaToken(variable)){
+		String variable = lexema+ambito;
+
+		while(!variable.equals(lexema)) {
+			if(this.estaToken(variable)){
 				return variable;
+			}else{
+				int lastIndex = variable.lastIndexOf(".");
+				if(lastIndex==-1){
+					break;
+				}
+				variable=variable.substring(0, lastIndex);
 			}
 		}
-		if (estaToken(lexema)) //variable esta en la TS pero no fue declarada.
-			//TODO agregar un if que identifique que no es una cte
-			//o devolver otra cosa cuando es cte (pero no null porque null es error de var fuera de alcance)
+
+		if(lexema.matches("\\[T\\d+\\]")){
+			return "Terceto";
+		}else{
 			return null;
-		return "Terceto";
+		}
 	}
-	public String getUltimoAmbito(String ambito) {
+	public String getUltimoAmbito() {
 		if (this.ambitos != null && !this.ambitos.isEmpty()) {
-			String[] partes = ambito.split("\\.");  // Divide la cadena por el separador '.'
-			return partes[partes.length - 1];  // Retorna el último elemento
+			String[] partes = ambitos.split("\\.");  // Divide la cadena por el separador '.'
+			String funcion = partes[partes.length - 1];
+			for (int i=0; i<partes.length-1; i++){
+				funcion+=partes[i];
+			}
+			return funcion;  // Retorna el último elemento
 		}
 		return "";  // Retorna una cadena vacía si el ámbito es nulo o vacío
 	}
