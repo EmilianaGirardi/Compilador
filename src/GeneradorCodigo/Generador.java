@@ -18,6 +18,7 @@ public class Generador {
     private String[][] tablaComp;
 
 
+
     private Generador(){
         this.tercetos = new ArrayList<Terceto>();
         this.pila = new Stack<>();

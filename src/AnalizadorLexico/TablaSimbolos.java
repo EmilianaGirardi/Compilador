@@ -13,7 +13,11 @@ public class TablaSimbolos {
 		this.map =  new HashMap<>();
 		this.agregarPalabras();
 	}
-    
+
+	public String nameMangling (String id, String ambito){
+		return id + this.ambitos + '.' + ambito;
+	}
+
     
     private void agregarPalabras() {
 
@@ -121,6 +125,30 @@ public class TablaSimbolos {
 
 	public String getAmbitos() {
 		return ambitos;
+	}
+
+	public String buscarVar(String lexema){
+		String ambito = this.ambitos;
+		String[] partes = ambito.split("\\.");
+		String variable;
+		for (int i = partes.length - 1; i>=0; i--) {
+			variable = lexema + '.' + i;
+			if (estaToken(variable)){
+				return variable;
+			}
+		}
+		if (estaToken(lexema)) //variable esta en la TS pero no fue declarada.
+			//TODO agregar un if que identifique que no es una cte
+			//o devolver otra cosa cuando es cte (pero no null porque null es error de var fuera de alcance)
+			return null;
+		return "Terceto";
+	}
+	public String getUltimoAmbito(String ambito) {
+		if (this.ambitos != null && !this.ambitos.isEmpty()) {
+			String[] partes = ambito.split("\\.");  // Divide la cadena por el separador '.'
+			return partes[partes.length - 1];  // Retorna el último elemento
+		}
+		return "";  // Retorna una cadena vacía si el ámbito es nulo o vacío
 	}
 
 	public void addAmbitos(String ambitos) {

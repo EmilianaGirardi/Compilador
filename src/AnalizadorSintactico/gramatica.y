@@ -70,13 +70,15 @@ declarativa : declaracionFun {System.out.println("Se detecto: Declaracion de fun
 declarvar : tipo lista_var {
         String[] lista = $2.sval.split(",");
         TablaSimbolos TS = lexico.getTablaSimbolos();
-        Integer tipo;
-        String amb = TS.getAmbitos();
+        Integer tipo = Integer.parseInt($1.sval);
+        String ambito = TS.getAmbitos();
         for (String var : lista){
-            tipo = Integer.parseInt($1.sval);
             TS.editarTipo(var, tipo);
             TS.agregarUso(var, NOMBRE_VAR);
-            TS.editarLexema(var, var + amb);
+            if (TS.estaToken(var + ambito)){
+                System.out.println("Error: ya existe la variable " + var + " en el ambito " + ambito + "en linea " + lexico.getContadorLinea());
+            }
+            TS.editarLexema(var, var + ambito);
         }
     }
     ;
@@ -97,7 +99,7 @@ declar_compuesto : ID lista_var{
                          break;
                 }
             String[] lista = $2.sval.split(",");
-            String amb = TS.getAmbitos();
+            String ambito = TS.getAmbitos();
             for (String var : lista){
                 for(int i=1; i<=3; i++){
                     String token = var+'{'+i+'}';
@@ -105,8 +107,10 @@ declar_compuesto : ID lista_var{
                     atributos.add(258);
                     atributos.add(t);
                     atributos.add(NOMBRE_VAR);
-                    TS.agregarToken(token, atributos);
-                    TS.editarLexema(var, var + amb);
+                    if (TS.estaToken(token + ambito)){
+                       System.out.println("Error: ya existe la variable " + var + " en el ambito " + ambito + "en linea " + lexico.getContadorLinea());
+                    }
+                    TS.agregarToken(token + ambito, atributos);
                 }
             }
         }
@@ -134,29 +138,47 @@ tipo : TIPO_OCTAL {$$.sval = String.valueOf(T_OCTAL);}
 
 /*---FUNCION---*/
 
-declaracionFun : tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias retorno END{
+encabezadoFun : tipo FUN ID '(' parametro ')' {
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 Integer tipo = Integer.parseInt($1.sval);
                 TS.editarTipo($3.sval, tipo);
                 TS.agregarUso($3.sval, NOMBRE_FUN);
-                Integer tipoParam = Integer.parseInt($5.sval);
+                Integer tipoParam = Integer.parseInt($5.sval); //parametro solo tiene almacenado su tipo
                 TS.agregarTipoParam($3.sval, tipoParam);
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($9.sval.replaceAll("\\D", ""))).getTipo();
-                if (tipo != tipoRetorno){
-                    System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
+                TS.addAmbitos($3.sval);
+}
+;
+
+declaracionFun : encabezadoFun BEGIN conjunto_sentencias retorno END{
+                //verificar el tipo de retorno
+                TablaSimbolos TS = lexico.getTablaSimbolos();
+                String lexemaFun = TS.getUltimoAmbito(); //obtengo el lexema de la funcion
+                Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($4.sval.replaceAll("\\D", ""))).getTipo();
+                if (tipoFun != tipoRetorno){
+                    System.out.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                 }
+
+                //desapilar el ambito de la funcion
+                TS.eliminarAmbito();
+
      }
-	| tipo FUN ID '(' parametro ')' BEGIN retorno END{
-	            TablaSimbolos TS = lexico.getTablaSimbolos();
-                Integer tipo = Integer.parseInt($1.sval);
-                TS.editarTipo($3.sval, tipo);
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($8.sval.replaceAll("\\D", ""))).getTipo();
+	| encabezadoFun BEGIN retorno END{
+	            //verificar tipo retorno
+	             TablaSimbolos TS = lexico.getTablaSimbolos();
+                 String lexemaFun = TS.getUltimoAmbito(); //obtengo el lexema de la funcion
+                 Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
+
+                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
                 if (tipo != tipoRetorno){
-                     System.out.println("Error: tipo de retorno invalido en funcion: " + $3.sval);
+                     System.out.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                 }
+                //desapilar el ambito de la funcion
+                TS.eliminarAmbito();
+
 	}
 
-	| tipo FUN ID '(' parametro ')' BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
+	| encabezadoFun BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta nombre de funcion");}
 	| tipo FUN  '(' parametro ')' BEGIN retorno END {System.out.println("Error, Falta nombre de funcion");}
 	| tipo FUN ID '(' ')' BEGIN conjunto_sentencias retorno END {System.out.println("Error, Falta parametro de funcion");}
@@ -168,6 +190,8 @@ parametro : tipo ID {
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 TS.editarTipo($2.sval, Integer.parseInt($1.sval));
                 TS.agregarUso($2.sval, NOMBRE_PARAMETRO);
+                //TODO ver como poner el ambito a este parametro que sea el de su funcion.
+                //al momento que se identifica esta regla no tengo el ambito, podria ponerlo en encabezadoFun pero hice que $$.sval sea solo el tipo.
                 $$.sval = $1.sval; //guarda el tipo
             }
 	| tipo {System.out.println("Error, falta nombre del parametro formal");}
@@ -177,20 +201,23 @@ parametro : tipo ID {
 
 retorno : RET '(' exp_arit ')' ';'{
             $$.sval = generador.addTerceto("RETORNO", $3.sval, null);
-
-            Integer tipo;
-            if($3.sval.matches("\\[T\\d+\\]")){
-                tipo = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
-            }else{
-                TablaSimbolos TS = lexico.getTablaSimbolos();
-                tipo = TS.getTipo($3.sval);
+            Integer tipo = null;
+            TablaSimbolos TS = lexico.getTablaSimbolos();
+            String expresion = TS.buscarVariable($3.sval);
+            switch (expresion){
+                case "Terceto" :  tipo = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
+                case null : System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                case default: tipo = TS.getTipo($3.sval);
             }
-
             generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
         }
 	    ;
 
 invocacion_fun : ID '(' exp_arit ')'{
+        // TODO implementar logica de etiquetas para llamar a la funcion.
+        // TODO Tambien que se apile y desapile el ambito cuando corresponda.
+        // idea: apilar ambito, generar tercetos de goto y despues desapilar el ambito?
+
         //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if (TS.getUso($1.sval) != NOMBRE_FUN){
@@ -286,24 +313,26 @@ invocacion_fun : ID '(' exp_arit ')'{
 
 exp_arit : exp_arit '+' termino {
                     //verificación de tipos
+
                     Integer tipoExp, tipoTermino;
                     TablaSimbolos TS = lexico.getTablaSimbolos();
-                    if (TS.estaToken($1.sval)){
-                        //exp es un token
-                        tipoExp = TS.getTipo($1.sval);
+
+                    String expresion = TS.buscarVariable($1.sval);
+                    switch (expresion){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoExp = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoExp = TS.getTipo(expresion);
                     }
-                    else {
-                        //exp es un terceto
-                        tipoExp = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
+
+                    String termino = TS.buscarVariable($3.sval);
+                    switch (termino){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoTermino = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoTermino = TS.getTipo(termino);
                     }
-                    if (TS.estaToken($3.sval)){
-                        //termino es un token
-                        tipoTermino = TS.getTipo($3.sval);
-                    }
-                    else{
-                        //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
-                    }
+
                     if(tipoExp != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en suma, en linea " + lexico.getContadorLinea());
                     }
@@ -315,31 +344,34 @@ exp_arit : exp_arit '+' termino {
 
 	       | exp_arit '-' termino {
                     //verificación de tipos
+
                     Integer tipoExp, tipoTermino;
                     TablaSimbolos TS = lexico.getTablaSimbolos();
-                    if (TS.estaToken($1.sval)){
-                        //exp es un token
-                        tipoExp = TS.getTipo($1.sval);
+
+                    String expresion = TS.buscarVariable($1.sval);
+                    switch (expresion){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoExp = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoExp = TS.getTipo(expresion);
                     }
-                    else {
-                        //exp es un terceto
-                        tipoExp = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
+
+                    String termino = TS.buscarVariable($3.sval);
+                    switch (termino){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoTermino = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoTermino = TS.getTipo(termino);
                     }
-                    if (TS.estaToken($3.sval)){
-                        //termino es un token
-                        tipoTermino = TS.getTipo($3.sval);
-                    }
-                    else{
-                        //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
-                    }
+
                     if(tipoExp != tipoTermino){
                         System.out.println("Incompatibilidad de tipos en resta, en linea " + lexico.getContadorLinea());
                     }
 
-	                $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
-	                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
-	                System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+                    $$.sval = generador.addTerceto("-", $1.sval, $3.sval);
+                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
+                    System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+
 	       }
 
            | exp_arit '+' error ';' {
@@ -365,58 +397,64 @@ lista_exp_arit : exp_arit {
 
 termino : termino '*' factor {
                     //verificación de tipos
-                    Integer tipoTermino, tipoFactor;
+
+                    Integer tipoFactor, tipoTermino;
                     TablaSimbolos TS = lexico.getTablaSimbolos();
-                    if (TS.estaToken($1.sval)){
-                        //termino es un token
-                        tipoTermino = TS.getTipo($1.sval);
-                    }
-                    else {
-                        //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
-                    }
-                    if (TS.estaToken($3.sval)){
-                        //factor es un token
-                        tipoFactor = TS.getTipo($3.sval);
-                    }
-                    else{
-                        //factor es un terceto
-                        tipoFactor = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
-                    }
-                    if(tipoFactor != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en multiplicación, en linea " + lexico.getContadorLinea());
+
+                    String termino = TS.buscarVariable($1.sval);
+                    switch (termino){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoTermino = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoTermino = TS.getTipo(termino);
                     }
 
-       			 $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
-       			 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoFactor);
-       			 System.out.println("Se detecto: Multiplicación " + "en linea: " + lexico.getContadorLinea());
+                    String factor = TS.buscarVariable($3.sval);
+                    switch (factor){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoFactor = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoFactor = TS.getTipo(factor);
+                    }
+
+                    if(tipoFactor != tipoTermino){
+                        System.out.println("Incompatibilidad de tipos en multiplicacion, en linea " + lexico.getContadorLinea());
+                    }
+
+                    $$.sval = generador.addTerceto("*", $1.sval, $3.sval);
+                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
+                    System.out.println("Se detecto: Multiplicacion " + "en linea: " + lexico.getContadorLinea());
+
    		 }
 	| termino '/' factor {
                     //verificación de tipos
-                    Integer tipoTermino, tipoFactor;
+
+                    Integer tipoFactor, tipoTermino;
                     TablaSimbolos TS = lexico.getTablaSimbolos();
-                    if (TS.estaToken($1.sval)){
-                        //termino es un token
-                        tipoTermino = TS.getTipo($1.sval);
+
+                    String termino = TS.buscarVariable($1.sval);
+                    switch (termino){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoTermino = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoTermino = TS.getTipo(termino);
                     }
-                    else {
-                        //termino es un terceto
-                        tipoTermino = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
+
+                    String factor = TS.buscarVariable($3.sval);
+                    switch (factor){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoFactor = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoFactor = TS.getTipo(factor);
                     }
-                    if (TS.estaToken($3.sval)){
-                        //factor es un token
-                        tipoFactor = TS.getTipo($3.sval);
-                    }
-                    else{
-                        //factor es un terceto
-                        tipoFactor = generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).getTipo();
-                    }
+
                     if(tipoFactor != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en división, en linea " + lexico.getContadorLinea());
+                        System.out.println("Incompatibilidad de tipos en division, en linea " + lexico.getContadorLinea());
                     }
-        	$$.sval = generador.addTerceto("/", $1.sval, $3.sval);
-        	generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoFactor);
-        	System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
+
+                    $$.sval = generador.addTerceto("/", $1.sval, $3.sval);
+                    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoFactor);
+                    System.out.println("Se detecto: División " + "en linea: " + lexico.getContadorLinea());
 		}
 	| factor {
 	    	$$.sval = $1.sval;
@@ -427,9 +465,14 @@ termino : termino '*' factor {
 	;
 
 factor : ID {
+            Tabla Simbolos TS = lexico.getTablaSimbolos();
+            String var = TS.buscarVariable($1.sval);
+            if (var == null) {
+                System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            }
             $$.sval = $1.sval;
             System.out.println("Se detecto: Identificador " + $1.sval + " en linea: " + lexico.getContadorLinea());
-        }
+            }
 	| invocacion_fun {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
 	| triple {$$.sval = $1.sval;}
 	| SINGLE_CONSTANTE {
@@ -454,7 +497,8 @@ factor : ID {
 triple : ID '{' ENTERO_UNSIGNED '}' {
     String token = $1.sval+'{'+$3.sval+'}';
     TablaSimbolos TS = lexico.getTablaSimbolos();
-    if (TS.estaToken(token)){
+    String var = TS.buscarVariable(token);
+    if (var != null){
         $$.sval = token;
     }
     else {
@@ -476,52 +520,65 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
 
 asig : ID ASIGNACION exp_arit {
             $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
-            
-            Integer t_exp_arit;
 
-            if ($3.sval.matches("\\[T\\d+\\]")) {
-            	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
-    			t_exp_arit = generador.getTerceto(pos).getTipo();
-			} else {
-    			t_exp_arit = lexico.getTablaSimbolos().getTipo($3.sval);;
-			}
+            Integer tipoExp, tipoID;
+            String expresion = TS.buscarVariable($3.sval);
+                    switch (expresion){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoExp = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoExp = TS.getTipo(expresion);
+                    }
 
-            
-            Integer t_id = lexico.getTablaSimbolos().getTipo($1.sval);
+            String id = TS.buscarVariable($3.sval);
+                switch (id){
+                    case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    default: //es una var valida
+                         tipoID = TS.getTipo(id);
+                         if (tipoID != tipoExp){
+                              System.out.printl("Error de tipos invalidos en asignación en linea: " +lexico.getContadorLinea()));
+                         }
+                        else{
+                            generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoID);
+                        }
+                }
 
-            if(t_id==null){
-            	System.out.println("Error: variable "+$1.sval+" no declarada. Linea: "+lexico.getContadorLinea());
-            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
-            }else if(t_id!=t_exp_arit){
-            	System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_id+" en la linea "+lexico.getContadorLinea());
-            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
-            }else{
-				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_id);
-            }
         }
 
     | triple ASIGNACION exp_arit {
-        $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
+            $$.sval = generador.addTerceto(":=", $1.sval, $3.sval);
 
-        Integer t_exp_arit;
-        if ($3.sval.matches("\\[T\\d+\\]")) {
-        	int pos = Integer.parseInt($3.sval.replaceAll("\\D", ""));
-    		t_exp_arit = generador.getTerceto(pos).getTipo();
-		} else {
-    		t_exp_arit = lexico.getTablaSimbolos().getTipo($3.sval);;
-		}
-        
-        Integer t_triple = lexico.getTablaSimbolos().getTipo($1.sval);
+            Integer tipoExp, tipoTriple;
+            String expresion = TS.buscarVariable($3.sval);
+                    switch (expresion){
+                        case null: System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                        case "Terceto": tipoExp = generador.getTerceto(Integer.parseInt($1.sval.replaceAll("\\D", ""))).getTipo();
+                        default: //es una var valida
+                            tipoExp = TS.getTipo(expresion);
+                    }
 
-        if(t_triple==null){
-            	System.out.println("Error: variable "+$1.sval+" no existente. Linea: "+lexico.getContadorLinea());
-            	//generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
-        }else if(t_triple!=t_exp_arit){
-            System.out.println("Error: se intenta asignar un "+t_exp_arit+" a una variable "+t_triple+" en la linea "+lexico.getContadorLinea());
-            //generador.getTerceto(Integer.parseInt($$.sval)).setTipo(t_id); ponerle tipo al terceto sería raro, porque si tiene un error no se sabe
-        }else{
-			generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_triple);
-        }
+            String var = TS.buscarVariable($1.sval);
+                if (var != null){
+                    $$.sval = $1.sval;
+                    tipoTriple = TS.getTipo(var);
+                }
+                else {
+                    System.out.println("Variable inexistene o Intento de acceso a una posición de triple inexistente en linea " + lexico.getContadorLinea());
+                    $$.sval = token;
+                    /*en este punto, los tercetos se generan igual,
+                    aunque se intente acceder a un valor invalido del tercerto.
+                    El generador de assembler deberia volver a verificar si la constante es 1, 2 o 3
+                    y solo generar codigo en ese caso, de lo contrario lanzar error.
+                    */
+                }
+
+                if (tipoTriple != tipoExp){
+                     System.out.printl("Error de tipos invalidos en asignación en linea: " +lexico.getContadorLinea()));
+                }
+                else{
+                     generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipoTriple);
+                }
+
     }
  ;	
 
