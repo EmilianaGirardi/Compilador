@@ -2048,6 +2048,7 @@ break;
 public void run() throws IOException {
   yyparse();
   generador.imprimirTercetos();
+  generador.generarCodigoMaquina();
 }
 //## end of method run() ########################################
 
