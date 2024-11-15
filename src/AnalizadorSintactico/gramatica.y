@@ -19,18 +19,18 @@
 programa : ID BEGIN conjunto_sentencias END ';' {
         lexico.getTablaSimbolos().agregarUso($1.sval, NOMBRE_PROGRAMA);
         System.out.println("Se detecto: Programa");}
-      | BEGIN conjunto_sentencias END ';' {System.out.println("Error, Falta nombre de programa");}
-      | ID conjunto_sentencias END ';' {System.out.println("Error de delimitador de programa ");}
+      | BEGIN conjunto_sentencias END ';' {System.err.println("Error: Falta nombre de programa"); generador.setError();}
+      | ID conjunto_sentencias END ';' {System.err.println("Error: Falta delimitador de programa ");generador.setError();}
       ;
       
 conjunto_sentencias : declarativa ';'
-			| declarativa {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
+			| declarativa {System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 			| ejecutable ';'
-			| ejecutable {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
+			| ejecutable {System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea());generador.setError();}
 			| conjunto_sentencias declarativa ';'
-			| conjunto_sentencias declarativa {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
+			| conjunto_sentencias declarativa {System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 			| conjunto_sentencias ejecutable ';'
-			| conjunto_sentencias ejecutable {System.out.println("Falta ; " + "antes de la linea: " + lexico.getContadorLinea());}
+			| conjunto_sentencias ejecutable {System.out.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 			;
 /*------*/
 
@@ -52,7 +52,7 @@ bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
 
 sentencias_ejecutables : ejecutable ';'
  	| sentencias_ejecutables ejecutable ';'
- 	| ejecutable {System.out.println("Falta ;");}
+ 	| ejecutable {System.err.println("Error: Falta ;"); generador.setError();}
  	| sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
 	;
 
@@ -76,7 +76,8 @@ declarvar : tipo lista_var {
             TS.editarTipo(var, tipo);
             TS.agregarUso(var, NOMBRE_VAR);
             if (TS.estaToken(var + ambito)){
-                System.out.println("Error: ya existe la variable " + var + " en el ambito " + ambito + "en linea " + lexico.getContadorLinea());
+                System.err.println("Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea());
+                generador.setError();
             }
             TS.editarLexema(var, var + ambito);
         }
@@ -88,7 +89,8 @@ declar_compuesto : ID lista_var{
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String id = TS.buscarVariable($1.sval);
         if (id == null){
-            System.out.println("Error: variable no declarad en linea: " + lexico.getContadorLinea());
+            System.err.println("Error: variable no declarad. Linea: " + lexico.getContadorLinea());
+            generador.setError();
         }
         else{
             if (tiposUsuario.contains($1.sval)){
@@ -114,7 +116,8 @@ declar_compuesto : ID lista_var{
                         atributos.add(t);
                         atributos.add(NOMBRE_VAR);
                         if (TS.estaToken(token + ambito)){
-                           System.out.println("Error: ya existe la variable " + var + " en el ambito " + ambito + "en linea " + lexico.getContadorLinea());
+                           System.err.println("Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea());
+                           generador.setError();
                         }
                         TS.agregarToken(token + ambito, atributos);
                     }
@@ -165,10 +168,10 @@ encabezadoFun : tipo FUN ID '(' tipo ID ')' {
                 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
                 generador.putEtiqueta(funcion);
               }
-              | tipo FUN  '(' tipo ID ')' {System.out.println("Error, Falta nombre de funcion");}
-              | tipo FUN ID '(' ')' {System.out.println("Error, Falta parametro de funcion");}
-              | tipo FUN ID '(' tipo ')' {System.out.println("Error, falta nombre del parametro formal");}
-              | tipo FUN ID '(' ID ')' {System.out.println("Error, falta tipo del parametro formal");}
+              | tipo FUN  '(' tipo ID ')' {System.err.println("Error: Falta nombre de funcion"); generador.setError();}
+              | tipo FUN ID '(' ')' {System.err.println("Error: Falta parametro de funcion"); generador.setError();}
+              | tipo FUN ID '(' tipo ')' {System.err.println("Error: falta nombre del parametro formal"); generador.setError();}
+              | tipo FUN ID '(' ID ')' {System.err.println("Error: falta tipo del parametro formal"); generador.setError();}
               ;
 
 declaracionFun : encabezadoFun BEGIN conjunto_sentencias retorno END{
@@ -178,7 +181,8 @@ declaracionFun : encabezadoFun BEGIN conjunto_sentencias retorno END{
                 Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
                 Integer tipoRetorno = generador.getTerceto(Integer.parseInt($4.sval.replaceAll("\\D", ""))).getTipo();
                 if (tipoFun != tipoRetorno){
-                    System.out.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                    System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                    generador.setError();
                 }
 
                 //desapilar el ambito de la funcion
@@ -193,14 +197,15 @@ declaracionFun : encabezadoFun BEGIN conjunto_sentencias retorno END{
 
                 Integer tipoRetorno = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
                 if (tipoFun != tipoRetorno){
-                     System.out.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                     System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                     generador.setError();
                 }
                 //desapilar el ambito de la funcion
                 TS.eliminarAmbito();
 
 	}
 
-	| encabezadoFun BEGIN conjunto_sentencias END {System.out.println("Error, falta retorno en funcion");}
+	| encabezadoFun BEGIN conjunto_sentencias END {System.err.println("Error: falta retorno en funcion"); generador.setError();}
 
 	;
 
@@ -210,7 +215,8 @@ retorno : RET '(' exp_arit ')' ';'{
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable($3.sval);
             if(expresion == null){
-            	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	generador.setError();
                 $$.sval = generador.addTerceto("RETORNO",expresion , null);
             }else{
 				switch (expresion){
@@ -235,7 +241,8 @@ invocacion_fun : ID '(' exp_arit ')'{
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.out.println("Error: funcion no declarada en linea: " + lexico.getContadorLinea());
+            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            generador.setError();
         }
         else{ //es una funcion alcanzable
             //verificar que el tipo del parametro formal sea igual al del parametro real.
@@ -246,7 +253,8 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipoExp = null;
             String expresion = TS.buscarVariable($3.sval);
             if(tipoExp == null){
-            	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	generador.setError();
             }else{
             	switch (expresion){
 	                case "Terceto" :
@@ -260,7 +268,8 @@ invocacion_fun : ID '(' exp_arit ')'{
             
 
             if (tipoExp != TS.getTipoParam(id)){
-                System.out.println("Invocación a una función con un parametro incorrecto en linea: " + lexico.getContadorLinea());
+                System.err.println("Error: Invocación a una función con un parametro incorrecto. Linea: " + lexico.getContadorLinea());
+                generador.setError();
             }
             // TODO implementar logica de etiquetas para llamar a la funcion
             String operando1;
@@ -278,7 +287,8 @@ invocacion_fun : ID '(' exp_arit ')'{
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.out.println("Error: funcion no declarada en linea: " + lexico.getContadorLinea());
+            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            generador.setError();
         }
         else { //es una función alcanzable
             //verificar que el tipo del parametro formal sea igual al del parametro real.
@@ -289,13 +299,15 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipoCast = Integer.parseInt($3.sval);
 
             if (tipoParam != tipoCast){
-                System.out.println("Error: tipo de parametro incompatible en linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                generador.setError();
             }
             else{
                 Integer tipoExp = null;
                 String expresion = TS.buscarVariable($4.sval);
                 if(expresion == null){
-                	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                	generador.setError();
                 }else{
 					switch (expresion){
                     	case "Terceto" :
@@ -309,7 +321,10 @@ invocacion_fun : ID '(' exp_arit ')'{
                 
                 //crear terceto de conversion
                 String conversion = generador.getConversion(tipoExp, tipoCast);
-                if (conversion == null) {System.out.println("Error de conversion en linea: " + lexico.getContadorLinea());}
+                if (conversion == null) {
+                	System.err.println("Error: conversion invalida. Linea: " + lexico.getContadorLinea());
+                	generador.setError();
+                }
 
                 String operando1;
                 if (expresion == "Terceto") operando1 = $1.sval;
@@ -328,7 +343,8 @@ invocacion_fun : ID '(' exp_arit ')'{
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.out.println("Error: funcion no declarada en linea: " + lexico.getContadorLinea());
+            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            generador.setError();
         }
         else { //es una función alcanzable
             //verificar que el tipo del parametro formal sea igual al del parametro real.
@@ -339,13 +355,15 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipoCast = Integer.parseInt($3.sval);
 
             if (tipoParam != tipoCast){
-                System.out.println("Error: tipo de parametro incompatible en linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                generador.setError();
             }
             else{
                 Integer tipoExp = null;
                 String expresion = TS.buscarVariable($5.sval);
                 if(expresion == null){
-                	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                	generador.setError();
                 }else{
                 	switch (expresion){
                     	case "Terceto" :
@@ -372,7 +390,7 @@ invocacion_fun : ID '(' exp_arit ')'{
             }
         }
     }
-	| ID '(' ')' {System.out.println("Error de falta de parámetro en invocación a función en linea: " + lexico.getContadorLinea());}
+	| ID '(' ')' {System.err.println("Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
 
 /*------*/
@@ -388,7 +406,8 @@ exp_arit : exp_arit '+' termino {
 
                     String expresion = TS.buscarVariable($1.sval);
                     if(expresion == null){
-						System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+						System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+						generador.setError();
                     }else{
                     	switch (expresion){
                         	case "Terceto":
@@ -403,7 +422,8 @@ exp_arit : exp_arit '+' termino {
 
                     String termino = TS.buscarVariable($3.sval);
                     if(termino == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else{
                     	switch (termino){
                         	case "Terceto":
@@ -418,7 +438,8 @@ exp_arit : exp_arit '+' termino {
                     
 
                     if(tipoExp != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en suma, en linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en suma. Linea " + lexico.getContadorLinea());
+                        generador.setError();
                     }
                     else{
                         String operando1, operando2;
@@ -442,7 +463,8 @@ exp_arit : exp_arit '+' termino {
 
                     String expresion = TS.buscarVariable($1.sval);
                     if(expresion == null){
-						System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+						System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+						generador.setError();
                     }else{
                     	switch (expresion){
                         	case "Terceto":
@@ -458,7 +480,8 @@ exp_arit : exp_arit '+' termino {
                     String termino = TS.buscarVariable($3.sval);
 
                     if(termino == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else{
 						switch (termino){
 	                        case "Terceto":
@@ -472,7 +495,8 @@ exp_arit : exp_arit '+' termino {
                     
 
                     if(tipoExp != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en resta, en linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en resta. Linea " + lexico.getContadorLinea());
+                        generador.setError();
                     }
                     else{
                         String operando1, operando2;
@@ -488,11 +512,13 @@ exp_arit : exp_arit '+' termino {
            }
 
            | exp_arit '+' error ';' {
-                    System.out.println("Error: Falta el término después de '+' en expresion aritmetica en línea: " + lexico.getContadorLinea());
+                    System.err.println("Error: Falta el término después de '+' en expresion aritmetica. Línea: " + lexico.getContadorLinea());
+                    generador.setError();
            }
 
            | exp_arit '-' error ';'  {
-                    System.out.println("Error: Falta el término después de '-' en expresión aritmetica en línea: " + lexico.getContadorLinea());
+                    System.err.println("Error: Falta el término después de '-' en expresión aritmetica. Línea: " + lexico.getContadorLinea());
+                    generador.setError();
            }
            
            | termino {$$.sval = $1.sval;}
@@ -517,7 +543,8 @@ termino : termino '*' factor{
 
                     String factor = TS.buscarVariable($3.sval);
                     if(factor == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else{
 	                    switch (factor){
 	                        case "Terceto":
@@ -532,7 +559,8 @@ termino : termino '*' factor{
 
                     String termino = TS.buscarVariable($1.sval);
                     if(termino == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else {
 	                    switch (termino){
 	                        case "Terceto":
@@ -545,7 +573,8 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en multiplicacion, en linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. Linea " + lexico.getContadorLinea());
+                        generador.setError();
                     }
                     else{
                         String operando1, operando2;
@@ -569,7 +598,8 @@ termino : termino '*' factor{
 
                     String factor = TS.buscarVariable($3.sval);
                     if(factor == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else{
 	                    switch (factor){
 	                        case "Terceto":
@@ -584,7 +614,8 @@ termino : termino '*' factor{
 
                     String termino = TS.buscarVariable($1.sval);
                     if(termino == null){
-                    	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	generador.setError();
                     }else {
 	                    switch (termino){
 	                        case "Terceto":
@@ -597,7 +628,8 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.out.println("Incompatibilidad de tipos en division, en linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en division. Linea " + lexico.getContadorLinea());
+                        generador.setError();
                     }
                     else{
                         String operando1, operando2;
@@ -615,8 +647,8 @@ termino : termino '*' factor{
 	    	$$.sval = $1.sval;
 		}
 
-	| termino '*' error ';' {System.out.println("Error: Falta el factor después de '*' en expresion aritmetica en línea: " + lexico.getContadorLinea());}
-    | termino '/' error ';'  {System.out.println("Error: Falta el factor después de '/' en expresión aritmetica en línea: " + lexico.getContadorLinea());}
+	| termino '*' error ';' {System.err.println("Error: Falta el factor después de '*' en expresion aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
+    | termino '/' error ';'  {System.err.println("Error: Falta el factor después de '/' en expresión aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
 	;
 
 factor : ID {
@@ -652,7 +684,8 @@ triple : ID '{' ENTERO_UNSIGNED '}' {
         $$.sval = token;
     }
     else {
-        System.out.println("Variable inexistenet o Intento de acceso a una posición de triple inexistente en linea " + lexico.getContadorLinea());
+        System.err.println("Error: Variable inexistenet o Intento de acceso a una posición de triple inexistente. Linea " + lexico.getContadorLinea());
+        generador.setError();
         $$.sval = token;
         /*en este punto, los tercetos se generan igual,
         aunque se intente acceder a un valor invalido del tercerto.
@@ -674,7 +707,8 @@ asig : ID ASIGNACION exp_arit {
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable($3.sval);
             if(expresion==null){
-				System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+				System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+				generador.setError();
             }else{
 				switch (expresion){
                     case "Terceto":
@@ -689,13 +723,15 @@ asig : ID ASIGNACION exp_arit {
 
             String id = TS.buscarVariable($1.sval);
             if(id == null){
-            	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	generador.setError();
             }else{
             	//es una var valida
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                     System.out.println("Error de tipos invalidos en asignación en linea: " +lexico.getContadorLinea());
+                     System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
+                     generador.setError();
                 }else{
                    String operando2;
                    if (expresion == "Terceto") operando2 = $3.sval;
@@ -714,7 +750,8 @@ asig : ID ASIGNACION exp_arit {
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable($3.sval);
             if(expresion==null){
-            	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	generador.setError();
             }else{
             	switch (expresion){
                     case "Terceto":
@@ -729,12 +766,13 @@ asig : ID ASIGNACION exp_arit {
 
             String id = TS.buscarVariable($1.sval);
             if(id == null){
-            	System.out.println("Error: variable no declarada en linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	generador.setError();
             }else{
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                      System.out.println("Error de tipos invalidos en asignación en linea: " +lexico.getContadorLinea());
+                      System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
                  }
                 else{
                     String operando2;
@@ -763,7 +801,7 @@ etiqueta : ID '@' {
     				generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 
     			}else{
-    				System.out.println("Error: la etiqueta "+etq+" ya existe. Linea: "+lexico.getContadorLinea());
+    				System.err.println("Error: la etiqueta "+etq+" ya existente. Linea: "+lexico.getContadorLinea());
     			}
     		}
 		;
@@ -776,7 +814,7 @@ goto : GOTO ID '@' {
 		    generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", "")), etq);
 		    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
        }
-	| GOTO error ';' {System.out.println("Error, falta de etiqueta en la sentencia GOTO" + "en linea: " + lexico.getContadorLinea());}
+	| GOTO error ';' {System.err.println("Error: falta de etiqueta en la sentencia GOTO" + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
 
 salida : OUTF '(' MULTILINEA ')' {
@@ -787,8 +825,8 @@ salida : OUTF '(' MULTILINEA ')' {
         	$$.sval = generador.addTerceto("SALIDA", $3.sval, null);
         }
 
-    |OUTF '(' ')'  {System.out.println("Error, falta parametro " + "en linea: " + lexico.getContadorLinea());}
-    |OUTF '(' error ')' {System.out.println("Error, parametro invalido " + "en linea: " + lexico.getContadorLinea());}
+    |OUTF '(' ')'  {System.err.println("Error: falta parametro " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+    |OUTF '(' error ')' {System.err.println("Error: parametro invalido " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 ;
 
 /*------*/
@@ -806,7 +844,7 @@ sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
 							generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 			}
 
-	| condicion_if bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if bloque_sentencias_ejecutables {System.err.println("Error: Falta END_IF de cierre " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables END_IF {
 		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
 		int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
@@ -819,8 +857,8 @@ sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
 		generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 	 }
 	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
-	| condicion_if END_IF {System.out.println("Error, Falta de contenido en el bloque then " + "en linea: " + lexico.getContadorLinea());}
-	| condicion_if condicion_else END_IF {System.out.println("Error, Falta de contenido en el bloque else " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if END_IF {System.err.println("Error: Falta de contenido en el bloque then " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+	| condicion_if condicion_else END_IF {System.err.println("Error: Falta de contenido en el bloque else " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
 
 condicion_if : IF condicion THEN{
@@ -872,7 +910,8 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 				}
 
         		if(t_primer_exp_arit != t_segunda_exp_arit){
-        			System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+        			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+        			generador.setError();
         		}
         	}
 
@@ -881,7 +920,8 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 	        String[] lista1 = $3.sval.split(",");
 	        String[] lista2 = $7.sval.split(",");
 	        if (lista1.length != lista2.length){
-	            System.out.println("Los tamaños de las listas en la condicion no coinciden en linea: " + lexico.getContadorLinea());
+	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
+	            generador.setError();
 	        }else{
 	        	$$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
 
@@ -932,7 +972,8 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 	                }
 
 	                if(error_comparacion){
-	                	System.out.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+	                	generador.setError();
 	                }
 
 	                /*$$.sval = generador.addTerceto("BF", $$.sval, null);*/
@@ -943,15 +984,15 @@ condicion : '(' exp_arit comparador exp_arit ')' {
 		    System.out.println("Se detecto: comparación múltiple");
 		  }
 
-	    | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	    | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	    | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-	    | '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-		| exp_arit comparador exp_arit ')' {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
-		| '(' exp_arit comparador exp_arit  {System.out.println("Error, falta de parentesis en la condicion " + "en linea: " + lexico.getContadorLinea());}
+	    | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+	    | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+	    | '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+	    | '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+		| exp_arit comparador exp_arit ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+		| '(' exp_arit comparador exp_arit  {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 		/*|'(' exp_arit exp_arit ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea() );} */
-		| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.out.println("Error, falta de comparador " + "en linea: " + lexico.getContadorLinea());}
-		| '(' '(' lista_exp_arit ')'  ')' {System.out.println("Error, falta de lista de expresión aritmetica en comparación " + "en linea: " + lexico.getContadorLinea());}
+		| '(' '(' lista_exp_arit ')' '(' lista_exp_arit ')' ')' {System.err.println("Error: falta de comparador. Linea: " + lexico.getContadorLinea()); generador.setError();}
+		| '(' '(' lista_exp_arit ')'  ')' {System.err.println("Error, falta de lista de expresión aritmetica en comparación. Linea: " + lexico.getContadorLinea()); generador.setError();}
 		;
 
 
@@ -969,8 +1010,8 @@ repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
     				generador.eliminarPila();
 				}
 
-		| sentencia_repeat UNTIL condicion {System.out.println("Error, falta cuerpo en la iteracion " + "en linea: " + lexico.getContadorLinea());}
-		| sentencia_repeat bloque_sentencias_ejecutables condicion {System.out.println("Error, falta de until en la iteracion repeat" + "en linea: " + lexico.getContadorLinea());}
+		| sentencia_repeat UNTIL condicion {System.err.println("Error: falta cuerpo en la iteracion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+		| sentencia_repeat bloque_sentencias_ejecutables condicion {System.err.println("Error: falta de until en la iteracion repeat. Linea: " + lexico.getContadorLinea()); generador.setError();}
  		;
 
 
