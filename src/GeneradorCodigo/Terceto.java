@@ -3,11 +3,13 @@ package GeneradorCodigo;
 public class Terceto {
     private String operador, operando1, operando2;
     private Integer tipo;
+    private Integer registro;
 
     public Terceto(String operador, String operando1, String operando2){
         this.operador = operador;
         this.operando1=operando1;
         this.operando2=operando2;
+        this.registro = null;
     }
 
     public void setTipo(Integer tipo){
@@ -31,5 +33,10 @@ public class Terceto {
     @Override
     public String toString() {
         return "(" + operador +", " + operando1 + ", " + operando2 + ")" + "Tipo:" + this.tipo;
+    }
+    
+    /**/
+    public void addRegistro(Integer registro) {
+    	this.registro = registro;
     }
 }
