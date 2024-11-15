@@ -9,7 +9,10 @@ import java.util.Stack;
 
 public class Generador {
     private ArrayList<Terceto> tercetos;
+    private TraductorAssembler traductor;
     private static volatile Generador instance;
+    private boolean error;
+    
     private Stack<String> pila;
 
     private ArrayList<String> etiquetas;
@@ -24,7 +27,9 @@ public class Generador {
         this.pila = new Stack<>();
         this.etiquetas = new ArrayList<>();
         this.mapGoto = new HashMap<Integer, String>();
+        this.traductor = new TraductorAssembler();
         this.tablaComp = this.crearTabla();
+        this.error = false;
     }
 
     private String[][] crearTabla(){
@@ -122,4 +127,24 @@ public class Generador {
     public void addGoto(Integer pos, String etq) {
     	this.mapGoto.put(pos, etq);
     }
+    
+    /*Error*/
+    public boolean getError() {
+    	return this.error;
+    }
+    
+    public void setError() {
+    	this.error=true;
+    }
+    
+    /*Traduccion*/
+    public void generarCodigoMaquina() {
+    	if((!this.error) || (this.mapGoto.isEmpty())) {
+    		for (Terceto t : this.tercetos) {
+        		this.traductor.traducir(t);
+        	}
+    	}
+    	
+    }
+    
 }
