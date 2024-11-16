@@ -244,49 +244,226 @@ public class TraductorAssembler {
 
 	//EMI
 	private void mayorIgual(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
+
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETGE CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 <= op2 (verdadero)
+		//0 si op1 > op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
 
 	}
 
 	//EMI
 	private void mayor(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
 
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETG CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 <= op2 (verdadero)
+		//0 si op1 > op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
 	}
 
 	//EMI
 	private void menorIgual(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
 
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETLE CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 <= op2 (verdadero)
+		//0 si op1 > op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
 	}
 
 	//EMI
 	private void menor(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
+
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETL CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 < op2 (verdadero)
+		//0 si op1 >= op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
+	}
+
+
+	private void igual(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
+
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETE CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 < op2 (verdadero)
+		//0 si op1 >= op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
 
 	}
 
-	//NAGU
-	private void igual(Terceto terceto) throws IOException{
+	private void distinto(Terceto terceto) throws IOException{
+		String op1, op2;
+		Integer pos;
+
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("SETNE CL" + saltoLinea);
+		//En este punto, CL contendrá:
+		//1 si op1 < op2 (verdadero)
+		//0 si op1 >= op2 (falso)
+
+		String result = crearAux();
+		salida.append("MOV " + result + ", CL" + saltoLinea);
+		terceto.setAux(result);
 
 	}
 
 	//NAGU
 	private void and(Terceto terceto) throws IOException{
+		String op1 = terceto.getOperando1();
+		String op2 = terceto.getOperando2();
+		int pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+		op1 = generador.getTerceto(pos).getAux(); //resultado condicion 1
+		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 
+		salida.append("AND " + op1 + ", " +op2 + saltoLinea); //AND
+		salida.append("CMP " + op1 + ", 0" + saltoLinea); //compara el resultado con cero (false)
+
+		String result = crearAux();
+		salida.append("SETZ " + result + saltoLinea);
+		terceto.setAux(result);
 	}
 
 	//EMI
 	private void branchIncondicional(Terceto terceto) throws IOException {
-		//el tercer operando tiene la etiqueta
+		String etiqueta = terceto.getOperando2();
+		salida.append("JMP " + etiqueta + saltoLinea);
+
 	}
 
 	//EMI
 	private void branchFalse(Terceto terceto) throws IOException {
-		//el segundo operando tienen la condicion
-		//el tercer operando tiene la etiqueta
+		//el primer operando tiene la condicion
+		//el segundo operando tiene la etiqueta
+		String etiqueta = terceto.getOperando2();
+		int pos = Integer.parseInt(terceto.getOperando1().replaceAll("\\D", ""));
+		Terceto condicion = generador.getTerceto(pos);
+		String resultCondicion = condicion.getAux();
+		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
+		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
 	}
 
 	//EMI
 	private void branchTrue(Terceto terceto) throws IOException {
-		//el segundo operando tienen la condicion
-		//el tercer operando tiene la etiqueta
+		//el primer operando tiene la condicion
+		//el segundo operando tiene la etiqueta
+		String etiqueta = terceto.getOperando2();
+		int pos = Integer.parseInt(terceto.getOperando1().replaceAll("\\D", ""));
+		Terceto condicion = generador.getTerceto(pos);
+		String resultCondicion = condicion.getAux();
+		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
+		salida.append("JNZ " + etiqueta +saltoLinea); //salta si no es cero
 	}
 
 	//NAGU
