@@ -3,6 +3,7 @@ package GeneradorCodigo;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TraductorAssembler {
 	
@@ -10,6 +11,9 @@ public class TraductorAssembler {
 	private FileWriter salida;
 	private Integer numAux;
 
+	private Integer numCadena;
+	private HashMap<String, String> mapaCadenas; //key: lexema; valor: etiqueta del .data
+	
 	private Generador generador;
 
 	private static String saltoLinea = "\r\n";
@@ -18,9 +22,22 @@ public class TraductorAssembler {
 		this.path = archivoSalida;
 		this.salida = new FileWriter(path, false);
 		this.numAux=0;
+		this.numCadena = 0;
 		this.generador = Generador.getInstance();
+		this.mapaCadenas = new HashMap<String, String>();
 	}
 
+	public void addCadena(String lexema) throws IOException {
+		if(!mapaCadenas.containsKey(lexema)) {
+			String etq = "_cadena"+this.numCadena+"_";
+			this.numCadena++;
+			
+			mapaCadenas.put(lexema, etq);
+			
+			salida.append(etq+" DB "+ "\""+lexema+"\", 10, 0");
+		}
+	}
+	
 	private String crearAux() {
 		numAux++;
 		return "@aux"+numAux;
@@ -219,8 +236,8 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV ST[0], " + op1 + saltoLinea);
-		salida.append("DIV ST[0], " + op2 + saltoLinea);
+		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("DIV ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
 
 		terceto.setAux(result);
@@ -228,17 +245,39 @@ public class TraductorAssembler {
 
 	//NAGU
 	private void etiqueta(Terceto terceto) throws IOException {
-		
+		String result = this.crearAux();
+		this.salida.append("MOV "+result + saltoLinea);
+		terceto.addAux(result);
 	}
 
 	//NAGU
 	private void call(Terceto terceto) throws IOException {
+		String parametro = terceto.getOperando2();
 
+	    if (parametro.matches("\\[T\\d+\\]")) {
+	        int pos = Integer.parseInt(parametro.replaceAll("\\D", ""));
+	        parametro = generador.getTerceto(pos).getAux();
+	    }
+	    
+	    salida.append("PUSH " + parametro + saltoLinea);
+	    salida.append("CALL " + terceto.getOperando1() + saltoLinea);  
+	    
 	}
 
 	//NAGU
 	private void ret(Terceto terceto) throws IOException {
-
+		String retorno = terceto.getOperando1();
+		
+		if (retorno.matches("\\[T\\d+\\]")) {
+	        int pos = Integer.parseInt(retorno.replaceAll("\\D", ""));
+	        retorno = generador.getTerceto(pos).getAux();
+	    }	
+		
+		String result = this.crearAux();
+		salida.append("MOV AX,"+retorno+ saltoLinea);
+		salida.append("MOV "+result+", AX"+ saltoLinea);
+		
+		terceto.addAux(result);
 	}
 
 
@@ -291,17 +330,38 @@ public class TraductorAssembler {
 
 	//NAGU
 	private void asignacion(Terceto terceto) throws IOException{
-
+		String operando2 = terceto.getOperando2();
+		
+		if (operando2.matches("\\[T\\d+\\]")) {
+	        int pos = Integer.parseInt(operando2.replaceAll("\\D", ""));
+	        operando2 = generador.getTerceto(pos).getAux();
+	    }
+		
+		String result = this.crearAux();
+		
+		salida.append("MOV AX, "+operando2 + saltoLinea);
+		salida.append("MOV "+terceto.getOperando1()+", AX" + saltoLinea);
 	}
 
 	//NAGU
 	private void asignacionPuntoFlotante(Terceto terceto) throws IOException{
-
+		String operando2 = terceto.getOperando2();
+		
+		if (operando2.matches("\\[T\\d+\\]")) {
+	        int pos = Integer.parseInt(operando2.replaceAll("\\D", ""));
+	        operando2 = generador.getTerceto(pos).getAux();
+	    }
+		
+		String result = this.crearAux();
+		
+		salida.append("MOV ST, "+operando2 + saltoLinea);
+		salida.append("MOV "+terceto.getOperando1()+", ST" + saltoLinea);
 	}
 
 	//AMBOS DOS
 	private void impresion(Terceto terceto) throws IOException{
-
+		String lexema = terceto.getOperando1();
+		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
 	}
 
 	
