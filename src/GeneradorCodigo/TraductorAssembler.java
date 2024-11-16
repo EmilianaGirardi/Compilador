@@ -276,6 +276,7 @@ public class TraductorAssembler {
 		String result = this.crearAux();
 		salida.append("MOV AX,"+retorno+ saltoLinea);
 		salida.append("MOV "+result+", AX"+ saltoLinea);
+		salida.append("RET");
 		
 		terceto.addAux(result);
 	}
