@@ -1,5 +1,6 @@
 package AnalizadorLexico;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -235,6 +236,9 @@ public class TablaSimbolos {
 			System.out.println("----------------------");
 		}
 	}
-	
+
+	public Map<String, ArrayList<Integer>> getMap() {
+		return map;
+	}
 }
 

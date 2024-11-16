@@ -1,5 +1,8 @@
 package GeneradorCodigo;
 
+import AnalizadorLexico.Lexico;
+import AnalizadorLexico.TablaSimbolos;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ public class TraductorAssembler {
 	private HashMap<String, String> mapaCadenas; //key: lexema; valor: etiqueta del .data
 	
 	private Generador generador;
+	private Lexico lexico;
 
 	private static String saltoLinea = "\r\n";
 
@@ -24,12 +28,36 @@ public class TraductorAssembler {
 		this.numAux=0;
 		this.numCadena = 0;
 		this.generador = Generador.getInstance();
+		this.lexico = Lexico.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
-		this.inicializarAssembler();
 	}
 
-	private void inicializarAssembler() throws IOException {
-		salida.append("");
+	public void inicializarAssembler() throws IOException {
+		salida.append(".MODEL flat, stdcall\n" +
+				"option casemap :none\n" +
+				"include \\masm32\\include\\masm32rt.inc\n" +
+				"includelib \\masm32\\lib\\kernel32.lib\n" +
+				"includelib \\masm32\\lib\\masm32.lib" + saltoLinea);
+		salida.append(".STACK 200h" + saltoLinea);
+		salida.append(".DATA" + saltoLinea);
+		//mapeo de variables y cadenas
+		TablaSimbolos TS = lexico.getTablaSimbolos();
+		for (String lexema : TS.getMap().keySet()){
+			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=50){ //IDENTIFICADORES
+				//TODO: decartar las que no tienen ambito!!!!!! (ya estan casi todas faltan las que empiezan con v,w, etc)
+				if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
+					salida.append(lexema + " DD ? " +saltoLinea);
+				}
+				else { //unsigned y octal de 16 bits
+					salida.append(lexema + " DW ? " + saltoLinea);
+				}
+			}
+			if (TS.getToken(lexema) == 265){ //MULTILINEA
+				addCadena(lexema);
+			}
+		}
+		salida.append(".CODE" + saltoLinea);
+		salida.append("START:" + saltoLinea);
 	}
 
 	public void addCadena(String lexema) throws IOException {
@@ -49,6 +77,7 @@ public class TraductorAssembler {
 	}
 
 	public void cerrarTraduccion() throws IOException {
+		salida.append("END START");
 		this.salida.close();
 	}
 
@@ -527,20 +556,35 @@ public class TraductorAssembler {
 	}
 
 	public void traducir(Terceto t) throws IOException {
-		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
 		Integer tipo = t.getTipo();
-		if (tipo == 2) { //FLOAT
+
+		if(tipo == 8) {
+			this.etiqueta(t);
+
+		}else if (tipo == 2) { //FLOAT
 			switch (operador) {
 				case "+":
 					this.sumaPuntoFlotante(t);
 					break;
+
 				case "-":
 					this.restaPuntoFlotante(t);
 					break;
+
+				case "*":
+					this.multiplicacionPuntoFlotante(t);
+					break;
+
+				case "/":
+					this.divisionPuntoFlotante(t);
+					break;
+
+				case ":=":
+					this.asignacionPuntoFlotante(t);
+					break;
 			}
-		}
-		else{
+		}else{
 			switch (operador) {
 				case "+":
 					this.suma(t);
@@ -548,8 +592,75 @@ public class TraductorAssembler {
 				case "-":
 					this.resta(t);
 					break;
+				case "*":
+					this.multiplicacion(t);
+					break;
+				case "/":
+					this.division(t);
+					break;
+				case ":=":
+					this.asignacion(t);
+					break;
 			}
 		}
+
+		//Verifico en caso de no ser una exp_arit.
+		switch (operador) {
+			case "SALIDA":
+				this.impresion(t);
+				break;
+
+			case "RETORNO":
+				this.ret(t);
+				break;
+
+			case "CALL":
+				this.call(t);
+				break;
+
+			case "BI":
+				this.branchIncondicional(t);
+				break;
+
+			case "BF":
+				this.branchFalse(t);
+				break;
+
+			case "BT":
+				this.branchTrue(t);
+				break;
+
+			case "AND":
+				this.and(t);
+				break;
+
+			case "!=":
+				this.distinto(t);
+				break;
+
+			case ">":
+				this.mayor(t);
+				break;
+
+			case ">=":
+				this.mayorIgual(t);
+				break;
+
+			case "<":
+				this.menor(t);
+				break;
+
+			case "<=":
+				this.menorIgual(t);
+				break;
+
+			case "=":
+				this.igual(t);
+				break;
+
+		}
+
+
 	}
 
 }

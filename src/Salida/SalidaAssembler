@@ -1,6 +1,25 @@
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+.DATA
+z.global DD ? 
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+v DW ? 
+.CODE
+START:
 MOV AX, x.global
 ADD AX, v.global
 MOV @aux1, AX
+MOV AX, @aux1
+MOV x.global, AX
 MOV ST, y.global
 SUB ST, z.global
 MOV @aux2, ST
+MOV ST, @aux2
+MOV y.global, ST
+END START

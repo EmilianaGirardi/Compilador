@@ -143,6 +143,7 @@ public class Generador {
     /*Traduccion*/
     public void generarCodigoMaquina() throws IOException {
     	if((!this.error) || (this.mapGoto.isEmpty())) {
+            this.traductor.inicializarAssembler();
     		for (Terceto t : this.tercetos) {
         		this.traductor.traducir(t);
         	}
