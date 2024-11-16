@@ -129,12 +129,16 @@ public class TablaSimbolos {
 	}
 
 	public String buscarVariable(String lexema){
+		
+		if(lexema.matches("\\[T\\d+\\]")){
+			return "Terceto";
+		}
+		
 		if (this.estaToken(lexema) && this.getTipo(lexema)<=3 ){
 			return lexema;
 		}
 
 		String ambito = this.ambitos;
-		String[] partes = ambito.split("\\.");
 		String variable = lexema+ambito;
 
 		while(!variable.equals(lexema)) {
@@ -149,11 +153,7 @@ public class TablaSimbolos {
 			}
 		}
 
-		if(lexema.matches("\\[T\\d+\\]")){
-			return "Terceto";
-		}else{
-			return null;
-		}
+		return null;
 	}
 	public String getUltimoAmbito() {
 		if (this.ambitos != null && !this.ambitos.isEmpty()) {

@@ -811,8 +811,13 @@ goto : GOTO ID '@' {
             TS.agregarUso($2.sval, NOMBRE_ETIQUETA);
 			String etq = $2.sval+"@"+TS.getAmbitos();
 			$$.sval = generador.addTerceto("BI", null , etq);
-		    generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", "")), etq);
-		    generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
+			generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
+
+			if(!generador.isEtiqueta(etq)){
+		    	generador.addGoto(Integer.parseInt($$.sval.replaceAll("\\D", "")), etq);
+		    }
+
+		    
        }
 	| GOTO error ';' {System.err.println("Error: falta de etiqueta en la sentencia GOTO" + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
