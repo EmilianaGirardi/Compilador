@@ -1100,10 +1100,12 @@ public void yyerror(String mensaje) {
     System.out.println("Error: " + mensaje);
 }
 
-public Parser(String archivo) throws IOException {
+public Parser(String archivo, String salida) throws IOException {
     lexico = Lexico.getInstance(archivo);
     generador = Generador.getInstance();
+    generador.setSalida(salida);
     this.tiposUsuario = new ArrayList<>();
+
 }
 
 private String truncarFueraRango(String cte, int linea) throws NumberFormatException{
@@ -1139,10 +1141,11 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
    }
 
 public static void main(String[] args) throws IOException {
-    if(args.length > 0) {
+    if(args.length == 2) {
           String archivo = args[0];
+          String salida = args[1];
           try {
-            Parser parser = new Parser(archivo);
+            Parser parser = new Parser(archivo, salida);
             parser.run();
           }
           catch (IOException excepcion){

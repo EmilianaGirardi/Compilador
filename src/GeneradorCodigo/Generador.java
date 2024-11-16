@@ -2,6 +2,7 @@ package GeneradorCodigo;
 
 import AnalizadorLexico.Lexico;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,13 +22,11 @@ public class Generador {
     private String[][] tablaComp;
 
 
-
     private Generador(){
         this.tercetos = new ArrayList<Terceto>();
         this.pila = new Stack<>();
         this.etiquetas = new ArrayList<>();
         this.mapGoto = new HashMap<Integer, String>();
-        this.traductor = new TraductorAssembler();
         this.tablaComp = this.crearTabla();
         this.error = false;
     }
@@ -44,6 +43,10 @@ public class Generador {
         result[2][1] = null;
         result[2][2] = "otoO";
         return  result;
+    }
+
+    public void setSalida(String salida) throws IOException {
+        this.traductor = new TraductorAssembler(salida);
     }
 
     public String getConversion(Integer tipo1, Integer tipo2){
@@ -138,11 +141,12 @@ public class Generador {
     }
     
     /*Traduccion*/
-    public void generarCodigoMaquina() {
+    public void generarCodigoMaquina() throws IOException {
     	if((!this.error) || (this.mapGoto.isEmpty())) {
     		for (Terceto t : this.tercetos) {
         		this.traductor.traducir(t);
         	}
+            traductor.cerrarTraduccion();
     	}
     	
     }

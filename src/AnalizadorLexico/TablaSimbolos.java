@@ -116,6 +116,10 @@ public class TablaSimbolos {
         map.put(lexema, atributos);
     }
 
+	public Integer getToken(String lexema){
+		return map.get(lexema).get(0);
+	}
+
 	public boolean estaToken(String lexema){
         return map.containsKey(lexema);
     }
@@ -134,7 +138,7 @@ public class TablaSimbolos {
 			return "Terceto";
 		}
 		
-		if (this.estaToken(lexema) && this.getTipo(lexema)<=3 ){
+		if (this.estaToken(lexema) && this.getTipo(lexema)<=3 && (this.getToken(lexema)!=258)) {
 			return lexema;
 		}
 

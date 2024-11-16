@@ -1,0 +1,6 @@
+MOV AX, x.global
+ADD AX, v.global
+MOV @aux1, AX
+MOV ST, y.global
+SUB ST, z.global
+MOV @aux2, ST

@@ -1,0 +1,8 @@
+prueba BEGIN
+    TIPO_UNSIGNED x, v;
+    TIPO_SINGLE y, z;
+
+    x := x + v;
+    y := y - z;
+
+END;
