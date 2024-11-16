@@ -25,6 +25,11 @@ public class TraductorAssembler {
 		this.numCadena = 0;
 		this.generador = Generador.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
+		this.inicializarAssembler();
+	}
+
+	private void inicializarAssembler() throws IOException {
+		salida.append("");
 	}
 
 	public void addCadena(String lexema) throws IOException {
@@ -243,14 +248,10 @@ public class TraductorAssembler {
 		terceto.setAux(result);
 	}
 
-	//NAGU
 	private void etiqueta(Terceto terceto) throws IOException {
-		String result = this.crearAux();
-		this.salida.append("MOV "+result + saltoLinea);
-		terceto.addAux(result);
+		this.salida.append(terceto.getOperador()+":" + saltoLinea);
 	}
 
-	//NAGU
 	private void call(Terceto terceto) throws IOException {
 		String parametro = terceto.getOperando2();
 
@@ -264,24 +265,22 @@ public class TraductorAssembler {
 	    
 	}
 
-	//NAGU
 	private void ret(Terceto terceto) throws IOException {
 		String retorno = terceto.getOperando1();
-		
+
 		if (retorno.matches("\\[T\\d+\\]")) {
-	        int pos = Integer.parseInt(retorno.replaceAll("\\D", ""));
-	        retorno = generador.getTerceto(pos).getAux();
-	    }	
-		
+			int pos = Integer.parseInt(retorno.replaceAll("\\D", ""));
+			retorno = generador.getTerceto(pos).getAux();
+		}
+
 		String result = this.crearAux();
 		salida.append("MOV AX,"+retorno+ saltoLinea);
 		salida.append("MOV "+result+", AX"+ saltoLinea);
-		
+		salida.append("RET");
+
 		terceto.addAux(result);
 	}
 
-
-	//EMI
 	private void mayorIgual(Terceto terceto) throws IOException{
 		String op1, op2;
 		Integer pos;
@@ -299,7 +298,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETGE CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 <= op2 (verdadero)
@@ -308,10 +308,8 @@ public class TraductorAssembler {
 		String result = crearAux();
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-
 	}
 
-	//EMI
 	private void mayor(Terceto terceto) throws IOException{
 		String op1, op2;
 		Integer pos;
@@ -329,7 +327,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETG CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 <= op2 (verdadero)
@@ -340,7 +339,6 @@ public class TraductorAssembler {
 		terceto.setAux(result);
 	}
 
-	//EMI
 	private void menorIgual(Terceto terceto) throws IOException{
 		String op1, op2;
 		Integer pos;
@@ -358,7 +356,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETLE CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 <= op2 (verdadero)
@@ -369,7 +368,6 @@ public class TraductorAssembler {
 		terceto.setAux(result);
 	}
 
-	//EMI
 	private void menor(Terceto terceto) throws IOException{
 		String op1, op2;
 		Integer pos;
@@ -387,7 +385,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETL CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 < op2 (verdadero)
@@ -397,7 +396,6 @@ public class TraductorAssembler {
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
 	}
-
 
 	private void igual(Terceto terceto) throws IOException{
 		String op1, op2;
@@ -416,7 +414,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETE CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 < op2 (verdadero)
@@ -445,7 +444,8 @@ public class TraductorAssembler {
 		}
 
 		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("CMP, " + op1 + ", " + op2 + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" +saltoLinea);
+		salida.append("CMP AX, " + op2 + saltoLinea);
 		salida.append("SETNE CL" + saltoLinea);
 		//En este punto, CL contendrá:
 		//1 si op1 < op2 (verdadero)
@@ -456,8 +456,6 @@ public class TraductorAssembler {
 		terceto.setAux(result);
 
 	}
-
-	//NAGU
 	private void and(Terceto terceto) throws IOException{
 		String op1 = terceto.getOperando1();
 		String op2 = terceto.getOperando2();
@@ -466,22 +464,19 @@ public class TraductorAssembler {
 		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 
-		salida.append("AND " + op1 + ", " +op2 + saltoLinea); //AND
-		salida.append("CMP " + op1 + ", 0" + saltoLinea); //compara el resultado con cero (false)
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("AND AX, "+ op2 + saltoLinea); //AND
+		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
 
 		String result = crearAux();
-		salida.append("SETZ " + result + saltoLinea);
+		salida.append("SETNZ " + result + saltoLinea);
 		terceto.setAux(result);
 	}
-
-	//EMI
 	private void branchIncondicional(Terceto terceto) throws IOException {
 		String etiqueta = terceto.getOperando2();
 		salida.append("JMP " + etiqueta + saltoLinea);
 
 	}
-
-	//EMI
 	private void branchFalse(Terceto terceto) throws IOException {
 		//el primer operando tiene la condicion
 		//el segundo operando tiene la etiqueta
@@ -492,8 +487,6 @@ public class TraductorAssembler {
 		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
 		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
 	}
-
-	//EMI
 	private void branchTrue(Terceto terceto) throws IOException {
 		//el primer operando tiene la condicion
 		//el segundo operando tiene la etiqueta
@@ -504,8 +497,6 @@ public class TraductorAssembler {
 		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
 		salida.append("JNZ " + etiqueta +saltoLinea); //salta si no es cero
 	}
-
-	//NAGU
 	private void asignacion(Terceto terceto) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
@@ -514,13 +505,11 @@ public class TraductorAssembler {
 	        operando2 = generador.getTerceto(pos).getAux();
 	    }
 		
-		String result = this.crearAux();
-		
 		salida.append("MOV AX, "+operando2 + saltoLinea);
 		salida.append("MOV "+terceto.getOperando1()+", AX" + saltoLinea);
-	}
 
-	//NAGU
+
+	}
 	private void asignacionPuntoFlotante(Terceto terceto) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
@@ -529,24 +518,19 @@ public class TraductorAssembler {
 	        operando2 = generador.getTerceto(pos).getAux();
 	    }
 		
-		String result = this.crearAux();
-		
 		salida.append("MOV ST, "+operando2 + saltoLinea);
 		salida.append("MOV "+terceto.getOperando1()+", ST" + saltoLinea);
 	}
-
-	//AMBOS DOS
 	private void impresion(Terceto terceto) throws IOException{
 		String lexema = terceto.getOperando1();
 		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
 	}
 
-	
 	public void traducir(Terceto t) throws IOException {
 		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
 		Integer tipo = t.getTipo();
-		if (tipo == 2) {
+		if (tipo == 2) { //FLOAT
 			switch (operador) {
 				case "+":
 					this.sumaPuntoFlotante(t);
