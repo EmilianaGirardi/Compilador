@@ -530,17 +530,33 @@ public class TraductorAssembler {
 		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
 		Integer tipo = t.getTipo();
-		if (tipo == 2) { //FLOAT
+		
+		if(tipo == 8) {
+			this.etiqueta(t);
+			
+		}else if (tipo == 2) { //FLOAT
 			switch (operador) {
 				case "+":
 					this.sumaPuntoFlotante(t);
 					break;
+					
 				case "-":
 					this.restaPuntoFlotante(t);
 					break;
+					
+				case "*":
+					this.multiplicacionPuntoFlotante(t);
+					break;
+					
+				case "/":
+					this.divisionPuntoFlotante(t);
+					break;
+					
+				case ":=":
+					this.asignacionPuntoFlotante(t);
+					break;
 			}
-		}
-		else{
+		}else{
 			switch (operador) {
 				case "+":
 					this.suma(t);
@@ -548,8 +564,77 @@ public class TraductorAssembler {
 				case "-":
 					this.resta(t);
 					break;
+				case "*":
+					this.multiplicacion(t);
+					break;
+				case "/":
+					this.division(t);
+					break;
+				case ":=":
+					this.asignacion(t);
+					break;
 			}
 		}
+		
+		//Verifico en caso de no ser una exp_arit.
+		switch (operador) {
+			case "SALIDA":
+				this.impresion(t);
+				break;
+			
+			case "RETORNO":
+				this.ret(t);
+				break;
+				
+			case "CALL":
+				this.call(t);
+				break;
+				
+			case "BI":
+				this.branchIncondicional(t);
+				break;
+			
+			case "BF":
+				this.branchFalse(t);
+				break;
+			
+			case "BT":
+				this.branchTrue(t);
+				break;
+			
+			case "AND":
+				this.and(t);
+				break;
+			
+			case "!=":
+				this.distinto(t);
+				break;
+				
+			case ">":
+				this.mayor(t);
+				break;
+				
+			case ">=":
+				this.mayorIgual(t);
+				break;
+				
+			case "<":
+				this.menor(t);
+				break;
+				
+			case "<=":
+				this.menorIgual(t);
+				break;
+				
+			case "=":
+				this.igual(t);
+				break;
+				
+		}
+		
+		
+				
+			
 	}
 
 }
