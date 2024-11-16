@@ -54,6 +54,8 @@ public class TraductorAssembler {
 		salida.append("ADD AX, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
+		terceto.setAux(result);
+
 	}
 
 	private void resta(Terceto terceto) throws IOException {
@@ -72,9 +74,11 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV AX, " + op1);
-		salida.append("SUB AX, " + op2);
-		salida.append("MOV " + result + ", AX" );
+		salida.append("MOV AX, " + op1 + saltoLinea);
+		salida.append("SUB AX, " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", AX" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 	
 	private void multiplicacion(Terceto terceto) throws IOException {
@@ -93,9 +97,11 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV AX, " + op1);
-		salida.append("MUL AX, " + op2);
-		salida.append("MOV " + result + ", AX" );
+		salida.append("MOV AX, " + op1 + saltoLinea);
+		salida.append("MUL AX, " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", AX" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 	
 	private void division(Terceto terceto) throws IOException {
@@ -114,9 +120,11 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV AX, " + op1);
-		salida.append("DIV AX, " + op2);
-		salida.append("MOV " + result + ", AX" );
+		salida.append("MOV AX, " + op1 + saltoLinea);
+		salida.append("DIV AX, " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", AX" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 
 	//Punto Flotante
@@ -141,9 +149,11 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV ST, " + op1);
-		salida.append("ADD ST, " + op2);
-		salida.append("MOV " + result + ", ST" );
+		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("ADD ST, " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", ST" + saltoLinea);
+
+		terceto.setAux(result);
 
 	}
 
@@ -166,6 +176,8 @@ public class TraductorAssembler {
 		salida.append("MOV ST, " + op1 + saltoLinea);
 		salida.append("SUB ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 
 	private void multiplicacionPuntoFlotante(Terceto terceto) throws IOException {
@@ -184,9 +196,11 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV ST, " + op1);
-		salida.append("MUL ST, " + op2);
-		salida.append("MOV " + result + ", ST" );
+		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("MUL ST, " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", ST" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 
 	private void divisionPuntoFlotante(Terceto terceto) throws IOException {
@@ -205,25 +219,91 @@ public class TraductorAssembler {
 
 		result = crearAux();
 
-		salida.append("MOV ST[0], " + op1);
-		salida.append("DIV ST[0], " + op2);
-		salida.append("MOV " + result + ", ST" );
+		salida.append("MOV ST[0], " + op1 + saltoLinea);
+		salida.append("DIV ST[0], " + op2 + saltoLinea);
+		salida.append("MOV " + result + ", ST" + saltoLinea);
+
+		terceto.setAux(result);
 	}
 
-	///
-	private void etiqueta() {
+	//NAGU
+	private void etiqueta(Terceto terceto) throws IOException {
 		
 	}
-	
-	private void salto() {
-		
+
+	//NAGU
+	private void call(Terceto terceto) throws IOException {
+
 	}
-	
-	private void invocacionFuncion() {
-		
+
+	//NAGU
+	private void ret(Terceto terceto) throws IOException {
+
 	}
-	
-	// Etc.
+
+
+	//EMI
+	private void mayorIgual(Terceto terceto) throws IOException{
+
+	}
+
+	//EMI
+	private void mayor(Terceto terceto) throws IOException{
+
+	}
+
+	//EMI
+	private void menorIgual(Terceto terceto) throws IOException{
+
+	}
+
+	//EMI
+	private void menor(Terceto terceto) throws IOException{
+
+	}
+
+	//NAGU
+	private void igual(Terceto terceto) throws IOException{
+
+	}
+
+	//NAGU
+	private void and(Terceto terceto) throws IOException{
+
+	}
+
+	//EMI
+	private void branchIncondicional(Terceto terceto) throws IOException {
+		//el tercer operando tiene la etiqueta
+	}
+
+	//EMI
+	private void branchFalse(Terceto terceto) throws IOException {
+		//el segundo operando tienen la condicion
+		//el tercer operando tiene la etiqueta
+	}
+
+	//EMI
+	private void branchTrue(Terceto terceto) throws IOException {
+		//el segundo operando tienen la condicion
+		//el tercer operando tiene la etiqueta
+	}
+
+	//NAGU
+	private void asignacion(Terceto terceto) throws IOException{
+
+	}
+
+	//NAGU
+	private void asignacionPuntoFlotante(Terceto terceto) throws IOException{
+
+	}
+
+	//AMBOS DOS
+	private void impresion(Terceto terceto) throws IOException{
+
+	}
+
 	
 	public void traducir(Terceto t) throws IOException {
 		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
