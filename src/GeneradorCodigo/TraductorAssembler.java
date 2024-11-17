@@ -730,12 +730,18 @@ public class TraductorAssembler {
 		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
 	}
 
-	private void conversionItoS() {
-		
+	private void conversionItoS(Terceto terceto) throws IOException {
+		String operando = terceto.getOperando1();
+		salida.append("MOV BX, " + operando);
+		salida.append("MOV ECX, 0")	;
+		salida.append("MOV CX, BX");
+		salida.append("MOV EBX, ECX");
 	}
 	
-	private void conversionStoI() {
-		
+	private void conversionStoI(Terceto terceto) throws IOException {
+			String operando = terceto.getOperando1();
+			salida.append("MOV BX, " + operando);
+			salida.append("MOV AX, EBX");
 	}
 	
 	public void traducir(Terceto t) throws IOException {
@@ -843,11 +849,11 @@ public class TraductorAssembler {
 				break;
 				
 			case "itoS":
-				this.conversionItoS();
+				this.conversionItoS(t);
 				break;
 			
 			case "stoI":
-				this.conversionStoI();
+				this.conversionStoI(t);
 				break;
 
 		}

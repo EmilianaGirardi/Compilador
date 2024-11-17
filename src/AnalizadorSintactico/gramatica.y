@@ -239,6 +239,7 @@ retorno : RET '(' exp_arit ')' ';'{
 invocacion_fun : ID '(' exp_arit ')'{
         //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
+
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
             System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
@@ -249,7 +250,10 @@ invocacion_fun : ID '(' exp_arit ')'{
             /* tenemos en la tabla de simbolos, para el lexema ID (nombre de la funcion) el tipo de su parametro,
             entonces lo comparamos con el tipo de exp_arit.
             */
-
+             if(id.equals(TS.getUltimoAmbito())) {
+                                    System.err.println("Error no se admiten funciones recursivas");
+                                    generador.setError();
+             }
             Integer tipoExp = null;
             String expresion = TS.buscarVariable($3.sval);
             if(expresion == null){
@@ -280,11 +284,16 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipo = TS.getTipo(id);
             generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
         }
+
     }
 
     | ID '(' tipo exp_arit ')'{
         //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
+        if($1.sval.equals(TS.getUltimoAmbito())) {
+                            System.err.println("Error no se admiten funciones recursivas");
+            generador.setError();
+        }
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
             System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
@@ -297,6 +306,11 @@ invocacion_fun : ID '(' exp_arit ')'{
             */
             Integer tipoParam = TS.getTipoParam(id);
             Integer tipoCast = Integer.parseInt($3.sval);
+
+             if(id.equals(TS.getUltimoAmbito())) {
+                                    System.err.println("Error no se admiten funciones recursivas");
+                                    generador.setError();
+                                }
 
             if (tipoParam != tipoCast){
                 System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
@@ -337,10 +351,12 @@ invocacion_fun : ID '(' exp_arit ')'{
 
             }
         }
+
     }
 	| ID '(' tipo '(' exp_arit ')' ')' {
         //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
+
         String id = TS.buscarVariable($1.sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
             System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
@@ -351,6 +367,10 @@ invocacion_fun : ID '(' exp_arit ')'{
             /* tenemos en la tabla de simbolos, para el lexema ID (nombre de la funcion) el tipo de su parametro,
             entonces lo comparamos con el tipo de exp_arit.
             */
+            if(id.equals(TS.getUltimoAmbito())) {
+                        System.err.println("Error no se admiten funciones recursivas");
+                        generador.setError();
+                    }
             Integer tipoParam = TS.getTipoParam(id);
             Integer tipoCast = Integer.parseInt($3.sval);
 
@@ -389,6 +409,7 @@ invocacion_fun : ID '(' exp_arit ')'{
                 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
             }
         }
+
     }
 	| ID '(' ')' {System.err.println("Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
