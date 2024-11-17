@@ -164,8 +164,8 @@ public class TablaSimbolos {
 		if (this.ambitos != null && !this.ambitos.isEmpty()) {
 			String[] partes = ambitos.split("\\.");  // Divide la cadena por el separador '.'
 			String funcion = partes[partes.length - 1];
-			for (int i=0; i<partes.length-1; i++){
-				funcion+=partes[i];
+			for (int i=1; i<partes.length-1; i++){
+				funcion=funcion+"."+partes[i];
 			}
 			return funcion;  // Retorna el último elemento
 		}
@@ -174,7 +174,7 @@ public class TablaSimbolos {
 
 	public void addAmbitos(String ambitos) {
 		this.ambitos = this.ambitos + "."  + ambitos;
-	}
+	} 
 
 	public void eliminarAmbito() {
 

@@ -252,7 +252,7 @@ invocacion_fun : ID '(' exp_arit ')'{
 
             Integer tipoExp = null;
             String expresion = TS.buscarVariable($3.sval);
-            if(tipoExp == null){
+            if(expresion == null){
             	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
             	generador.setError();
             }else{
@@ -895,8 +895,9 @@ condicion_else	: ELSE {
 
                     		TablaSimbolos TS = lexico.getTablaSimbolos();
 
-                    		Strign primer_exp_arit = TS.buscarVariable($2.sval);
-                    		Integer t_primer_exp_arit;
+                    		String primer_exp_arit = TS.buscarVariable($2.sval);
+                    		Integer t_primer_exp_arit = null;
+                    		Integer pos;
 
                     		if(primer_exp_arit == null){
                     			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
@@ -914,7 +915,7 @@ condicion_else	: ELSE {
                     		}
 
             				Strign segunda_exp_arit = TS.buscarVariable($4.sval);
-                    		Integer t_segunda_exp_arit;
+                    		Integer t_segunda_exp_arit = null;
 
                     		if(segunda_exp_arit == null){
                     			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
@@ -965,8 +966,8 @@ condicion_else	: ELSE {
                   		Strign primer_exp_arit = TS.buscarVariable(lista1[0]);
           	        	Strign segunda_exp_arit = TS.buscarVariable(lista2[0]);
 
-          	            Integer t_primer_exp_arit;
-                  		Integer t_segunda_exp_arit;
+          	            Integer t_primer_exp_arit = null;
+                  		Integer t_segunda_exp_arit = null;
           	            int pos;
 
           				String operando1, operando2;
@@ -1096,7 +1097,7 @@ comparador : MAYORIGUAL {$$.sval = ">=";}
 		;
 
 repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
-					int posT = generador.obtenerElementoPila()..replaceAll("\\D", "");
+					int pos = Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 
 					$$.sval = generador.addTerceto("BT", $4.sval, generador.getTerceto(pos).getOperador());
 					generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);

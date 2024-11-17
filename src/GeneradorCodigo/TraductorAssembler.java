@@ -39,6 +39,7 @@ public class TraductorAssembler {
 				"includelib \\masm32\\lib\\kernel32.lib\n" +
 				"includelib \\masm32\\lib\\masm32.lib" + saltoLinea);
 		salida.append(".STACK 200h" + saltoLinea);
+		salida.append(saltoLinea);
 		salida.append(".DATA" + saltoLinea);
 		//mapeo de variables y cadenas
 		TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -56,6 +57,7 @@ public class TraductorAssembler {
 				addCadena(lexema);
 			}
 		}
+		salida.append(saltoLinea);
 		salida.append(".CODE" + saltoLinea);
 		salida.append("START:" + saltoLinea);
 	}
@@ -67,7 +69,7 @@ public class TraductorAssembler {
 			
 			mapaCadenas.put(lexema, etq);
 			
-			salida.append(etq+" DB "+ "\""+lexema+"\", 10, 0");
+			salida.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
 		}
 	}
 	
@@ -305,7 +307,7 @@ public class TraductorAssembler {
 		String result = this.crearAux();
 		salida.append("MOV AX,"+retorno+ saltoLinea);
 		salida.append("MOV "+result+", AX"+ saltoLinea);
-		salida.append("RET");
+		salida.append("RET"+ saltoLinea);
 
 		terceto.addAux(result);
 	}

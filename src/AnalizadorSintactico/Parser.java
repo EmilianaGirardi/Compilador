@@ -743,7 +743,7 @@ String yys;    //current token string
 //###############################################################
 // method: yyparse : parse input and execute indicated items
 //###############################################################
-int yyparse()
+int yyparse() throws IOException
 {
 boolean doaction;
   init_stacks();
@@ -1157,7 +1157,7 @@ case 46:
 
             Integer tipoExp = null;
             String expresion = TS.buscarVariable(val_peek(1).sval);
-            if(tipoExp == null){
+            if(expresion == null){
             	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
             	generador.setError();
             }else{
@@ -1865,12 +1865,13 @@ break;
 case 87:
 //#line 894 "gramatica.y"
 {
-
+							
                     		TablaSimbolos TS = lexico.getTablaSimbolos();
 
-                    		Strign primer_exp_arit = TS.buscarVariable(val_peek(3).sval);
-                    		Integer t_primer_exp_arit;
-
+                    		String primer_exp_arit = TS.buscarVariable(val_peek(3).sval);
+                    		Integer t_primer_exp_arit= null;
+                    		Integer pos;
+                    		
                     		if(primer_exp_arit == null){
                     			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
                     			generador.setError();
@@ -1886,8 +1887,8 @@ case 87:
                     			}
                     		}
 
-            				Strign segunda_exp_arit = TS.buscarVariable(val_peek(1).sval);
-                    		Integer t_segunda_exp_arit;
+                    		String segunda_exp_arit = TS.buscarVariable(val_peek(1).sval);
+                    		Integer t_segunda_exp_arit= null;
 
                     		if(segunda_exp_arit == null){
                     			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
@@ -1913,7 +1914,7 @@ case 87:
 
                     		if (primer_exp_arit == "Terceto") operando1 = val_peek(3).sval;
                             else operando1 = primer_exp_arit;
-                            if (factor == "Terceto") operando2 = val_peek(1).sval;
+                            if (segunda_exp_arit == "Terceto") operando2 = val_peek(1).sval;
                             else operando2 = segunda_exp_arit;
 
                     		yyval.sval = generador.addTerceto(val_peek(2).sval, operando1, operando2);
@@ -1937,11 +1938,11 @@ case 88:
 
           	        	TablaSimbolos TS = lexico.getTablaSimbolos();
 
-                  		Strign primer_exp_arit = TS.buscarVariable(lista1[0]);
-          	        	Strign segunda_exp_arit = TS.buscarVariable(lista2[0]);
+          	        	String primer_exp_arit = TS.buscarVariable(lista1[0]);
+          	        	String segunda_exp_arit = TS.buscarVariable(lista2[0]);
 
-          	            Integer t_primer_exp_arit;
-                  		Integer t_segunda_exp_arit;
+          	            Integer t_primer_exp_arit = null;
+                  		Integer t_segunda_exp_arit = null;
           	            int pos;
 
           				String operando1, operando2;
@@ -2109,7 +2110,7 @@ break;
 case 103:
 //#line 1098 "gramatica.y"
 {
-					int posT = generador.obtenerElementoPila()..replaceAll("\\D", "");
+					int pos = Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 
 					yyval.sval = generador.addTerceto("BT", val_peek(0).sval, generador.getTerceto(pos).getOperador());
 					generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
@@ -2209,10 +2210,13 @@ break;
  * A default run method, used for operating this parser
  * object in the background.  It is intended for extending Thread
  * or implementing Runnable.  Turn off with -Jnorun .
+ * @throws IOException 
  */
-public void run()
+public void run() throws IOException
 {
   yyparse();
+  generador.imprimirTercetos();
+  generador.generarCodigoMaquina();
 }
 //## end of method run() ########################################
 

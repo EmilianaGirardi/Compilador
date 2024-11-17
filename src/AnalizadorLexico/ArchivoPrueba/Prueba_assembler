@@ -4,5 +4,19 @@ prueba BEGIN
 
     x := x + v;
     y := y - z;
+    
+    TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+	    BEGIN
+	        IF ( x = 01)  THEN
+	            BEGIN
+	                RET (1);
+	            END
+	        END_IF;
+	
+	        RET (123);
+	    END;
+	    
+	TIPO_OCTAL g;
+	funcion1(g);
 
 END;
