@@ -1,7 +1,6 @@
 prueba BEGIN
  REPEAT
     BEGIN
-        t:= 0;
         IF (x > 0) THEN
             BEGIN
                 x:= x+1;
