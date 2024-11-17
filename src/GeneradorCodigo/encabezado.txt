@@ -1,0 +1,34 @@
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+z.global DD ? 
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+
+.CODE
+START:
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+z.global DD ? 
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+@aux2 DD ? 
+@aux1 DW ? 
+
+.CODE
+START:

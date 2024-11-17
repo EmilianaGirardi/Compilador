@@ -3,7 +3,9 @@ package GeneradorCodigo;
 import AnalizadorLexico.Lexico;
 import AnalizadorLexico.TablaSimbolos;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,9 +36,11 @@ public class TraductorAssembler {
 
 	public TraductorAssembler(String archivoSalida) throws IOException {
 		this.path = archivoSalida;
+		
 		this.assembler = new FileWriter(path, false);
-		this.encabezado = new FileWriter(path+"Encabezado",false);
-		this.salida = new FileWriter(path+"Salida",false);
+		
+		this.salida  = new FileWriter("src/GeneradorCodigo/salida.txt",false);
+		this.encabezado= new FileWriter("src/GeneradorCodigo/encabezado.txt",false);
 		
 		this.numAux = 0;
 		this.numCadena = 0;
@@ -85,7 +89,7 @@ public class TraductorAssembler {
 		encabezado.append(saltoLinea);
 		encabezado.append(".CODE" + saltoLinea);
 		encabezado.append("START:" + saltoLinea);
-		encabezado.close();
+		
 	}
 
 	public void addCadena(String lexema) throws IOException {
@@ -120,18 +124,33 @@ public class TraductorAssembler {
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
 		
 		salida.append("END START");
-		this.salida.close();
+		
 		
 		this.inicializarAssembler();
 		
-		this.assembler.append(this.encabezado.toString());
-		this.assembler.append(this.salida.toString());
+		this.assembler.append(leerArchivo("src/GeneradorCodigo/encabezado.txt"));
+		this.assembler.append(leerArchivo("src/GeneradorCodigo/salida.txt"));
 		
+		
+		this.encabezado.close();
+		this.salida.close();
 		this.assembler.close();
-		
 		
 	}
 
+    private String leerArchivo(String pathArchivo) throws IOException {
+        StringBuilder contenido = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(pathArchivo));
+        String linea;
+
+        while ((linea = reader.readLine()) != null) {
+            contenido.append(linea).append("\n");
+        }
+
+        reader.close();
+        return contenido.toString();
+    }
+	
 	private void suma(Terceto terceto) throws IOException {
 		String op1, op2, result;
 		Integer pos;
