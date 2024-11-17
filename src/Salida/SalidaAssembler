@@ -11,6 +11,10 @@ v.global DW ?
 _float0_ DD 12.2e+8
 x.global DW ? 
 y.global DD ? 
+x.global.funcion1 DD ? 
+g.global DD ? 
+funcion1.global DW ? 
+_float1_ DD 1.0
 
 .CODE
 START:
@@ -26,4 +30,21 @@ FSUB ST, z.global
 MOV @aux2, ST
 MOV ST, @aux2
 MOV y.global, ST
+funcion1.global:
+MOV CX, 0 
+MOV x.global.funcion1, AX
+CMP AX, 1.0
+SETE CL
+MOV @aux3, CL
+CMP @aux3, 0
+JE ET9
+MOV AX,1
+MOV @aux4, AX
+RET
+ET9:
+MOV AX,123
+MOV @aux5, AX
+RET
+PUSH g.global
+CALL funcion1.global
 END START

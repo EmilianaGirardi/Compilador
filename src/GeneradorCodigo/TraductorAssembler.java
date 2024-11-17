@@ -608,14 +608,10 @@ public class TraductorAssembler {
 		salida.append("MOV EBX, ECX");
 	}
 	
-	private void conversionStoI(Terceto terceto) {
-		private void conversionStoI(Terceto terceto) {
+	private void conversionStoI(Terceto terceto) throws IOException {
 			String operando = terceto.getOperando1();
-			salida.append("FLD " + operando);
-			salida.append("FISTP EBX");
+			salida.append("MOV BX, " + operando);
 			salida.append("MOV AX, EBX");
-		}
-
 	}
 	
 	public void traducir(Terceto t) throws IOException {
@@ -723,11 +719,11 @@ public class TraductorAssembler {
 				break;
 				
 			case "itoS":
-				this.conversionItoS();
+				this.conversionItoS(t);
 				break;
 			
 			case "stoI":
-				this.conversionStoI();
+				this.conversionStoI(t);
 				break;
 
 		}

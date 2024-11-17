@@ -280,6 +280,8 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipo = TS.getTipo(id);
             generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
         }
+        if($1.sval == TS.getUltimoAmbito())
+            System.err.println("Error no se admiten funciones recursivas");
     }
 
     | ID '(' tipo exp_arit ')'{
@@ -337,6 +339,8 @@ invocacion_fun : ID '(' exp_arit ')'{
 
             }
         }
+        if($1.sval == TS.getUltimoAmbito())
+                    System.err.println("Error no se admiten funciones recursivas");
     }
 	| ID '(' tipo '(' exp_arit ')' ')' {
         //verificar que el uso de ID sea nombre de función.
@@ -389,6 +393,8 @@ invocacion_fun : ID '(' exp_arit ')'{
                 generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(tipo);
             }
         }
+        if($1.sval == TS.getUltimoAmbito())
+                    System.err.println("Error no se admiten funciones recursivas");
     }
 	| ID '(' ')' {System.err.println("Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
