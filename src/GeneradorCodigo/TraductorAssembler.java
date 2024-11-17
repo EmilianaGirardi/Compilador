@@ -600,6 +600,14 @@ public class TraductorAssembler {
 		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
 	}
 
+	private void conversionItoS() {
+		
+	}
+	
+	private void conversionStoI() {
+		
+	}
+	
 	public void traducir(Terceto t) throws IOException {
 		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
@@ -702,6 +710,14 @@ public class TraductorAssembler {
 
 			case "=":
 				this.igual(t);
+				break;
+				
+			case "itoS":
+				this.conversionItoS();
+				break;
+			
+			case "stoI":
+				this.conversionStoI();
 				break;
 
 		}
