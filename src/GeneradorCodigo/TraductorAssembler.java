@@ -556,13 +556,14 @@ public class TraductorAssembler {
 	}
 
 	public void traducir(Terceto t) throws IOException {
+		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
 		Integer tipo = t.getTipo();
 
-		if(tipo == 8) {
+		if(tipo!=null && tipo == 8) {
 			this.etiqueta(t);
 
-		}else if (tipo == 2) { //FLOAT
+		}else if (tipo!=null && tipo == 2) { //FLOAT
 			switch (operador) {
 				case "+":
 					this.sumaPuntoFlotante(t);
@@ -662,5 +663,4 @@ public class TraductorAssembler {
 
 
 	}
-
 }

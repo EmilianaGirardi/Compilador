@@ -891,103 +891,189 @@ condicion_else	: ELSE {
 				;
 	
 
-condicion : '(' exp_arit comparador exp_arit ')' {
+ condicion : '(' exp_arit comparador exp_arit ')' {
 
-        		$$.sval = generador.addTerceto($3.sval, $2.sval, $4.sval);
-        		System.out.println("Se detecto: comparación");
+                    		TablaSimbolos TS = lexico.getTablaSimbolos();
 
-        		int pos;
-        		Integer t_primer_exp_arit;
+                    		Strign primer_exp_arit = TS.buscarVariable($2.sval);
+                    		Integer t_primer_exp_arit;
 
-        		if ($2.sval.matches("\\[T\\d+\\]")) {
-        			pos = Integer.parseInt($2.sval.replaceAll("\\D", ""));
-    				t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-		    		t_primer_exp_arit = lexico.getTablaSimbolos().getTipo($2.sval);;
-				}
+                    		if(primer_exp_arit == null){
+                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}else{
+                    			switch(primer_exp_arit){
+                    				case "Terceto":
+                    					pos = Integer.parseInt($2.sval.replaceAll("\\D", ""));
+                						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+                    					break;
+                    				default:
+                    					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+                    					break;
+                    			}
+                    		}
 
-        		Integer t_segunda_exp_arit;
-        		if ($4.sval.matches("\\[T\\d+\\]")) {
-        			pos = Integer.parseInt($4.sval.replaceAll("\\D", ""));
-    				t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-		    		t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo($4.sval);;
-				}
+            				Strign segunda_exp_arit = TS.buscarVariable($4.sval);
+                    		Integer t_segunda_exp_arit;
 
-        		if(t_primer_exp_arit != t_segunda_exp_arit){
-        			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
-        			generador.setError();
-        		}
-        	}
+                    		if(segunda_exp_arit == null){
+                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}else{
+                    			switch(segunda_exp_arit){
+                    				case "Terceto":
+                    					pos = Integer.parseInt($4.sval.replaceAll("\\D", ""));
+                						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+                    					break;
+                    				default:
+                    					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+                    					break;
+                    			}
+                    		}
+
+                    		if(t_primer_exp_arit != t_segunda_exp_arit){
+                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}
+
+                    		String operando1, operando2;
+
+                    		if (primer_exp_arit == "Terceto") operando1 = $2.sval;
+                            else operando1 = primer_exp_arit;
+                            if (factor == "Terceto") operando2 = $4.sval;
+                            else operando2 = segunda_exp_arit;
+
+                    		$$.sval = generador.addTerceto($3.sval, operando1, operando2);
+
+                    		System.out.println("Se detecto: comparación");
+
+                    	}
 
 		| '(' '(' lista_exp_arit ')' comparador '(' lista_exp_arit ')' ')' {
 
-	        String[] lista1 = $3.sval.split(",");
-	        String[] lista2 = $7.sval.split(",");
-	        if (lista1.length != lista2.length){
-	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
-	            generador.setError();
-	        }else{
-	        	$$.sval = generador.addTerceto($5.sval, lista1[0], lista2[0]);
+          	        String[] lista1 = $3.sval.split(",");
+          	        String[] lista2 = $7.sval.split(",");
+          	        if (lista1.length != lista2.length){
+          	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
+          	            generador.setError();
+          	        }else{
 
-	        	boolean error_comparacion = false;
-	        	int pos;
-	            Integer t_primer_exp_arit;
+          	        	boolean error_comparacion = false;
 
-	        	if (lista1[0].matches("\\[T\\d+\\]")) {
-	        		pos = Integer.parseInt(lista1[0].replaceAll("\\D", ""));
-	    			t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-			    	t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[0]);;
-				}
+          	        	TablaSimbolos TS = lexico.getTablaSimbolos();
 
-	        	Integer t_segunda_exp_arit;
-	        	if (lista2[0].matches("\\[T\\d+\\]")) {
-	        		pos = Integer.parseInt(lista2[0].replaceAll("\\D", ""));
-	    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-			    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[0]);;
-				}
+                  		Strign primer_exp_arit = TS.buscarVariable(lista1[0]);
+          	        	Strign segunda_exp_arit = TS.buscarVariable(lista2[0]);
 
-				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
+          	            Integer t_primer_exp_arit;
+                  		Integer t_segunda_exp_arit;
+          	            int pos;
+
+          				String operando1, operando2;
+
+                  		if(primer_exp_arit == null){
+                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			generador.setError();
+                  		}else{
+                  			switch(primer_exp_arit){
+                  				case "Terceto":
+                  					pos = Integer.parseInt($2.sval.replaceAll("\\D", ""));
+              						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+                  					break;
+                  				default:
+                  					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+                  					break;
+                  			}
+                  		}
 
 
-	            if(lista1.length!=1){
-	                String auxTerceto;
 
-	                for (int i = 1; i<lista1.length; i++){
-	                    auxTerceto= generador.addTerceto($5.sval, lista1[i], lista2[i]);
-	                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
-	                    
-	                    if (lista1[i].matches("\\[T\\d+\\]")) {
-	        				pos = Integer.parseInt(lista1[i].replaceAll("\\D", ""));
-	    					t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-						} else {
-			    			t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[i]);;
-						}
+                  		if(segunda_exp_arit == null){
+                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			generador.setError();
+                  		}else{
+                  			switch(segunda_exp_arit){
+                  				case "Terceto":
+                  					pos = Integer.parseInt($4.sval.replaceAll("\\D", ""));
+              						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+                  					break;
+                  				default:
+                  					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+                  					break;
+                  			}
+                  		}
 
-			        	if (lista2[i].matches("\\[T\\d+\\]")) {
-			        		pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
-			    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-						} else {
-					    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[i]);;
-						}
+          				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
 
-						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
-	                }
 
-	                if(error_comparacion){
-	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
-	                	generador.setError();
-	                }
+                  		if (primer_exp_arit == "Terceto") operando1 = lista1[0];
+                          else operando1 = primer_exp_arit;
+                          if (segunda_exp_arit == "Terceto") operando2 = lista2[0];
+                          else operando2 = segunda_exp_arit;
 
-	                /*$$.sval = generador.addTerceto("BF", $$.sval, null);*/
-	                /*generador.addPila($$.sval);*/
-	            }
+                  		$$.sval = generador.addTerceto($5.sval, operando1, operando2);
 
-	        }
-		    System.out.println("Se detecto: comparación múltiple");
-		  }
+
+          	            if(lista1.length!=1){
+          	                String auxTerceto;
+
+          	                for (int i = 1; i<lista1.length; i++){
+
+          	                    primer_exp_arit = TS.buscarVariable(lista1[i]);
+          	                    segunda_exp_arit = TS.buscarVariable(lista2[i]);
+
+
+          	                    if(primer_exp_arit == null){
+                  					System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  					generador.setError();
+          		        		}else{
+          		        			switch(primer_exp_arit){
+          		        				case "Terceto":
+          		        					pos = Integer.parseInt(lista1[i].replaceAll("\\D", ""));
+          		    						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+          		        					break;
+          		        				default:
+          		        					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+          		        					break;
+          		        			}
+                  				}
+
+
+          		        		if(segunda_exp_arit == null){
+          		        			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+          		        			generador.setError();
+          		        		}else{
+          		        			switch(segunda_exp_arit){
+          		        				case "Terceto":
+          		        					pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
+          		    						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+          		        					break;
+          		        				default:
+          		        					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+          		        					break;
+          		        			}
+          		        		}
+
+          						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
+
+          						if (primer_exp_arit == "Terceto") operando1 = lista1[i];
+                          		else operando1 = primer_exp_arit;
+                          		if (segunda_exp_arit == "Terceto") operando2 = lista2[i];
+                          		else operando2 = segunda_exp_arit;
+
+          						auxTerceto= generador.addTerceto($5.sval, operando1, operando2);
+          	                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
+          	                }
+
+          	                if(error_comparacion){
+          	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+          	                	generador.setError();
+          	                }
+          	            }
+
+          	        }
+          		    System.out.println("Se detecto: comparación múltiple");
+          		  }
 
 	    | '(' '(' lista_exp_arit  comparador '(' lista_exp_arit ')' ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 	    | '(' '(' lista_exp_arit ')' comparador lista_exp_arit ')' ')' {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
@@ -1010,7 +1096,9 @@ comparador : MAYORIGUAL {$$.sval = ">=";}
 		;
 
 repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
-					$$.sval = generador.addTerceto("BT", $4.sval, generador.obtenerElementoPila());
+					int posT = generador.obtenerElementoPila()..replaceAll("\\D", "");
+
+					$$.sval = generador.addTerceto("BT", $4.sval, generador.getTerceto(pos).getOperador());
 					generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
     				generador.eliminarPila();
 				}

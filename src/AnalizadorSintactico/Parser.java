@@ -616,7 +616,7 @@ final static String yyrule[] = {
 "def_triple : TYPEDEF TRIPLE '<' tipo '>' ID",
 };
 
-//#line 1064 "gramatica.y"
+//#line 1152 "gramatica.y"
 
 private Lexico lexico;
 private Generador generador;
@@ -743,7 +743,8 @@ String yys;    //current token string
 //###############################################################
 // method: yyparse : parse input and execute indicated items
 //###############################################################
-int yyparse() throws IOException {
+int yyparse()
+{
 boolean doaction;
   init_stacks();
   yynerrs = 0;
@@ -1865,178 +1866,266 @@ case 87:
 //#line 894 "gramatica.y"
 {
 
-        		yyval.sval = generador.addTerceto(val_peek(2).sval, val_peek(3).sval, val_peek(1).sval);
-        		System.out.println("Se detecto: comparación");
+                    		TablaSimbolos TS = lexico.getTablaSimbolos();
 
-        		int pos;
-        		Integer t_primer_exp_arit;
+                    		Strign primer_exp_arit = TS.buscarVariable(val_peek(3).sval);
+                    		Integer t_primer_exp_arit;
 
-        		if (val_peek(3).sval.matches("\\[T\\d+\\]")) {
-        			pos = Integer.parseInt(val_peek(3).sval.replaceAll("\\D", ""));
-    				t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-		    		t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(val_peek(3).sval);;
-				}
+                    		if(primer_exp_arit == null){
+                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}else{
+                    			switch(primer_exp_arit){
+                    				case "Terceto":
+                    					pos = Integer.parseInt(val_peek(3).sval.replaceAll("\\D", ""));
+                						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+                    					break;
+                    				default:
+                    					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+                    					break;
+                    			}
+                    		}
 
-        		Integer t_segunda_exp_arit;
-        		if (val_peek(1).sval.matches("\\[T\\d+\\]")) {
-        			pos = Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""));
-    				t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-		    		t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(val_peek(1).sval);;
-				}
+            				Strign segunda_exp_arit = TS.buscarVariable(val_peek(1).sval);
+                    		Integer t_segunda_exp_arit;
 
-        		if(t_primer_exp_arit != t_segunda_exp_arit){
-        			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
-        			generador.setError();
-        		}
-        	}
+                    		if(segunda_exp_arit == null){
+                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}else{
+                    			switch(segunda_exp_arit){
+                    				case "Terceto":
+                    					pos = Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""));
+                						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+                    					break;
+                    				default:
+                    					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+                    					break;
+                    			}
+                    		}
+
+                    		if(t_primer_exp_arit != t_segunda_exp_arit){
+                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+                    			generador.setError();
+                    		}
+
+                    		String operando1, operando2;
+
+                    		if (primer_exp_arit == "Terceto") operando1 = val_peek(3).sval;
+                            else operando1 = primer_exp_arit;
+                            if (factor == "Terceto") operando2 = val_peek(1).sval;
+                            else operando2 = segunda_exp_arit;
+
+                    		yyval.sval = generador.addTerceto(val_peek(2).sval, operando1, operando2);
+
+                    		System.out.println("Se detecto: comparación");
+
+                    	}
 break;
 case 88:
-//#line 923 "gramatica.y"
+//#line 952 "gramatica.y"
 {
 
-	        String[] lista1 = val_peek(6).sval.split(",");
-	        String[] lista2 = val_peek(2).sval.split(",");
-	        if (lista1.length != lista2.length){
-	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
-	            generador.setError();
-	        }else{
-	        	yyval.sval = generador.addTerceto(val_peek(4).sval, lista1[0], lista2[0]);
+          	        String[] lista1 = val_peek(6).sval.split(",");
+          	        String[] lista2 = val_peek(2).sval.split(",");
+          	        if (lista1.length != lista2.length){
+          	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
+          	            generador.setError();
+          	        }else{
 
-	        	boolean error_comparacion = false;
-	        	int pos;
-	            Integer t_primer_exp_arit;
+          	        	boolean error_comparacion = false;
 
-	        	if (lista1[0].matches("\\[T\\d+\\]")) {
-	        		pos = Integer.parseInt(lista1[0].replaceAll("\\D", ""));
-	    			t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-			    	t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[0]);;
-				}
+          	        	TablaSimbolos TS = lexico.getTablaSimbolos();
 
-	        	Integer t_segunda_exp_arit;
-	        	if (lista2[0].matches("\\[T\\d+\\]")) {
-	        		pos = Integer.parseInt(lista2[0].replaceAll("\\D", ""));
-	    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-				} else {
-			    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[0]);;
-				}
+                  		Strign primer_exp_arit = TS.buscarVariable(lista1[0]);
+          	        	Strign segunda_exp_arit = TS.buscarVariable(lista2[0]);
 
-				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
+          	            Integer t_primer_exp_arit;
+                  		Integer t_segunda_exp_arit;
+          	            int pos;
+
+          				String operando1, operando2;
+
+                  		if(primer_exp_arit == null){
+                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			generador.setError();
+                  		}else{
+                  			switch(primer_exp_arit){
+                  				case "Terceto":
+                  					pos = Integer.parseInt(val_peek(7).sval.replaceAll("\\D", ""));
+              						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+                  					break;
+                  				default:
+                  					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+                  					break;
+                  			}
+                  		}
 
 
-	            if(lista1.length!=1){
-	                String auxTerceto;
 
-	                for (int i = 1; i<lista1.length; i++){
-	                    auxTerceto= generador.addTerceto(val_peek(4).sval, lista1[i], lista2[i]);
-	                    yyval.sval =generador.addTerceto("AND", yyval.sval, auxTerceto);
-	                    
-	                    if (lista1[i].matches("\\[T\\d+\\]")) {
-	        				pos = Integer.parseInt(lista1[i].replaceAll("\\D", ""));
-	    					t_primer_exp_arit = generador.getTerceto(pos).getTipo();
-						} else {
-			    			t_primer_exp_arit = lexico.getTablaSimbolos().getTipo(lista1[i]);;
-						}
+                  		if(segunda_exp_arit == null){
+                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			generador.setError();
+                  		}else{
+                  			switch(segunda_exp_arit){
+                  				case "Terceto":
+                  					pos = Integer.parseInt(val_peek(5).sval.replaceAll("\\D", ""));
+              						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+                  					break;
+                  				default:
+                  					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+                  					break;
+                  			}
+                  		}
 
-			        	if (lista2[i].matches("\\[T\\d+\\]")) {
-			        		pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
-			    			t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
-						} else {
-					    	t_segunda_exp_arit = lexico.getTablaSimbolos().getTipo(lista2[i]);;
-						}
+          				if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
 
-						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
-	                }
 
-	                if(error_comparacion){
-	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
-	                	generador.setError();
-	                }
+                  		if (primer_exp_arit == "Terceto") operando1 = lista1[0];
+                          else operando1 = primer_exp_arit;
+                          if (segunda_exp_arit == "Terceto") operando2 = lista2[0];
+                          else operando2 = segunda_exp_arit;
 
-	                /*$$.sval = generador.addTerceto("BF", $$.sval, null);*/
-	                /*generador.addPila($$.sval);*/
-	            }
+                  		yyval.sval = generador.addTerceto(val_peek(4).sval, operando1, operando2);
 
-	        }
-		    System.out.println("Se detecto: comparación múltiple");
-		  }
+
+          	            if(lista1.length!=1){
+          	                String auxTerceto;
+
+          	                for (int i = 1; i<lista1.length; i++){
+
+          	                    primer_exp_arit = TS.buscarVariable(lista1[i]);
+          	                    segunda_exp_arit = TS.buscarVariable(lista2[i]);
+
+
+          	                    if(primer_exp_arit == null){
+                  					System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  					generador.setError();
+          		        		}else{
+          		        			switch(primer_exp_arit){
+          		        				case "Terceto":
+          		        					pos = Integer.parseInt(lista1[i].replaceAll("\\D", ""));
+          		    						t_primer_exp_arit = generador.getTerceto(pos).getTipo();
+          		        					break;
+          		        				default:
+          		        					t_primer_exp_arit = TS.getTipo(primer_exp_arit);
+          		        					break;
+          		        			}
+                  				}
+
+
+          		        		if(segunda_exp_arit == null){
+          		        			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+          		        			generador.setError();
+          		        		}else{
+          		        			switch(segunda_exp_arit){
+          		        				case "Terceto":
+          		        					pos = Integer.parseInt(lista2[i].replaceAll("\\D", ""));
+          		    						t_segunda_exp_arit = generador.getTerceto(pos).getTipo();
+          		        					break;
+          		        				default:
+          		        					t_segunda_exp_arit = TS.getTipo(segunda_exp_arit);
+          		        					break;
+          		        			}
+          		        		}
+
+          						if(t_primer_exp_arit!=t_segunda_exp_arit) error_comparacion=true;
+
+          						if (primer_exp_arit == "Terceto") operando1 = lista1[i];
+                          		else operando1 = primer_exp_arit;
+                          		if (segunda_exp_arit == "Terceto") operando2 = lista2[i];
+                          		else operando2 = segunda_exp_arit;
+
+          						auxTerceto= generador.addTerceto(val_peek(4).sval, operando1, operando2);
+          	                    yyval.sval =generador.addTerceto("AND", yyval.sval, auxTerceto);
+          	                }
+
+          	                if(error_comparacion){
+          	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+          	                	generador.setError();
+          	                }
+          	            }
+
+          	        }
+          		    System.out.println("Se detecto: comparación múltiple");
+          		  }
 break;
 case 89:
-//#line 992 "gramatica.y"
+//#line 1078 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 90:
-//#line 993 "gramatica.y"
+//#line 1079 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 91:
-//#line 994 "gramatica.y"
+//#line 1080 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 92:
-//#line 995 "gramatica.y"
+//#line 1081 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 93:
-//#line 996 "gramatica.y"
+//#line 1082 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 94:
-//#line 997 "gramatica.y"
+//#line 1083 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 95:
-//#line 999 "gramatica.y"
+//#line 1085 "gramatica.y"
 {System.err.println("Error: falta de comparador. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 96:
-//#line 1000 "gramatica.y"
+//#line 1086 "gramatica.y"
 {System.err.println("Error, falta de lista de expresión aritmetica en comparación. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 97:
-//#line 1004 "gramatica.y"
+//#line 1090 "gramatica.y"
 {yyval.sval = ">=";}
 break;
 case 98:
-//#line 1005 "gramatica.y"
+//#line 1091 "gramatica.y"
 {yyval.sval = "<=";}
 break;
 case 99:
-//#line 1006 "gramatica.y"
+//#line 1092 "gramatica.y"
 {yyval.sval = "!=";}
 break;
 case 100:
-//#line 1007 "gramatica.y"
+//#line 1093 "gramatica.y"
 {yyval.sval = "=";}
 break;
 case 101:
-//#line 1008 "gramatica.y"
+//#line 1094 "gramatica.y"
 {yyval.sval = ">";}
 break;
 case 102:
-//#line 1009 "gramatica.y"
+//#line 1095 "gramatica.y"
 {yyval.sval = "<";}
 break;
 case 103:
-//#line 1012 "gramatica.y"
+//#line 1098 "gramatica.y"
 {
-					yyval.sval = generador.addTerceto("BT", val_peek(0).sval, generador.obtenerElementoPila());
+					int posT = generador.obtenerElementoPila()..replaceAll("\\D", "");
+
+					yyval.sval = generador.addTerceto("BT", val_peek(0).sval, generador.getTerceto(pos).getOperador());
 					generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
     				generador.eliminarPila();
 				}
 break;
 case 104:
-//#line 1018 "gramatica.y"
+//#line 1106 "gramatica.y"
 {System.err.println("Error: falta cuerpo en la iteracion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 105:
-//#line 1019 "gramatica.y"
+//#line 1107 "gramatica.y"
 {System.err.println("Error: falta de until en la iteracion repeat. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 106:
-//#line 1023 "gramatica.y"
+//#line 1111 "gramatica.y"
 {
 				    yyval.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
 				    generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
@@ -2044,7 +2133,7 @@ case 106:
 				}
 break;
 case 107:
-//#line 1033 "gramatica.y"
+//#line 1121 "gramatica.y"
 {
     Integer t = Integer.parseInt(val_peek(2).sval);
     switch(t){
@@ -2071,7 +2160,7 @@ case 107:
         TS.editarLexema(val_peek(0).sval, val_peek(0).sval + amb);
     }
 break;
-//#line 1999 "Parser.java"
+//#line 2087 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
@@ -2121,10 +2210,9 @@ break;
  * object in the background.  It is intended for extending Thread
  * or implementing Runnable.  Turn off with -Jnorun .
  */
-public void run() throws IOException {
+public void run()
+{
   yyparse();
-  generador.imprimirTercetos();
-  generador.generarCodigoMaquina();
 }
 //## end of method run() ########################################
 
