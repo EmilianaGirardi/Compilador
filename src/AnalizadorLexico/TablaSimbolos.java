@@ -246,6 +246,6 @@ public class TablaSimbolos {
 
 	public Map<String, ArrayList<Integer>> getMap() {
 		return map;
-	}
+	} 
 }
 
