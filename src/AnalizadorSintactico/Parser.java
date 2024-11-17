@@ -672,27 +672,26 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
        if(result>0.0f) {
 	        if (infPositivo > result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = infPositivo.toString().replace('E', 's');
+	            String nuevaCte = infPositivo.toString();
 	            return nuevaCte;
 
 	        }else if(supPositivo < result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = supPositivo.toString().replace('E', 's');
+	            String nuevaCte = supPositivo.toString();
 	            return nuevaCte;
 	        }
        }else {
        	if(infNegativo > result) {
        		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = infNegativo.toString().replace('E', 's');
+	            String nuevaCte = infNegativo.toString();
 	            return nuevaCte;
 	        }else if(supNegativo < result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = supNegativo.toString().replace('E', 's');
+	            String nuevaCte = supNegativo.toString();
 	            return nuevaCte;
 	        }
        }
 
-       cte = cte.replace('e', 's');
        return cte;
    }
 

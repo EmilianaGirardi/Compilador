@@ -148,6 +148,9 @@ public class TablaSimbolos {
 
 		while(!variable.equals(lexema)) {
 			if(this.estaToken(variable)){
+				if(this.estaToken(lexema)) {
+					this.map.remove(lexema);
+				}
 				return variable;
 			}else{
 				int lastIndex = variable.lastIndexOf(".");
@@ -158,6 +161,10 @@ public class TablaSimbolos {
 			}
 		}
 
+		if(this.estaToken(lexema)) {
+			this.map.remove(lexema);
+		}
+		
 		return null;
 	}
 	public String getUltimoAmbito() {

@@ -1,10 +1,11 @@
 prueba BEGIN
     TIPO_UNSIGNED x, v;
     TIPO_SINGLE y, z;
-
+	
     x := x + v;
+    y := 12.2s+8;
     y := y - z;
-    
+    y:= 
     TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
 	    BEGIN
 	        IF ( x = 01)  THEN

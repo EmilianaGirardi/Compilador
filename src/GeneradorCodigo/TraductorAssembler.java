@@ -15,8 +15,9 @@ public class TraductorAssembler {
 	private Integer numAux;
 
 	private Integer numCadena;
+	private Integer numFloat;
 	private HashMap<String, String> mapaCadenas; //key: lexema; valor: etiqueta del .data
-	
+	private HashMap<String, String> mapaSingles; //key: cte; valor: etiqueta del .data
 	private Generador generador;
 	private Lexico lexico;
 
@@ -25,11 +26,13 @@ public class TraductorAssembler {
 	public TraductorAssembler(String archivoSalida) throws IOException {
 		this.path = archivoSalida;
 		this.salida = new FileWriter(path, false);
-		this.numAux=0;
+		this.numAux = 0;
 		this.numCadena = 0;
+		this.numFloat = 0;
 		this.generador = Generador.getInstance();
 		this.lexico = Lexico.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
+		this.mapaSingles = new HashMap<String, String>();
 	}
 
 	public void inicializarAssembler() throws IOException {
@@ -45,7 +48,7 @@ public class TraductorAssembler {
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		for (String lexema : TS.getMap().keySet()){
 			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=50){ //IDENTIFICADORES
-				//TODO: decartar las que no tienen ambito!!!!!! (ya estan casi todas faltan las que empiezan con v,w, etc)
+				
 				if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
 					salida.append(lexema + " DD ? " +saltoLinea);
 				}
@@ -55,6 +58,9 @@ public class TraductorAssembler {
 			}
 			if (TS.getToken(lexema) == 265){ //MULTILINEA
 				addCadena(lexema);
+			}
+			if (TS.getToken(lexema)== 262) { //ctes single
+				addFloat(lexema);
 			}
 		}
 		salida.append(saltoLinea);
@@ -70,6 +76,17 @@ public class TraductorAssembler {
 			mapaCadenas.put(lexema, etq);
 			
 			salida.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
+		}
+	}
+	
+	public void addFloat(String cte) throws IOException {
+		if(!mapaSingles.containsKey(cte)) {
+			String etq = "_float"+this.numFloat+"_";
+			this.numFloat++;
+			
+			mapaSingles.put(cte, etq);
+			
+			salida.append(etq+" DD "+ cte + saltoLinea);
 		}
 	}
 	
@@ -181,12 +198,7 @@ public class TraductorAssembler {
 	}
 
 	//Punto Flotante
-	//TODO verificar si el formato de la constante single es el correcto para assembler
 	private void sumaPuntoFlotante(Terceto terceto) throws IOException {
-		//MOV R1, _a
-		//ADD R1, @aux1
-		//MOV @aux2, R1
-
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -194,16 +206,22 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
 			op1 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op1)) {
+			op1 = mapaSingles.get(op1);
+		}
 		op2 = terceto.getOperando2();
 		if (op2.matches("\\[T\\d+\\]")){
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 			op2 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op2)) {
+			op2 = mapaSingles.get(op2);
+		}
 
 		result = crearAux();
 
 		salida.append("MOV ST, " + op1 + saltoLinea);
-		salida.append("ADD ST, " + op2 + saltoLinea);
+		salida.append("FADD ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
 
 		terceto.setAux(result);
@@ -218,16 +236,23 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
 			op1 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op1)) {
+			op1 = mapaSingles.get(op1);
+		}
+		
 		op2 = terceto.getOperando2();
 		if (op2.matches("\\[T\\d+\\]")){
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 			op2 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op2)) {
+			op2 = mapaSingles.get(op2);
+		}
 
 		result = crearAux();
 
 		salida.append("MOV ST, " + op1 + saltoLinea);
-		salida.append("SUB ST, " + op2 + saltoLinea);
+		salida.append("FSUB ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
 
 		terceto.setAux(result);
@@ -241,16 +266,23 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
 			op1 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op1)) {
+			op1 = mapaSingles.get(op1);
+		}
+		
 		op2 = terceto.getOperando2();
 		if (op2.matches("\\[T\\d+\\]")){
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 			op2 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op2)) {
+			op2 = mapaSingles.get(op2);
+		}
 
 		result = crearAux();
 
 		salida.append("MOV ST, " + op1 + saltoLinea);
-		salida.append("MUL ST, " + op2 + saltoLinea);
+		salida.append("FMUL ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
 
 		terceto.setAux(result);
@@ -264,16 +296,23 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
 			op1 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op1)) {
+			op1 = mapaSingles.get(op1);
+		}
+		
 		op2 = terceto.getOperando2();
 		if (op2.matches("\\[T\\d+\\]")){
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 			op2 = generador.getTerceto(pos).getAux();
 		}
+		if (mapaSingles.containsKey(op2)) {
+			op2 = mapaSingles.get(op2);
+		}
 
 		result = crearAux();
 
 		salida.append("MOV ST, " + op1 + saltoLinea);
-		salida.append("DIV ST, " + op2 + saltoLinea);
+		salida.append("FDIV ST, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", ST" + saltoLinea);
 
 		terceto.setAux(result);
@@ -548,6 +587,10 @@ public class TraductorAssembler {
 	        int pos = Integer.parseInt(operando2.replaceAll("\\D", ""));
 	        operando2 = generador.getTerceto(pos).getAux();
 	    }
+		if (mapaSingles.containsKey(operando2)) {
+			operando2 = mapaSingles.get(operando2);
+		}
+		
 		
 		salida.append("MOV ST, "+operando2 + saltoLinea);
 		salida.append("MOV "+terceto.getOperando1()+", ST" + saltoLinea);

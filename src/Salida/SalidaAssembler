@@ -8,12 +8,9 @@ includelib \masm32\lib\masm32.lib
 .DATA
 z.global DD ? 
 v.global DW ? 
+_float0_ DD 12.2e+8
 x.global DW ? 
 y.global DD ? 
-x.global.funcion1 DW ? 
-g.global DW ? 
-funcion1.global DW ? 
-v DW ? 
 
 .CODE
 START:
@@ -22,26 +19,11 @@ ADD AX, v.global
 MOV @aux1, AX
 MOV AX, @aux1
 MOV x.global, AX
+MOV ST, _float0_
+MOV y.global, ST
 MOV ST, y.global
-SUB ST, z.global
+FSUB ST, z.global
 MOV @aux2, ST
 MOV ST, @aux2
 MOV y.global, ST
-funcion1.global:
-MOV CX, 0 
-MOV x.global.funcion1, AX
-CMP AX, 01
-SETE CL
-MOV @aux3, CL
-CMP @aux3, 0
-JE ET8
-MOV AX,1
-MOV @aux4, AX
-RET
-ET8:
-MOV AX,123
-MOV @aux5, AX
-RET
-PUSH g.global
-CALL funcion1.global
 END START
