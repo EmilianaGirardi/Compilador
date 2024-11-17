@@ -25,11 +25,6 @@ public class TraductorAssembler {
 		this.numCadena = 0;
 		this.generador = Generador.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
-		this.inicializarAssembler();
-	}
-
-	private void inicializarAssembler() throws IOException {
-		salida.append("");
 	}
 
 	public void addCadena(String lexema) throws IOException {
