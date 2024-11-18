@@ -7,9 +7,9 @@ MOV AX, @aux1
 MOV x.global, AX
 MOV ST, _float0_
 MOV y.global, ST
-MOV ST, y.global
+FLD y.global
 FSUB ST, z.global
-MOV @aux2, ST
+FST @aux2
 MOV ST, @aux2
 MOV y.global, ST
 funcion1.global:
@@ -31,4 +31,6 @@ PUSH g.global
 CALL funcion1.global
 ??OVERFLOW_ERROR:
 invoke StdOut, addr errorMsgOverflow
+??errorConversionNegativo
+invoke StdOut, addr errorMsgConversionNegativa
 END START

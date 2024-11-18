@@ -31,8 +31,8 @@ public class TraductorAssembler {
 	private Generador generador;
 	private Lexico lexico;
 
-	private static Integer TIPO_AUX_ENTERO = 10;
-	private static Integer TIPO_AUX_FLOAT = 11;
+	private static Integer TIPO_AUX_ENTERO = 11;
+	private static Integer TIPO_AUX_FLOAT = 12;
 	
 	private static String saltoLinea = "\r\n";
 	private String identacion;
@@ -67,6 +67,7 @@ public class TraductorAssembler {
 		encabezado.append(".DATA" + saltoLinea);
 		encabezado.append("errorMsgOverflow db \"Overflow: en suma!.\", 10, 0 ;"+saltoLinea);
 		encabezado.append("errorMsgConversionNegativa db \"Conversion invalida: no puede convertir un Single negativo a Entero!.\", 10, 0 ;"+saltoLinea);
+		encabezado.append("errorMsgRestaNegativa db \"Resta invalida: resultado negativo!.\", 10, 0 ;"+saltoLinea);
 		
 		//mapeo de variables y cadenas
 		TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -139,10 +140,14 @@ public class TraductorAssembler {
 	}
 
 	public void cerrarTraduccion() throws IOException {
-		salida.append("??OVERFLOW_ERROR:"+saltoLinea);
+		salida.append("??errorOverflow:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
-		salida.append("??errorConversionNegativo");
+		salida.append("");
+		salida.append("??errorConversionNegativo"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
+		salida.append("");
+		salida.append("??errorRestaNegativa"+saltoLinea);
+		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
 		
 		salida.append("END START");
 		
@@ -198,7 +203,7 @@ public class TraductorAssembler {
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
 		salida.append("ADD AX, " + op2 + saltoLinea);
-		salida.append("JC ??OVERFLOW_ERROR");
+		salida.append("JC ??errorOverflow");
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 		
 
@@ -223,6 +228,7 @@ public class TraductorAssembler {
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
 		salida.append("SUB AX, " + op2 + saltoLinea);
+		salida.append("JS ??errorRestaNegativa");
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
@@ -413,6 +419,23 @@ public class TraductorAssembler {
 	    
 	}
 
+
+	private void funcion(Terceto terceto) throws IOException {
+		// TODO Auto-generated method stub
+		this.salida.append(terceto.getOperador()+":" + saltoLinea);
+		
+		String parametro = terceto.getOperando1(); 
+		Integer tipo = lexico.getTablaSimbolos().getTipo(parametro);
+		
+		if(tipo == 2) {
+			this.salida.append("FLD [EBP+8]");
+			this.salida.append("FST "+parametro);
+		}else {
+			this.salida.append("MOV AX, [EBP+8]");
+			this.salida.append("MOV "+parametro+", AX");
+		}
+	}
+	
 	private void ret(Terceto terceto) throws IOException {
 		String retorno = terceto.getOperando1();
 		Integer tipo= terceto.getTipo();;
@@ -613,6 +636,7 @@ public class TraductorAssembler {
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
 	}
+	
 	private void and(Terceto terceto) throws IOException{
 		String op1 = terceto.getOperando1();
 		String op2 = terceto.getOperando2();
@@ -629,11 +653,13 @@ public class TraductorAssembler {
 		salida.append("SETNZ " + result + saltoLinea);
 		terceto.setAux(result);
 	}
+	
 	private void branchIncondicional(Terceto terceto) throws IOException {
 		String etiqueta = terceto.getOperando2();
 		salida.append("JMP " + etiqueta + saltoLinea);
 
 	}
+	
 	private void branchFalse(Terceto terceto) throws IOException {
 		//el primer operando tiene la condicion
 		//el segundo operando tiene la etiqueta
@@ -644,6 +670,7 @@ public class TraductorAssembler {
 		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
 		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
 	}
+	
 	private void branchTrue(Terceto terceto) throws IOException {
 		//el primer operando tiene la condicion
 		//el segundo operando tiene la etiqueta
@@ -654,6 +681,7 @@ public class TraductorAssembler {
 		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
 		salida.append("JNZ " + etiqueta +saltoLinea); //salta si no es cero
 	}
+	
 	private void asignacion(Terceto terceto) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
@@ -667,6 +695,7 @@ public class TraductorAssembler {
 
 
 	}
+	
 	private void asignacionPuntoFlotante(Terceto terceto) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
@@ -682,6 +711,7 @@ public class TraductorAssembler {
 		salida.append("MOV ST, "+operando2 + saltoLinea);
 		salida.append("MOV "+terceto.getOperando1()+", ST" + saltoLinea);
 	}
+	
 	private void impresion(Terceto terceto) throws IOException{
 		String lexema = terceto.getOperando1();
 		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
@@ -739,6 +769,8 @@ public class TraductorAssembler {
 		if(tipo!=null && tipo == 8) {
 			this.etiqueta(t);
 
+		}else if(tipo!=null && tipo == 10) {
+			this.funcion(t);
 		}else if (tipo!=null && tipo == 2) { //FLOAT
 			switch (operador) {
 				case "+":
@@ -844,7 +876,5 @@ public class TraductorAssembler {
 				break;
 
 		}
-
-
 	}
 }
