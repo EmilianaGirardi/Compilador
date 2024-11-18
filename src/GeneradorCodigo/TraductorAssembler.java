@@ -478,7 +478,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo()==null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
@@ -524,7 +524,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo() == null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
@@ -563,7 +563,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo() ==null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
@@ -602,7 +602,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo() ==null && terceto.getTipo()== 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
@@ -641,7 +641,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
@@ -679,7 +679,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == 2){
+		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
     		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2

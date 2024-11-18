@@ -8,6 +8,7 @@ includelib \masm32\lib\masm32.lib
 .DATA
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
 z.global DD ? 
 v.global DW ? 
 x.global DW ? 
@@ -28,6 +29,7 @@ includelib \masm32\lib\masm32.lib
 .DATA
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
 z.global DD ? 
 @aux5 DW ? 
 @aux4 DW ? 

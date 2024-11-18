@@ -2,7 +2,7 @@ _float0_ DD 12.2s+8
 _float1_ DD 1.0
 MOV AX, x.global
 ADD AX, v.global
-JC ??OVERFLOW_ERRORMOV @aux1, AX
+JC ??errorOverflowMOV @aux1, AX
 MOV AX, @aux1
 MOV x.global, AX
 MOV ST, _float0_
@@ -29,8 +29,10 @@ MOV @aux5, AX
 RET
 PUSH g.global
 CALL funcion1.global
-??OVERFLOW_ERROR:
+??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
 ??errorConversionNegativo
 invoke StdOut, addr errorMsgConversionNegativa
+??errorRestaNegativa
+invoke StdOut, addr errorMsgRestaNegativa
 END START
