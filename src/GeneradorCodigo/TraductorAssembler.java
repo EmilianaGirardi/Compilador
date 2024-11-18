@@ -709,7 +709,7 @@ public class TraductorAssembler {
 		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 
-		salida.append(S"MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("MOV " + op1 + ", AX" + saltoLinea);
 		salida.append("AND AX, "+ op2 + saltoLinea); //AND
 		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
 

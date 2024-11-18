@@ -315,7 +315,7 @@ invocacion_fun : ID '(' exp_arit ')'{
                                 }
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
                 generador.setError();
             }
             else{
@@ -338,7 +338,7 @@ invocacion_fun : ID '(' exp_arit ')'{
                 //crear terceto de conversion
                 String conversion = generador.getConversion(tipoExp, tipoCast);
                 if (conversion == null) {
-                	System.err.println("Error: conversion invalida. Linea: " + lexico.getContadorLinea());
+                	System.err.println("Error: conversion invalida. No se puede convertir"+this.mappeoTipo(tipoExp)+ " a "+this.mappeoTipo(tipoCast) +" .Linea: " + lexico.getContadorLinea());
                 	generador.setError();
                 }
 
@@ -377,7 +377,7 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipoCast = Integer.parseInt($3.sval);
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
                 generador.setError();
             }
             else{
@@ -461,7 +461,7 @@ exp_arit : exp_arit '+' termino {
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en suma. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en suma. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -518,7 +518,7 @@ exp_arit : exp_arit '+' termino {
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en resta. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en resta. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -596,7 +596,7 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -651,7 +651,7 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en division. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -753,7 +753,7 @@ asig : ID ASIGNACION exp_arit {
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                     System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
+                     System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
                      generador.setError();
                 }else{
                    String operando2;
@@ -795,7 +795,7 @@ asig : ID ASIGNACION exp_arit {
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                      System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
+                      System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
                  }
                 else{
                     String operando2;
@@ -956,7 +956,7 @@ condicion_else	: ELSE {
                     		}
 
                     		if(t_primer_exp_arit != t_segunda_exp_arit){
-                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. No se puede comparar entre "+this.mappeoTipo(t_primer_exp_arit)+" y "+this.mappeoTipo(t_segunda_exp_arit)+". Linea: "+lexico.getContadorLinea());
                     			generador.setError();
                     		}
 
@@ -1255,6 +1255,44 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
        cte = cte.replace('e', 's');
        return cte;
    }
+
+private String mappeoTipo(Integer tipo){
+	switch(tipo){
+		case T_UNSIGNED:
+			return "UNSIGNED";
+			break;
+		case T_SINGLE:
+			return "SINGLE";
+			break;
+		case T_OCTAL:
+			return "OCTAL";
+			break;
+		case TIPO_MULTILINEA:
+			return "MULTILINEA";
+			break;
+		case TIPO_TRIPLE_UNSIGNED:
+			return "TRIPLE_UNSIGNED";
+			break;
+		case TIPO_TRIPLE_SINGLE:
+			return "TRIPLE_SINGLE";
+			break;
+		case TIPO_TRIPLE_OCTAL:
+			return "TRIPLE_OCTAL";
+			break;
+		case TIPO_ETIQUETA:
+			return "ETIQUETA";
+			break;	
+		case TIPO_SALTO:
+			return "SALTO";
+			break;	
+		case TIPO_FUNCION:
+			return "FUNCION";
+			break;
+		case 11:
+			return "AUXILIAR";
+			break;
+	}
+}
 
 public static void main(String[] args) throws IOException {
     if(args.length == 2) {
