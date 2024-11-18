@@ -6,7 +6,8 @@ includelib \masm32\lib\masm32.lib
 .STACK 200h
 
 .DATA
-errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 z.global DD ? 
 v.global DW ? 
 x.global DW ? 
@@ -25,7 +26,8 @@ includelib \masm32\lib\masm32.lib
 .STACK 200h
 
 .DATA
-errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 z.global DD ? 
 @aux5 DW ? 
 @aux4 DW ? 
@@ -50,9 +52,9 @@ MOV AX, @aux1
 MOV x.global, AX
 MOV ST, _float0_
 MOV y.global, ST
-MOV ST, y.global
+FLD y.global
 FSUB ST, z.global
-MOV @aux2, ST
+FST @aux2
 MOV ST, @aux2
 MOV y.global, ST
 funcion1.global:
@@ -74,4 +76,6 @@ PUSH g.global
 CALL funcion1.global
 ??OVERFLOW_ERROR:
 invoke StdOut, addr errorMsgOverflow
+??errorConversionNegativo
+invoke StdOut, addr errorMsgConversionNegativa
 END START

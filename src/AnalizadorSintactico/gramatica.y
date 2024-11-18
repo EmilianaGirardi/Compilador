@@ -162,10 +162,12 @@ encabezadoFun : tipo FUN ID '(' tipo ID ')' {
                 TS.agregarUso($6.sval, NOMBRE_PARAMETRO);
                 TS.agregarTipoParam(funcion, tipoParam);
                 TS.addAmbitos($3.sval);
-                TS.editarLexema($6.sval, $6.sval + TS.getAmbitos());
+                
+                String parametro =  $6.sval + TS.getAmbitos();
+                TS.editarLexema($6.sval,parametro);
 
-                $$.sval = generador.addTerceto(funcion,null,null);
-                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
+                $$.sval = generador.addTerceto(funcion,parametro,null);
+                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_FUNCION);
                 generador.putEtiqueta(funcion);
               }
               | tipo FUN  '(' tipo ID ')' {System.err.println("Error: Falta nombre de funcion"); generador.setError();}
@@ -1188,6 +1190,8 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     //¿sEtiqueta seria uso?
     public final static int  TIPO_ETIQUETA = 8;
     public final static int  TIPO_SALTO = 9;
+    public final static int  TIPO_FUNCION = 10;
+
     public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
