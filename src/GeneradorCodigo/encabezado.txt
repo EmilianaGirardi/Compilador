@@ -9,14 +9,32 @@ includelib \masm32\lib\masm32.lib
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
+<<<<<<< HEAD
 @aux4 DW ? 
 x.global DW ? 
 x.global.funcion1 DW ? 
+=======
+z.global DD ? 
+_float0_ DD 1.01
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+x.global.funcion1 DD ? 
+_float1_ DD 12.2s+8
+g.global DD ? 
+funcion1.global DW ? 
+_float2_ DD 25.111
+@aux5 DW ? 
+@aux4 DW ? 
+>>>>>>> manejoArchivoSalida
 @aux3 DW ? 
 @aux2 DW ? 
 @aux1 DW ? 
+<<<<<<< HEAD
 z.global.funcion1 DW ? 
 funcion1.global DW ? 
+=======
+>>>>>>> manejoArchivoSalida
 
 .CODE
 START:

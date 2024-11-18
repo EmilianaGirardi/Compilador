@@ -1,0 +1,74 @@
+<<<<<<< HEAD
+=======
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
+z.global DD ? 
+_float0_ DD 1.01
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+x.global.funcion1 DD ? 
+_float1_ DD 12.2s+8
+g.global DD ? 
+funcion1.global DW ? 
+_float2_ DD 25.111
+@aux5 DW ? 
+@aux4 DW ? 
+@aux3 DW ? 
+@aux2 DD ? 
+@aux1 DW ? 
+
+.CODE
+START:
+MOV AX, x.global
+ADD AX, v.global
+JC ??errorOverflowMOV @aux1, AX
+MOV AX, @aux1
+MOV x.global, AX
+MOV ST, _float1_
+MOV y.global, ST
+FLD y.global
+FSUB ST, z.global
+FST @aux2
+MOV ST, @aux2
+MOV y.global, ST
+MOV ST, _float2_
+MOV z.global, ST
+funcion1.global:
+FLD [EBP+8]
+FST x.global.funcion1MOV CX, 0 
+FLD x.global.funcion1
+FCOMI  1.01
+SETZ  CL
+MOV @aux3, CL
+CMP @aux3, 0
+JE ET10
+MOV AX,1
+MOV @aux4, AX
+RET
+ET10:
+MOV AX,123
+MOV @aux5, AX
+RET
+PUSH g.global
+CALL funcion1.global
+J END_START
+??errorOverflow:
+invoke StdOut, addr errorMsgOverflow
+J END_START
+??errorConversionNegativo
+invoke StdOut, addr errorMsgConversionNegativa
+J END_START
+??errorRestaNegativa
+invoke StdOut, addr errorMsgRestaNegativa
+END START
+>>>>>>> manejoArchivoSalida

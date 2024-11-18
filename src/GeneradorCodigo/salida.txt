@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 funcion1.global:
 MOV AX, [EBP+8]
 MOV x.global.funcion1, AX
@@ -23,6 +24,39 @@ RET
 MOV AX, 25
 MOV x.global, AX
 PUSH 01
+=======
+MOV AX, x.global
+ADD AX, v.global
+JC ??errorOverflowMOV @aux1, AX
+MOV AX, @aux1
+MOV x.global, AX
+MOV ST, _float1_
+MOV y.global, ST
+FLD y.global
+FSUB ST, z.global
+FST @aux2
+MOV ST, @aux2
+MOV y.global, ST
+MOV ST, _float2_
+MOV z.global, ST
+funcion1.global:
+FLD [EBP+8]
+FST x.global.funcion1MOV CX, 0 
+FLD x.global.funcion1
+FCOMI  1.01
+SETZ  CL
+MOV @aux3, CL
+CMP @aux3, 0
+JE ET10
+MOV AX,1
+MOV @aux4, AX
+RET
+ET10:
+MOV AX,123
+MOV @aux5, AX
+RET
+PUSH g.global
+>>>>>>> manejoArchivoSalida
 CALL funcion1.global
 J END_START
 ??errorOverflow:
