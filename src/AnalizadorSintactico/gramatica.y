@@ -966,7 +966,7 @@ condicion_else	: ELSE {
                             else operando2 = segunda_exp_arit;
 
                     		$$.sval = generador.addTerceto($3.sval, operando1, operando2);
-
+                            generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
                     		System.out.println("Se detecto: comparación");
 
                     	}
@@ -1034,6 +1034,7 @@ condicion_else	: ELSE {
                           else operando2 = segunda_exp_arit;
 
                   		$$.sval = generador.addTerceto($5.sval, operando1, operando2);
+                        generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
 
 
           	            if(lista1.length!=1){
@@ -1085,6 +1086,7 @@ condicion_else	: ELSE {
 
           						auxTerceto= generador.addTerceto($5.sval, operando1, operando2);
           	                    $$.sval =generador.addTerceto("AND", $$.sval, auxTerceto);
+                                generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
           	                }
 
           	                if(error_comparacion){

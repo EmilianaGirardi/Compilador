@@ -455,17 +455,33 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETGE CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 <= op2 (verdadero)
-		//0 si op1 > op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETGE  CL" + saltoLinea);
+			//En este punto, CL contendrá:
+			//1 si op1 <= op2 (verdadero)
+			//0 si op1 > op2 (falso)
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		} else{
+			
+					salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+					salida.append("MOV " + op1 + ", AX" + saltoLinea);
+					salida.append("CMP AX, " + op2 + saltoLinea);
+					salida.append("SETAE CL" + saltoLinea);
+					//En este punto, CL contendrá:
+					//1 si op1 <= op2 (verdadero)
+					//0 si op1 > op2 (falso)
+			
+					String result = crearAux(TIPO_AUX_ENTERO);
+					salida.append("MOV " + result + ", CL" + saltoLinea);
+					terceto.setAux(result);
+		
+		}
 		
 	}
 
@@ -485,17 +501,27 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETG CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 <= op2 (verdadero)
-		//0 si op1 > op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETG  CL" + saltoLinea);
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}else{
+
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("CMP AX, " + op2 + saltoLinea);
+			salida.append("SETA CL" + saltoLinea);
+
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}
+
 	}
 
 	private void menorIgual(Terceto terceto) throws IOException{
@@ -514,17 +540,27 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETLE CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 <= op2 (verdadero)
-		//0 si op1 > op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETLE  CL" + saltoLinea);
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}else{
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("CMP AX, " + op2 + saltoLinea);
+			salida.append("SETBE CL" + saltoLinea);
+	
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+
+		}
+
 	}
 
 	private void menor(Terceto terceto) throws IOException{
@@ -543,17 +579,27 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETL CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 < op2 (verdadero)
-		//0 si op1 >= op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETL  CL" + saltoLinea);
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}else{
+
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("CMP AX, " + op2 + saltoLinea);
+			salida.append("SETB CL" + saltoLinea);
+	
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}
+
 	}
 
 	private void igual(Terceto terceto) throws IOException{
@@ -572,17 +618,26 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETE CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 < op2 (verdadero)
-		//0 si op1 >= op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETZ  CL" + saltoLinea);
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}else{
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("CMP AX, " + op2 + saltoLinea);
+			salida.append("SETE CL" + saltoLinea);
+
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+
+		}
 	}
 
 	private void distinto(Terceto terceto) throws IOException{
@@ -601,17 +656,26 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-		salida.append("MOV " + op1 + ", AX" +saltoLinea);
-		salida.append("CMP AX, " + op2 + saltoLinea);
-		salida.append("SETNE CL" + saltoLinea);
-		//En este punto, CL contendrá:
-		//1 si op1 < op2 (verdadero)
-		//0 si op1 >= op2 (falso)
+		if (terceto.getTipo() == 2){
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("SETNZ  CL" + saltoLinea);
 
-		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result + ", CL" + saltoLinea);
-		terceto.setAux(result);
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}else{
+			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append("MOV " + op1 + ", AX" +saltoLinea);
+			salida.append("CMP AX, " + op2 + saltoLinea);
+			salida.append("SETNE CL" + saltoLinea);
+	
+			String result = crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV " + result + ", CL" + saltoLinea);
+			terceto.setAux(result);
+		}
+
 	}
 	private void and(Terceto terceto) throws IOException{
 		String op1 = terceto.getOperando1();
@@ -621,7 +685,7 @@ public class TraductorAssembler {
 		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append(S"MOV " + op1 + ", AX" + saltoLinea);
 		salida.append("AND AX, "+ op2 + saltoLinea); //AND
 		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
 
