@@ -140,11 +140,15 @@ public class TraductorAssembler {
 	}
 
 	public void cerrarTraduccion() throws IOException {
+		salida.append("J END_START"+saltoLinea);
+		salida.append("");
 		salida.append("??errorOverflow:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
+		salida.append("J END_START"+saltoLinea);
 		salida.append("");
 		salida.append("??errorConversionNegativo"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
+		salida.append("J END_START"+saltoLinea);
 		salida.append("");
 		salida.append("??errorRestaNegativa"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
