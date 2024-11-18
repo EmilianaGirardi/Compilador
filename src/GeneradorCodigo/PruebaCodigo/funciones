@@ -1,0 +1,18 @@
+prueba BEGIN
+
+
+TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+	    BEGIN
+	        IF ( x = 45)  THEN
+	            BEGIN
+	                RET (x);
+	            END
+	        ELSE BEGIN
+	           RET(X+2);
+	        END
+	        END_IF;
+
+	        RET (123+22);
+	    END;
+
+END;

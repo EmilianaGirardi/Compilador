@@ -616,7 +616,7 @@ final static String yyrule[] = {
 "def_triple : TYPEDEF TRIPLE '<' tipo '>' ID",
 };
 
-//#line 1174 "gramatica.y"
+//#line 1178 "gramatica.y"
 
 private Lexico lexico;
 private Generador generador;
@@ -632,6 +632,8 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     //¿sEtiqueta seria uso?
     public final static int  TIPO_ETIQUETA = 8;
     public final static int  TIPO_SALTO = 9;
+    public final static int  TIPO_FUNCION = 10;
+
     public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
@@ -696,6 +698,35 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
        return cte;
    }
 
+private String mappeoTipo(Integer tipo){
+	switch(tipo){
+		case T_UNSIGNED:
+			return "UNSIGNED";
+
+		case T_SINGLE:
+			return "SINGLE";
+		case T_OCTAL:
+			return "OCTAL";
+		case TIPO_MULTILINEA:
+			return "MULTILINEA";
+		case TIPO_TRIPLE_UNSIGNED:
+			return "TRIPLE_UNSIGNED";
+		case TIPO_TRIPLE_SINGLE:
+			return "TRIPLE_SINGLE";
+		case TIPO_TRIPLE_OCTAL:
+			return "TRIPLE_OCTAL";
+		case TIPO_ETIQUETA:
+			return "ETIQUETA";
+		case TIPO_SALTO:
+			return "SALTO";
+		case TIPO_FUNCION:
+			return "FUNCION";
+		case 11:
+			return "AUXILIAR";
+	}
+    return " ";
+}
+
 public static void main(String[] args) throws IOException {
     if(args.length == 2) {
           String archivo = args[0];
@@ -714,7 +745,7 @@ public static void main(String[] args) throws IOException {
 }
 
 
-//#line 646 "Parser.java"
+//#line 686 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1049,31 +1080,33 @@ case 37:
                 TS.agregarUso(val_peek(1).sval, NOMBRE_PARAMETRO);
                 TS.agregarTipoParam(funcion, tipoParam);
                 TS.addAmbitos(val_peek(4).sval);
-                TS.editarLexema(val_peek(1).sval, val_peek(1).sval + TS.getAmbitos());
+                
+                String parametro =  val_peek(1).sval + TS.getAmbitos();
+                TS.editarLexema(val_peek(1).sval,parametro);
 
-                yyval.sval = generador.addTerceto(funcion,null,null);
-                generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
+                yyval.sval = generador.addTerceto(funcion,parametro,null);
+                generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_FUNCION);
                 generador.putEtiqueta(funcion);
               }
 break;
 case 38:
-//#line 171 "gramatica.y"
+//#line 173 "gramatica.y"
 {System.err.println("Error: Falta nombre de funcion"); generador.setError();}
 break;
 case 39:
-//#line 172 "gramatica.y"
+//#line 174 "gramatica.y"
 {System.err.println("Error: Falta parametro de funcion"); generador.setError();}
 break;
 case 40:
-//#line 173 "gramatica.y"
+//#line 175 "gramatica.y"
 {System.err.println("Error: falta nombre del parametro formal"); generador.setError();}
 break;
 case 41:
-//#line 174 "gramatica.y"
+//#line 176 "gramatica.y"
 {System.err.println("Error: falta tipo del parametro formal"); generador.setError();}
 break;
 case 42:
-//#line 177 "gramatica.y"
+//#line 179 "gramatica.y"
 {
                 /*verificar el tipo de retorno*/
                 TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1090,7 +1123,7 @@ case 42:
      }
 break;
 case 43:
-//#line 192 "gramatica.y"
+//#line 194 "gramatica.y"
 {
 	            /*verificar tipo retorno*/
 	             TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1108,11 +1141,11 @@ case 43:
 	}
 break;
 case 44:
-//#line 208 "gramatica.y"
+//#line 210 "gramatica.y"
 {System.err.println("Error: falta retorno en funcion"); generador.setError();}
 break;
 case 45:
-//#line 213 "gramatica.y"
+//#line 215 "gramatica.y"
 {
             Integer tipo = null;
             TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1139,7 +1172,7 @@ case 45:
         }
 break;
 case 46:
-//#line 239 "gramatica.y"
+//#line 241 "gramatica.y"
 {
         /*verificar que el uso de ID sea nombre de función.*/
         TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1192,7 +1225,7 @@ case 46:
     }
 break;
 case 47:
-//#line 290 "gramatica.y"
+//#line 292 "gramatica.y"
 {
         /*verificar que el uso de ID sea nombre de función.*/
         TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1219,7 +1252,7 @@ case 47:
                                 }
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
                 generador.setError();
             }
             else{
@@ -1242,7 +1275,7 @@ case 47:
                 /*crear terceto de conversion*/
                 String conversion = generador.getConversion(tipoExp, tipoCast);
                 if (conversion == null) {
-                	System.err.println("Error: conversion invalida. Linea: " + lexico.getContadorLinea());
+                	System.err.println("Error: conversion invalida. No se puede convertir"+this.mappeoTipo(tipoExp)+ " a "+this.mappeoTipo(tipoCast) +" .Linea: " + lexico.getContadorLinea());
                 	generador.setError();
                 }
 
@@ -1261,7 +1294,7 @@ case 47:
     }
 break;
 case 48:
-//#line 356 "gramatica.y"
+//#line 358 "gramatica.y"
 {
         /*verificar que el uso de ID sea nombre de función.*/
         TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1284,7 +1317,7 @@ case 48:
             Integer tipoCast = Integer.parseInt(val_peek(4).sval);
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Linea: " + lexico.getContadorLinea());
+                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
                 generador.setError();
             }
             else{
@@ -1322,11 +1355,11 @@ case 48:
     }
 break;
 case 49:
-//#line 414 "gramatica.y"
+//#line 416 "gramatica.y"
 {System.err.println("Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 50:
-//#line 421 "gramatica.y"
+//#line 423 "gramatica.y"
 {
                     /*verificación de tipos*/
 
@@ -1368,7 +1401,7 @@ case 50:
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en suma. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en suma. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -1385,7 +1418,7 @@ case 50:
            }
 break;
 case 51:
-//#line 478 "gramatica.y"
+//#line 480 "gramatica.y"
 {
                     /*verificación de tipos*/
 
@@ -1427,7 +1460,7 @@ case 51:
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en resta. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en resta. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -1444,37 +1477,37 @@ case 51:
            }
 break;
 case 52:
-//#line 535 "gramatica.y"
+//#line 537 "gramatica.y"
 {
                     System.err.println("Error: Falta el término después de '+' en expresion aritmetica. Línea: " + lexico.getContadorLinea());
                     generador.setError();
            }
 break;
 case 53:
-//#line 540 "gramatica.y"
+//#line 542 "gramatica.y"
 {
                     System.err.println("Error: Falta el término después de '-' en expresión aritmetica. Línea: " + lexico.getContadorLinea());
                     generador.setError();
            }
 break;
 case 54:
-//#line 545 "gramatica.y"
+//#line 547 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 55:
-//#line 550 "gramatica.y"
+//#line 552 "gramatica.y"
 {
         			yyval.sval = val_peek(0).sval;
     			}
 break;
 case 56:
-//#line 553 "gramatica.y"
+//#line 555 "gramatica.y"
 {
 	    yyval.sval = val_peek(2).sval.concat(",").concat(val_peek(0).sval);
 	}
 break;
 case 57:
-//#line 558 "gramatica.y"
+//#line 560 "gramatica.y"
 {
                     /*verificación de tipos*/
 
@@ -1514,7 +1547,7 @@ case 57:
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -1531,7 +1564,7 @@ case 57:
            }
 break;
 case 58:
-//#line 613 "gramatica.y"
+//#line 615 "gramatica.y"
 {
                     /*verificación de tipos*/
 
@@ -1571,7 +1604,7 @@ case 58:
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en division. Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -1588,36 +1621,36 @@ case 58:
            }
 break;
 case 59:
-//#line 667 "gramatica.y"
+//#line 669 "gramatica.y"
 {
 	    	yyval.sval = val_peek(0).sval;
 		}
 break;
 case 60:
-//#line 671 "gramatica.y"
+//#line 673 "gramatica.y"
 {System.err.println("Error: Falta el factor después de '*' en expresion aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 61:
-//#line 672 "gramatica.y"
+//#line 674 "gramatica.y"
 {System.err.println("Error: Falta el factor después de '/' en expresión aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 62:
-//#line 675 "gramatica.y"
+//#line 677 "gramatica.y"
 {
             yyval.sval = val_peek(0).sval;
             System.out.println("Se detecto: Identificador " + val_peek(0).sval + " en linea: " + lexico.getContadorLinea());
             }
 break;
 case 63:
-//#line 679 "gramatica.y"
+//#line 681 "gramatica.y"
 {System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 64:
-//#line 680 "gramatica.y"
+//#line 682 "gramatica.y"
 {yyval.sval = val_peek(0).sval;}
 break;
 case 65:
-//#line 681 "gramatica.y"
+//#line 683 "gramatica.y"
 {
 		 	yyval.sval = truncarFueraRango(val_peek(0).sval, lexico.getContadorLinea());
 		 	TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1625,19 +1658,19 @@ case 65:
         }
 break;
 case 66:
-//#line 686 "gramatica.y"
+//#line 688 "gramatica.y"
 {
             yyval.sval = val_peek(0).sval;
         }
 break;
 case 67:
-//#line 689 "gramatica.y"
+//#line 691 "gramatica.y"
 {
             yyval.sval = val_peek(0).sval;
         }
 break;
 case 68:
-//#line 692 "gramatica.y"
+//#line 694 "gramatica.y"
 {
         	yyval.sval = truncarFueraRango("-"+val_peek(0).sval, lexico.getContadorLinea());
         	TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1645,7 +1678,7 @@ case 68:
         }
 break;
 case 69:
-//#line 700 "gramatica.y"
+//#line 702 "gramatica.y"
 {
     String token = val_peek(3).sval+'{'+val_peek(1).sval+'}';
     TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1666,7 +1699,7 @@ case 69:
 }
 break;
 case 70:
-//#line 725 "gramatica.y"
+//#line 727 "gramatica.y"
 {
             Integer tipoExp = null;
             Integer tipoID = null;
@@ -1696,7 +1729,7 @@ case 70:
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                     System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
+                     System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
                      generador.setError();
                 }else{
                    String operando2;
@@ -1711,7 +1744,7 @@ case 70:
         }
 break;
 case 71:
-//#line 768 "gramatica.y"
+//#line 770 "gramatica.y"
 {
             Integer tipoExp = null;
             Integer tipoID = null;
@@ -1740,7 +1773,7 @@ case 71:
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                      System.err.println("Error: tipos invalidos en asignación. Linea: " +lexico.getContadorLinea());
+                      System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
                  }
                 else{
                     String operando2;
@@ -1756,7 +1789,7 @@ case 71:
         }
 break;
 case 72:
-//#line 813 "gramatica.y"
+//#line 815 "gramatica.y"
 {
                 lexico.getTablaSimbolos().agregarUso(val_peek(0).sval, NOMBRE_ETIQUETA);
                 TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1774,7 +1807,7 @@ case 72:
     		}
 break;
 case 73:
-//#line 830 "gramatica.y"
+//#line 832 "gramatica.y"
 {
             TablaSimbolos TS = lexico.getTablaSimbolos();
             TS.agregarUso(val_peek(1).sval, NOMBRE_ETIQUETA);
@@ -1790,31 +1823,31 @@ case 73:
        }
 break;
 case 74:
-//#line 843 "gramatica.y"
+//#line 845 "gramatica.y"
 {System.err.println("Error: falta de etiqueta en la sentencia GOTO" + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 75:
-//#line 846 "gramatica.y"
+//#line 848 "gramatica.y"
 {
         	yyval.sval = generador.addTerceto("SALIDA", val_peek(1).sval, null);
         }
 break;
 case 76:
-//#line 850 "gramatica.y"
+//#line 852 "gramatica.y"
 {
         	yyval.sval = generador.addTerceto("SALIDA", val_peek(1).sval, null);
         }
 break;
 case 77:
-//#line 854 "gramatica.y"
+//#line 856 "gramatica.y"
 {System.err.println("Error: falta parametro " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 78:
-//#line 855 "gramatica.y"
+//#line 857 "gramatica.y"
 {System.err.println("Error: parametro invalido " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 79:
-//#line 862 "gramatica.y"
+//#line 864 "gramatica.y"
 {
 							int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 							generador.eliminarPila();
@@ -1827,11 +1860,11 @@ case 79:
 			}
 break;
 case 80:
-//#line 873 "gramatica.y"
+//#line 875 "gramatica.y"
 {System.err.println("Error: Falta END_IF de cierre " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 81:
-//#line 874 "gramatica.y"
+//#line 876 "gramatica.y"
 {
 		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
 		int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
@@ -1845,19 +1878,19 @@ case 81:
 	 }
 break;
 case 82:
-//#line 885 "gramatica.y"
+//#line 887 "gramatica.y"
 {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
 break;
 case 83:
-//#line 886 "gramatica.y"
+//#line 888 "gramatica.y"
 {System.err.println("Error: Falta de contenido en el bloque then " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 84:
-//#line 887 "gramatica.y"
+//#line 889 "gramatica.y"
 {System.err.println("Error: Falta de contenido en el bloque else " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 85:
-//#line 890 "gramatica.y"
+//#line 892 "gramatica.y"
 {
 							yyval.sval = generador.addTerceto("BF", val_peek(1).sval, null);
 							generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
@@ -1865,7 +1898,7 @@ case 85:
 				}
 break;
 case 86:
-//#line 897 "gramatica.y"
+//#line 899 "gramatica.y"
 {
 							int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 							generador.eliminarPila();
@@ -1883,7 +1916,7 @@ case 86:
 				  }
 break;
 case 87:
-//#line 915 "gramatica.y"
+//#line 917 "gramatica.y"
 {
 
                     		TablaSimbolos TS = lexico.getTablaSimbolos();
@@ -1926,7 +1959,7 @@ case 87:
                     		}
 
                     		if(t_primer_exp_arit != t_segunda_exp_arit){
-                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. No se puede comparar entre "+this.mappeoTipo(t_primer_exp_arit)+" y "+this.mappeoTipo(t_segunda_exp_arit)+". Linea: "+lexico.getContadorLinea());
                     			generador.setError();
                     		}
 
@@ -1938,13 +1971,13 @@ case 87:
                             else operando2 = segunda_exp_arit;
 
                     		yyval.sval = generador.addTerceto(val_peek(2).sval, operando1, operando2);
-
+                            generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
                     		System.out.println("Se detecto: comparación");
 
                     	}
 break;
 case 88:
-//#line 974 "gramatica.y"
+//#line 976 "gramatica.y"
 {
 
           	        String[] lista1 = val_peek(6).sval.split(",");
@@ -2008,6 +2041,7 @@ case 88:
                           else operando2 = segunda_exp_arit;
 
                   		yyval.sval = generador.addTerceto(val_peek(4).sval, operando1, operando2);
+                        generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
 
 
           	            if(lista1.length!=1){
@@ -2059,6 +2093,7 @@ case 88:
 
           						auxTerceto= generador.addTerceto(val_peek(4).sval, operando1, operando2);
           	                    yyval.sval =generador.addTerceto("AND", yyval.sval, auxTerceto);
+                                generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
           	                }
 
           	                if(error_comparacion){
@@ -2072,63 +2107,63 @@ case 88:
           		  }
 break;
 case 89:
-//#line 1100 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
-break;
-case 90:
-//#line 1101 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
-break;
-case 91:
-//#line 1102 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
-break;
-case 92:
-//#line 1103 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
-break;
-case 93:
 //#line 1104 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
-case 94:
+case 90:
 //#line 1105 "gramatica.y"
 {System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
-case 95:
+case 91:
+//#line 1106 "gramatica.y"
+{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+break;
+case 92:
 //#line 1107 "gramatica.y"
+{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+break;
+case 93:
+//#line 1108 "gramatica.y"
+{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+break;
+case 94:
+//#line 1109 "gramatica.y"
+{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+break;
+case 95:
+//#line 1111 "gramatica.y"
 {System.err.println("Error: falta de comparador. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 96:
-//#line 1108 "gramatica.y"
+//#line 1112 "gramatica.y"
 {System.err.println("Error, falta de lista de expresión aritmetica en comparación. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 97:
-//#line 1112 "gramatica.y"
+//#line 1116 "gramatica.y"
 {yyval.sval = ">=";}
 break;
 case 98:
-//#line 1113 "gramatica.y"
+//#line 1117 "gramatica.y"
 {yyval.sval = "<=";}
 break;
 case 99:
-//#line 1114 "gramatica.y"
+//#line 1118 "gramatica.y"
 {yyval.sval = "!=";}
 break;
 case 100:
-//#line 1115 "gramatica.y"
+//#line 1119 "gramatica.y"
 {yyval.sval = "=";}
 break;
 case 101:
-//#line 1116 "gramatica.y"
+//#line 1120 "gramatica.y"
 {yyval.sval = ">";}
 break;
 case 102:
-//#line 1117 "gramatica.y"
+//#line 1121 "gramatica.y"
 {yyval.sval = "<";}
 break;
 case 103:
-//#line 1120 "gramatica.y"
+//#line 1124 "gramatica.y"
 {
 					int pos = Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 
@@ -2138,15 +2173,15 @@ case 103:
 				}
 break;
 case 104:
-//#line 1128 "gramatica.y"
+//#line 1132 "gramatica.y"
 {System.err.println("Error: falta cuerpo en la iteracion. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 105:
-//#line 1129 "gramatica.y"
+//#line 1133 "gramatica.y"
 {System.err.println("Error: falta de until en la iteracion repeat. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 106:
-//#line 1133 "gramatica.y"
+//#line 1137 "gramatica.y"
 {
 				    yyval.sval = generador.addTerceto("ET" + generador.getSizeTercetos(), null, null);
 				    generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
@@ -2154,7 +2189,7 @@ case 106:
 				}
 break;
 case 107:
-//#line 1143 "gramatica.y"
+//#line 1147 "gramatica.y"
 {
     Integer t = Integer.parseInt(val_peek(2).sval);
     switch(t){
@@ -2181,7 +2216,7 @@ case 107:
         TS.editarLexema(val_peek(0).sval, val_peek(0).sval + amb);
     }
 break;
-//#line 2109 "Parser.java"
+//#line 2153 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

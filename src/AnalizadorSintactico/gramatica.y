@@ -596,7 +596,7 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -651,7 +651,7 @@ termino : termino '*' factor{
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
                         generador.setError();
                     }
                     else{
@@ -937,7 +937,7 @@ condicion_else	: ELSE {
                     			}
                     		}
 
-            				Strign segunda_exp_arit = TS.buscarVariable($4.sval);
+            				String segunda_exp_arit = TS.buscarVariable($4.sval);
                     		Integer t_segunda_exp_arit = null;
 
                     		if(segunda_exp_arit == null){
@@ -964,7 +964,7 @@ condicion_else	: ELSE {
 
                     		if (primer_exp_arit == "Terceto") operando1 = $2.sval;
                             else operando1 = primer_exp_arit;
-                            if (factor == "Terceto") operando2 = $4.sval;
+                            if (segunda_exp_arit == "Terceto") operando2 = $4.sval;
                             else operando2 = segunda_exp_arit;
 
                     		$$.sval = generador.addTerceto($3.sval, operando1, operando2);
@@ -986,8 +986,8 @@ condicion_else	: ELSE {
 
           	        	TablaSimbolos TS = lexico.getTablaSimbolos();
 
-                  		Strign primer_exp_arit = TS.buscarVariable(lista1[0]);
-          	        	Strign segunda_exp_arit = TS.buscarVariable(lista2[0]);
+                  		String primer_exp_arit = TS.buscarVariable(lista1[0]);
+          	        	String segunda_exp_arit = TS.buscarVariable(lista2[0]);
 
           	            Integer t_primer_exp_arit = null;
                   		Integer t_segunda_exp_arit = null;
