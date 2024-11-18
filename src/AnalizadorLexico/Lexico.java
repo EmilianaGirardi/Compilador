@@ -276,7 +276,6 @@ public class Lexico {
         if(caracterActual == FINAL_ARCHIVO) {
         	System.out.println("Fin de Archivo (0)");
             System.out.println();
-            this.tablaSimbolos.imprimirTabla();
         	return 0;
         }
         

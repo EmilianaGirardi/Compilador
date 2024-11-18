@@ -87,7 +87,13 @@ public class TraductorAssembler {
 			if (TS.getToken(lexema)== 262) { //ctes single
 				addFloat(lexema);
 			}
-			
+		}
+		
+	}
+	
+	public void cerrarDeclaracion() throws IOException {
+		TablaSimbolos TS = lexico.getTablaSimbolos();
+		for (String lexema : TS.getMap().keySet()){
 			if(TS.getTipo(lexema)==TIPO_AUX_ENTERO) {
 				encabezado.append(lexema + " DW ? "+ saltoLinea);
 			}else if(TS.getTipo(lexema)==TIPO_AUX_FLOAT) {
@@ -97,7 +103,6 @@ public class TraductorAssembler {
 		encabezado.append(saltoLinea);
 		encabezado.append(".CODE" + saltoLinea);
 		encabezado.append("START:" + saltoLinea);
-		
 	}
 
 	public void addCadena(String lexema) throws IOException {
@@ -107,7 +112,7 @@ public class TraductorAssembler {
 			
 			mapaCadenas.put(lexema, etq);
 			
-			salida.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
+			encabezado.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
 		}
 	}
 	
@@ -118,7 +123,7 @@ public class TraductorAssembler {
 			
 			mapaSingles.put(cte, etq);
 			
-			salida.append(etq+" DD "+ cte + saltoLinea);
+			encabezado.append(etq+" DD "+ cte + saltoLinea);
 		}
 	}
 	
@@ -153,12 +158,13 @@ public class TraductorAssembler {
 		salida.append("??errorRestaNegativa"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
 		
-		salida.append("END START");
+		salida.append("END START"); 
 		
 		
-		this.inicializarAssembler();
+		this.cerrarDeclaracion();
 		
 		cargarArchivo("/GeneradorCodigo/encabezado.txt", this.assembler);
+		
 		cargarArchivo("/GeneradorCodigo/salida.txt", this.assembler);
 		
 		
@@ -432,11 +438,11 @@ public class TraductorAssembler {
 		Integer tipo = lexico.getTablaSimbolos().getTipo(parametro);
 		
 		if(tipo == 2) {
-			this.salida.append("FLD [EBP+8]");
+			this.salida.append("FLD [EBP+8]"+saltoLinea);
 			this.salida.append("FST "+parametro);
 		}else {
-			this.salida.append("MOV AX, [EBP+8]");
-			this.salida.append("MOV "+parametro+", AX");
+			this.salida.append("MOV AX, [EBP+8]"+saltoLinea);
+			this.salida.append("MOV "+parametro+", AX"+saltoLinea);
 		}
 	}
 	

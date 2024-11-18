@@ -5,10 +5,11 @@ prueba BEGIN
     x := x + v;
     y := 12.2s+8;
     y := y - z;
+    z:= 25.111;
 
     TIPO_UNSIGNED FUN funcion1 (TIPO_SINGLE x )
 	    BEGIN
-	        IF ( x = 1.0)  THEN
+	        IF ( x = 1.01)  THEN
 	            BEGIN
 	                RET (1);
 	            END

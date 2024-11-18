@@ -10,17 +10,20 @@ errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
 z.global DD ? 
-@aux5 DW ? 
-@aux4 DW ? 
+_float0_ DD 1.01
 v.global DW ? 
 x.global DW ? 
 y.global DD ? 
 x.global.funcion1 DD ? 
+_float1_ DD 12.2s+8
+g.global DD ? 
+funcion1.global DW ? 
+_float2_ DD 25.111
+@aux5 DW ? 
+@aux4 DW ? 
 @aux3 DW ? 
 @aux2 DD ? 
 @aux1 DW ? 
-g.global DD ? 
-funcion1.global DW ? 
 
 .CODE
 START:
