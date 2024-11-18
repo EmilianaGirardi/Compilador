@@ -46,8 +46,24 @@ ejecutable : sentencia_if {System.out.println("Se detecto: Sentencia if ");}
     ;
 
 bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
-                                | BEGIN sentencias_ejecutables retorno END
-                                | BEGIN retorno END
+                                | BEGIN sentencias_ejecutables retorno END {//verificar el tipo de retorno
+                                                                                            TablaSimbolos TS = lexico.getTablaSimbolos();
+                                                                                            String lexemaFun = TS.getUltimoAmbito(); //obtengo el lexema de la funcion
+                                                                                            Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
+                                                                                            Integer tipoRetorno = generador.getTerceto(Integer.parseInt($3.sval.replaceAll("\\D", ""))).getTipo();
+                                                                                            if (tipoFun != tipoRetorno){
+                                                                                                System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                                                                                                generador.setError();
+                                                                                            }}
+                                | BEGIN retorno END {//verificar el tipo de retorno
+                                                                     TablaSimbolos TS = lexico.getTablaSimbolos();
+                                                                     String lexemaFun = TS.getUltimoAmbito(); //obtengo el lexema de la funcion
+                                                                     Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
+                                                                     Integer tipoRetorno = generador.getTerceto(Integer.parseInt($2.sval.replaceAll("\\D", ""))).getTipo();
+                                                                     if (tipoFun != tipoRetorno){
+                                                                         System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                                                                         generador.setError();
+                                                                     }}
 								;
 
 sentencias_ejecutables : ejecutable ';'

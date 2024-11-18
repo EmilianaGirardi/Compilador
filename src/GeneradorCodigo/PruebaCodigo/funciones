@@ -3,16 +3,25 @@ prueba BEGIN
 
 TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
 	    BEGIN
-	        IF ( x = 45)  THEN
+	        IF ( x = 045)  THEN
 	            BEGIN
-	                RET (x);
+	                RET (45);
 	            END
 	        ELSE BEGIN
-	           RET(X+2);
+	           RET(90);
 	        END
 	        END_IF;
 
-	        RET (123+22);
+            RET(500);
+
 	    END;
+
+TIPO_OCTAL x;
+x:= 047;
+
+funcion1(x);
+
+TIPO_UNSIGNED y;
+y:= 45;
 
 END;

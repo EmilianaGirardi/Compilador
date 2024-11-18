@@ -1,31 +1,28 @@
-MOV AX, x.global
-ADD AX, v.global
-JC ??errorOverflowMOV @aux1, AX
-MOV AX, @aux1
-MOV x.global, AX
-MOV ST, 12.2s+8
-MOV y.global, ST
-FLD y.global
-FSUB ST, z.global
-FST @aux2
-MOV ST, @aux2
-MOV y.global, ST
 funcion1.global:
-FLD [EBP+8]FST x.global.funcion1MOV CX, 0 
-FLD x.global.funcion1
-FCOMI  1.0
-SETZ  CL
-MOV @aux3, CL
-CMP @aux3, 0
-JE ET9
-MOV AX,1
+MOV AX, [EBP+8]
+MOV x.global.funcion1, AX
+MOV AX, 05
+MOV z.global.funcion1, AX
+MOV CX, 0 
+MOV x.global.funcion1, AX
+CMP AX, 045
+SETA CL
+MOV @aux1, CL
+CMP @aux1, 0
+JE ET5
+MOV AX,x.global.funcion1
+MOV @aux2, AX
+RET
+ET5:
+MOV AX, x.global.funcion1
+ADD AX, z.global.funcion1
+JC ??errorOverflowMOV @aux3, AX
+MOV AX,@aux3
 MOV @aux4, AX
 RET
-ET9:
-MOV AX,123
-MOV @aux5, AX
-RET
-PUSH g.global
+MOV AX, 25
+MOV x.global, AX
+PUSH 01
 CALL funcion1.global
 J END_START
 ??errorOverflow:
@@ -36,5 +33,4 @@ invoke StdOut, addr errorMsgConversionNegativa
 J END_START
 ??errorRestaNegativa
 invoke StdOut, addr errorMsgRestaNegativa
-END START_float0_ DD 12.2s+8
-_float1_ DD 1.0
+END START

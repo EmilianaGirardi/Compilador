@@ -435,8 +435,8 @@ public class TraductorAssembler {
 			this.salida.append("FLD [EBP+8]");
 			this.salida.append("FST "+parametro);
 		}else {
-			this.salida.append("MOV AX, [EBP+8]");
-			this.salida.append("MOV "+parametro+", AX");
+			this.salida.append("MOV AX, [EBP+8]" + saltoLinea);
+			this.salida.append("MOV "+parametro+", AX" + saltoLinea);
 		}
 	}
 	

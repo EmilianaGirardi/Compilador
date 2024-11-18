@@ -1,0 +1,21 @@
+prueba BEGIN
+
+TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
+	    BEGIN
+	        TIPO_OCTAL z;
+	        z:= 05;
+	        IF ( x > 045)  THEN
+            BEGIN
+                RET (x);
+            END
+            END_IF;
+	        RET (x+z);
+	    END;
+
+TIPO_UNSIGNED x;
+x:= 25;
+
+funcion1(01);
+
+
+END;
