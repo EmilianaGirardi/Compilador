@@ -441,13 +441,8 @@ public class TraductorAssembler {
 			this.salida.append("FLD [EBP+8]"+saltoLinea);
 			this.salida.append("FST "+parametro);
 		}else {
-<<<<<<< HEAD
 			this.salida.append("MOV AX, [EBP+8]" + saltoLinea);
 			this.salida.append("MOV "+parametro+", AX" + saltoLinea);
-=======
-			this.salida.append("MOV AX, [EBP+8]"+saltoLinea);
-			this.salida.append("MOV "+parametro+", AX"+saltoLinea);
->>>>>>> manejoArchivoSalida
 		}
 	}
 	
