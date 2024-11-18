@@ -1,4 +1,5 @@
-_float0_ DD 12.2e+8
+_float0_ DD 12.2s+8
+_float1_ DD 1.0
 MOV AX, x.global
 ADD AX, v.global
 JC ??OVERFLOW_ERRORMOV @aux1, AX
@@ -11,6 +12,23 @@ FSUB ST, z.global
 MOV @aux2, ST
 MOV ST, @aux2
 MOV y.global, ST
+funcion1.global:
+MOV CX, 0 
+MOV x.global.funcion1, AX
+CMP AX, 1.0
+SETE CL
+MOV @aux3, CL
+CMP @aux3, 0
+JE ET9
+MOV AX,1
+MOV @aux4, AX
+RET
+ET9:
+MOV AX,123
+MOV @aux5, AX
+RET
+PUSH g.global
+CALL funcion1.global
 ??OVERFLOW_ERROR:
 invoke StdOut, addr errorMsgOverflow
 END START

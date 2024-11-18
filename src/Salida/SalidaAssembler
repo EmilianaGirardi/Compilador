@@ -1,0 +1,77 @@
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+z.global DD ? 
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+x.global.funcion1 DD ? 
+g.global DD ? 
+funcion1.global DW ? 
+
+.CODE
+START:
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow en suma!.", 10, 0 ;
+z.global DD ? 
+@aux5 DW ? 
+@aux4 DW ? 
+v.global DW ? 
+x.global DW ? 
+y.global DD ? 
+x.global.funcion1 DD ? 
+@aux3 DW ? 
+@aux2 DD ? 
+@aux1 DW ? 
+g.global DD ? 
+funcion1.global DW ? 
+
+.CODE
+START:
+_float0_ DD 12.2s+8
+_float1_ DD 1.0
+MOV AX, x.global
+ADD AX, v.global
+JC ??OVERFLOW_ERRORMOV @aux1, AX
+MOV AX, @aux1
+MOV x.global, AX
+MOV ST, _float0_
+MOV y.global, ST
+MOV ST, y.global
+FSUB ST, z.global
+MOV @aux2, ST
+MOV ST, @aux2
+MOV y.global, ST
+funcion1.global:
+MOV CX, 0 
+MOV x.global.funcion1, AX
+CMP AX, 1.0
+SETE CL
+MOV @aux3, CL
+CMP @aux3, 0
+JE ET9
+MOV AX,1
+MOV @aux4, AX
+RET
+ET9:
+MOV AX,123
+MOV @aux5, AX
+RET
+PUSH g.global
+CALL funcion1.global
+??OVERFLOW_ERROR:
+invoke StdOut, addr errorMsgOverflow
+END START

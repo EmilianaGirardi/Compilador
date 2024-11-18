@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,6 +35,7 @@ public class TraductorAssembler {
 	private static Integer TIPO_AUX_FLOAT = 11;
 	
 	private static String saltoLinea = "\r\n";
+	private String identacion;
 
 	public TraductorAssembler(String archivoSalida) throws IOException {
 		this.path = archivoSalida;
@@ -49,6 +52,8 @@ public class TraductorAssembler {
 		this.lexico = Lexico.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
 		this.mapaSingles = new HashMap<String, String>();
+		
+		this.identacion = "";
 	}
 
 	public void inicializarAssembler() throws IOException {
@@ -128,23 +133,30 @@ public class TraductorAssembler {
 		
 		this.inicializarAssembler();
 		
-		this.assembler.append(leerArchivo("src/GeneradorCodigo/encabezado.txt"));
-		this.assembler.append(leerArchivo("src/GeneradorCodigo/salida.txt"));
+		cargarArchivo("/GeneradorCodigo/encabezado.txt", this.assembler);
+		cargarArchivo("/GeneradorCodigo/salida.txt", this.assembler);
 		
 		
 		this.encabezado.close();
-		this.salida.close();
+		this.salida.close(); 
 		this.assembler.close();
 		
 	}
 
-    private String leerArchivo(String pathArchivo) throws IOException {
+    private String cargarArchivo(String pathArchivoOrigen, FileWriter archivoDestino) throws IOException {
         StringBuilder contenido = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(pathArchivo));
-        String linea;
+        InputStream archivo = getClass().getResourceAsStream(pathArchivoOrigen);
+        
+        if (archivo == null) {
+            throw new IOException("No se pudo encontrar uno de los archivos de Assembler en el classpath");
+        }
 
-        while ((linea = reader.readLine()) != null) {
-            contenido.append(linea).append("\n");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(archivo));
+        String linea= reader.readLine();
+        
+        while (linea != null) {
+            archivoDestino.append(linea).append("\n");
+            linea= reader.readLine();
         }
 
         reader.close();
