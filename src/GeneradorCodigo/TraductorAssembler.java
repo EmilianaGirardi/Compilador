@@ -65,7 +65,9 @@ public class TraductorAssembler {
 		encabezado.append(".STACK 200h" + saltoLinea);
 		encabezado.append(saltoLinea);
 		encabezado.append(".DATA" + saltoLinea);
-		encabezado.append("errorMsgOverflow db \"Overflow en suma!.\", 10, 0 ;"+saltoLinea);
+		encabezado.append("errorMsgOverflow db \"Overflow: en suma!.\", 10, 0 ;"+saltoLinea);
+		encabezado.append("errorMsgConversionNegativa db \"Conversion invalida: no puede convertir un Single negativo a Entero!.\", 10, 0 ;"+saltoLinea);
+		
 		//mapeo de variables y cadenas
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		for (String lexema : TS.getMap().keySet()){
@@ -119,14 +121,28 @@ public class TraductorAssembler {
 		}
 	}
 	
-	private String crearAux() {
+	private String crearAux(Integer tipo) {
 		numAux++;
-		return "@aux"+numAux;
+		
+		ArrayList<Integer> atributo = new ArrayList<Integer>();
+		atributo.add(0);
+		if(tipo==TIPO_AUX_ENTERO)
+			atributo.add(TIPO_AUX_ENTERO);
+		else
+			atributo.add(TIPO_AUX_FLOAT);
+		
+		String var = "@aux"+numAux;
+		
+		lexico.getTablaSimbolos().agregarToken(var, atributo);
+		
+		return var;
 	}
 
 	public void cerrarTraduccion() throws IOException {
 		salida.append("??OVERFLOW_ERROR:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
+		salida.append("??errorConversionNegativo");
+		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
 		
 		salida.append("END START");
 		
@@ -177,7 +193,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_ENTERO);
 		
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
@@ -187,12 +203,6 @@ public class TraductorAssembler {
 		
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
-
 	}
 
 	private void resta(Terceto terceto) throws IOException {
@@ -209,18 +219,13 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
 		salida.append("SUB AX, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 	
 	private void multiplicacion(Terceto terceto) throws IOException {
@@ -237,18 +242,13 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
 		salida.append("MUL AX, " + op2 + saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 	
 	private void division(Terceto terceto) throws IOException {
@@ -265,7 +265,7 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
 		salida.append("DIV AX, " + op2 + saltoLinea);
@@ -273,10 +273,6 @@ public class TraductorAssembler {
 
 		terceto.setAux(result);
 		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	//Punto Flotante
@@ -300,19 +296,13 @@ public class TraductorAssembler {
 			op2 = mapaSingles.get(op2);
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("FLD "+ op1 + saltoLinea);
 		salida.append("FADD ST, " + op2 + saltoLinea);
-		salida.append("MOV " + result + ", ST" + saltoLinea);
+		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_FLOAT);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
-
 	}
 
 	private void restaPuntoFlotante(Terceto terceto) throws IOException {
@@ -336,18 +326,13 @@ public class TraductorAssembler {
 			op2 = mapaSingles.get(op2);
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("FLD "+ op1 + saltoLinea);
 		salida.append("FSUB ST, " + op2 + saltoLinea);
-		salida.append("MOV " + result + ", ST" + saltoLinea);
+		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_FLOAT);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void multiplicacionPuntoFlotante(Terceto terceto) throws IOException {
@@ -371,18 +356,13 @@ public class TraductorAssembler {
 			op2 = mapaSingles.get(op2);
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("MOV ST, " + op1 + saltoLinea);
+		salida.append("FLD "+ op1 + saltoLinea);
 		salida.append("FMUL ST, " + op2 + saltoLinea);
-		salida.append("MOV " + result + ", ST" + saltoLinea);
+		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_FLOAT);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void divisionPuntoFlotante(Terceto terceto) throws IOException {
@@ -406,18 +386,14 @@ public class TraductorAssembler {
 			op2 = mapaSingles.get(op2);
 		}
 
-		result = crearAux();
+		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("MOV ST, " + op1 + saltoLinea);
+		
+		salida.append("FLD " + op1 + saltoLinea);
 		salida.append("FDIV ST, " + op2 + saltoLinea);
-		salida.append("MOV " + result + ", ST" + saltoLinea);
+		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_FLOAT);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void etiqueta(Terceto terceto) throws IOException {
@@ -439,23 +415,28 @@ public class TraductorAssembler {
 
 	private void ret(Terceto terceto) throws IOException {
 		String retorno = terceto.getOperando1();
+		Integer tipo= terceto.getTipo();;
 
 		if (retorno.matches("\\[T\\d+\\]")) {
 			int pos = Integer.parseInt(retorno.replaceAll("\\D", ""));
 			retorno = generador.getTerceto(pos).getAux();
 		}
 
-		String result = this.crearAux();
-		salida.append("MOV AX,"+retorno+ saltoLinea);
-		salida.append("MOV "+result+", AX"+ saltoLinea);
-		salida.append("RET"+ saltoLinea);
-
-		terceto.addAux(result);
+		String result;
 		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
+		if(tipo == 2) {
+			result = this.crearAux(TIPO_AUX_FLOAT);
+			salida.append("FLD "+retorno+ saltoLinea);
+			salida.append("FST "+result+ saltoLinea);
+			salida.append("RET"+ saltoLinea);
+		}else {
+			result = this.crearAux(TIPO_AUX_ENTERO);
+			salida.append("MOV AX,"+retorno+ saltoLinea);
+			salida.append("MOV "+result+", AX"+ saltoLinea);
+			salida.append("RET"+ saltoLinea);
+		}
+		
+		terceto.addAux(result);
 	}
 
 	private void mayorIgual(Terceto terceto) throws IOException{
@@ -482,14 +463,10 @@ public class TraductorAssembler {
 		//1 si op1 <= op2 (verdadero)
 		//0 si op1 > op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
 		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void mayor(Terceto terceto) throws IOException{
@@ -516,14 +493,9 @@ public class TraductorAssembler {
 		//1 si op1 <= op2 (verdadero)
 		//0 si op1 > op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void menorIgual(Terceto terceto) throws IOException{
@@ -550,14 +522,9 @@ public class TraductorAssembler {
 		//1 si op1 <= op2 (verdadero)
 		//0 si op1 > op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void menor(Terceto terceto) throws IOException{
@@ -584,14 +551,9 @@ public class TraductorAssembler {
 		//1 si op1 < op2 (verdadero)
 		//0 si op1 >= op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 
 	private void igual(Terceto terceto) throws IOException{
@@ -618,15 +580,9 @@ public class TraductorAssembler {
 		//1 si op1 < op2 (verdadero)
 		//0 si op1 >= op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
-
 	}
 
 	private void distinto(Terceto terceto) throws IOException{
@@ -653,15 +609,9 @@ public class TraductorAssembler {
 		//1 si op1 < op2 (verdadero)
 		//0 si op1 >= op2 (falso)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("MOV " + result + ", CL" + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
-
 	}
 	private void and(Terceto terceto) throws IOException{
 		String op1 = terceto.getOperando1();
@@ -675,14 +625,9 @@ public class TraductorAssembler {
 		salida.append("AND AX, "+ op2 + saltoLinea); //AND
 		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
 
-		String result = crearAux();
+		String result = crearAux(TIPO_AUX_ENTERO);
 		salida.append("SETNZ " + result + saltoLinea);
 		terceto.setAux(result);
-		
-		ArrayList<Integer> atributo = new ArrayList<Integer>();
-		atributo.add(0); 
-		atributo.add(TIPO_AUX_ENTERO);
-		lexico.getTablaSimbolos().agregarToken(result, atributo);
 	}
 	private void branchIncondicional(Terceto terceto) throws IOException {
 		String etiqueta = terceto.getOperando2();
@@ -744,16 +689,46 @@ public class TraductorAssembler {
 
 	private void conversionItoS(Terceto terceto) throws IOException {
 		String operando = terceto.getOperando1();
-		salida.append("MOV BX, " + operando);
+		Integer pos;
+		
+		if (operando.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(operando.replaceAll("\\D", ""));
+			operando = generador.getTerceto(pos).getAux();
+		}
+		
+		String result = this.crearAux(TIPO_AUX_FLOAT);
+		salida.append("FILD "+operando+saltoLinea);
+		
+		salida.append("MOV "+result+", ST"+saltoLinea);
+		terceto.addAux(result);
+		
+		/*salida.append("MOV BX, " + operando);
 		salida.append("MOV ECX, 0")	;
 		salida.append("MOV CX, BX");
-		salida.append("MOV EBX, ECX");
+		salida.append("MOV EBX, ECX");*/
 	}
 	
 	private void conversionStoI(Terceto terceto) throws IOException {
 			String operando = terceto.getOperando1();
-			salida.append("MOV BX, " + operando);
-			salida.append("MOV AX, EBX");
+			Integer pos;
+			
+			if (operando.matches("\\[T\\d+\\]")){
+				pos = Integer.parseInt(operando.replaceAll("\\D", ""));
+				operando = generador.getTerceto(pos).getAux();
+			}else if(this.mapaSingles.containsKey(operando)) {
+					operando = this.mapaSingles.get(operando);
+			}	
+			
+			this.salida.append("MOV EAX, "+operando+saltoLinea);
+			this.salida.append("CMP EAX, 0");
+			this.salida.append("JL ??errorConversionNegativo"+saltoLinea);
+			
+			this.salida.append("FLD dword["+operando+"]"+saltoLinea);
+			
+			String result = this.crearAux(TIPO_AUX_ENTERO);
+			this.salida.append("FISTP "+result+saltoLinea);
+			
+			terceto.setAux(result);
 	}
 	
 	public void traducir(Terceto t) throws IOException {
