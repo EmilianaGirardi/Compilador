@@ -1,0 +1,139 @@
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
+z.global DW ? 
+v5.global DW ? 
+v6.global DW ? 
+v.global DW ? 
+x.global DW ? 
+y.global DW ? 
+u.global DW ? 
+v2.global DW ? 
+v1.global DW ? 
+v3.global DW ? 
+v4.global DW ? 
+_float0_ DD 2.025s+10
+d.global DD ? 
+@aux7 DW ? 
+@aux6 DW ? 
+@aux5 DW ? 
+@aux4 DW ? 
+@aux9 DW ? 
+@aux8 DW ? 
+@aux3 DW ? 
+@aux2 DW ? 
+@aux1 DW ? 
+@aux11 DW ? 
+@aux12 DW ? 
+@aux13 DW ? 
+@aux10 DW ? 
+
+.CODE
+START:
+FDL _float0_
+FST d.global
+MOV AX, 5
+MOV x.global, AX
+MOV AX, 8
+MOV y.global, AX
+MOV AX, 5
+MOV z.global, AX
+MOV AX, 3
+MOV u.global, AX
+MOV CX, 0 
+MOV AX, x.global
+CMP AX, z.global
+SETBE CL
+MOV @aux1, CL
+MOV CX, 0 
+MOV AX, y.global
+CMP AX, u.global
+SETBE CL
+MOV @aux2, CL
+MOV @aux1, AX
+AND AX, @aux2
+CMP AX, 0
+SETNZ @aux3
+CMP @aux3, 0
+JE ET13
+MOV AX, x.global
+ADD AX, y.global
+JC ??errorOverflow
+MOV @aux4, AX
+MOV AX, @aux4
+ADD AX, u.global
+JC ??errorOverflow
+MOV @aux5, AX
+MOV AX, @aux5
+MOV z.global, AX
+BI:
+JMP ET31
+MOV AX, 02
+MOV v1.global, AX
+MOV AX, 06
+MOV v2.global, AX
+MOV AX, 025
+MOV v3.global, AX
+MOV AX, 044
+MOV v4.global, AX
+MOV AX, 057
+MOV v5.global, AX
+MOV AX, 035
+MOV v6.global, AX
+MOV CX, 0 
+MOV AX, v1.global
+CMP AX, v4.global
+SETAE CL
+MOV @aux6, CL
+MOV CX, 0 
+MOV AX, v2.global
+CMP AX, v5.global
+SETAE CL
+MOV @aux7, CL
+MOV @aux6, AX
+AND AX, @aux7
+CMP AX, 0
+SETNZ @aux8
+MOV CX, 0 
+MOV AX, v3.global
+CMP AX, v6.global
+SETAE CL
+MOV @aux9, CL
+MOV @aux8, AX
+AND AX, @aux9
+CMP AX, 0
+SETNZ @aux10
+CMP @aux10, 0
+JE ET30
+MOV AX, v1.global
+MUL AX, v2.global
+MOV @aux11, AX
+MOV AX, @aux11
+MUL AX, v3.global
+MOV @aux12, AX
+MOV AX, @aux12
+ADD AX, v5.global
+JC ??errorOverflow
+MOV @aux13, AX
+MOV AX, @aux13
+MOV v1.global, AX
+ET30:
+ET31:
+J END_START
+??errorOverflow:
+invoke StdOut, addr errorMsgOverflow
+J END_START
+??errorConversionNegativo
+invoke StdOut, addr errorMsgConversionNegativa
+J END_START
+??errorRestaNegativa
+invoke StdOut, addr errorMsgRestaNegativa
+END START

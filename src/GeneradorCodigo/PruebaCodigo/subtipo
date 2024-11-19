@@ -1,0 +1,21 @@
+subtipo BEGIN
+
+TYPEDEF TRIPLE <TIPO_UNSIGNED> tipotipo;
+TYPEDEF TRIPLE <TIPO_OCTAL> variable;
+
+
+tipotipo x;
+
+variable ppp;
+
+ppp{1}:= 056;
+ppp{2}:= 045;
+ppp{3}:= 056;
+
+x{1}:= 5;
+x{2}:= 10;
+x{3}:= 15;
+
+x{1}:= x{2} + x{3} * 5;
+
+END;

@@ -1,0 +1,40 @@
+.MODEL flat, stdcall
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
+z.global DW ? 
+v5.global DW ? 
+v6.global DW ? 
+v.global DW ? 
+x.global DW ? 
+y.global DW ? 
+u.global DW ? 
+v2.global DW ? 
+v1.global DW ? 
+v3.global DW ? 
+v4.global DW ? 
+_float0_ DD 2.025s+10
+d.global DD ? 
+@aux7 DW ? 
+@aux6 DW ? 
+@aux5 DW ? 
+@aux4 DW ? 
+@aux9 DW ? 
+@aux8 DW ? 
+@aux3 DW ? 
+@aux2 DW ? 
+@aux1 DW ? 
+@aux11 DW ? 
+@aux12 DW ? 
+@aux13 DW ? 
+@aux10 DW ? 
+
+.CODE
+START:

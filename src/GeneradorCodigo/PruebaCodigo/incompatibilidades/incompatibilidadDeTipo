@@ -1,0 +1,11 @@
+prueba BEGIN
+
+TIPO_UNSIGNED x;
+TIPO_SINGLE y;
+
+x:= 5;
+y:= 2.0s8;
+
+x:= x + y;
+
+END;

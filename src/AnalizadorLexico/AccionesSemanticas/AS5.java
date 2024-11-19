@@ -23,13 +23,21 @@ public class AS5 extends AccionSemantica {
     	String token = lexico.getToken();
     	
     	ArrayList<Integer> atributos = new ArrayList<Integer>();
-    	atributos.add(OCTAL);
-    	atributos.add(TIPO_OCTAL);
-        int numero = Integer.parseInt(token, 8);
-        if (numero < 0 || numero > limite){
-            System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
-            token = '0' + truncaEntero(numero);
+        if(token.equals("0")) {
+            atributos.add(ENTERO_UNSIGNED);
+            atributos.add(TIPO_UNSIGNED);
         }
+        else {
+            atributos.add(OCTAL);
+            atributos.add(TIPO_OCTAL);
+            int numero = Integer.parseInt(token, 8);
+            if (numero < 0 || numero > limite){
+                System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
+                token = '0' + truncaEntero(numero);
+            }
+        }
+
+
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(!TS.estaToken(token)){
             TS.agregarToken(token, atributos);

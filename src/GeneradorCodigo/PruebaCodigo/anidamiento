@@ -1,0 +1,47 @@
+prueba BEGIN
+
+TIPO_UNSIGNED x, y;
+
+x:= 5;
+y:= 2;
+
+TIPO_UNSIGNED FUN funcion(TIPO_UNSIGNED l)
+BEGIN
+    TIPO_UNSIGNED variable, var;
+    variable:= 50;
+    TIPO_UNSIGNED FUN funcion2(TIPO_UNSIGNED i)
+    BEGIN
+        RET (l+i*2);
+    END;
+    REPEAT
+        BEGIN
+
+            IF (l > 0) THEN BEGIN l:= l; END END_IF;
+            var:= l * variable;
+            IF(var <= 8800000)THEN BEGIN var:= funcion2(var);
+                IF(var < 80) THEN BEGIN
+                    REPEAT BEGIN
+                        var:= var + 1;
+                    END
+                    UNTIL(var > 70);
+                END
+                ELSE BEGIN
+                    IF(var < 800) THEN BEGIN
+                        var:= var + 5;
+                    END
+                    END_IF;
+                END
+                END_IF;
+            END
+            ELSE BEGIN
+                RET(var);
+            END
+            END_IF;
+        END
+        UNTIL (variable = 100);
+        RET(var);
+END;
+
+x:= x + y + funcion(x);
+
+END;

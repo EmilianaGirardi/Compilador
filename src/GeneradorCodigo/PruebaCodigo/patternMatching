@@ -1,0 +1,37 @@
+pattern BEGIN
+
+    TIPO_UNSIGNED x,y,z,u,v;
+
+    	TIPO_SINGLE d;
+
+    	d:=2.025s+10;
+
+    	x:= 5;
+    	y:= 8;
+    	z:= 5;
+    	u:=3;
+
+    	IF((x,y) <= (z,u))THEN
+    		BEGIN
+    			z:=x+y+u;
+    		END
+    		ELSE BEGIN
+    		       TIPO_OCTAL v1,v2,v3,v4, v5, v6;
+                   v1:= 02;
+                   v2:= 06;
+                   v3:= 025;
+                   v4:= 044;
+                   v5:= 057;
+                   v6:= 035;
+    		    IF((v1,v2,v3) >= (v4, v5, v6)) THEN BEGIN
+    		        v1:= v1*v2*v3 + v5;
+    		    END
+    		    END_IF;
+    		END
+    	END_IF;
+
+
+
+
+
+END;

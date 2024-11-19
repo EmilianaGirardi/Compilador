@@ -17,7 +17,7 @@ x:= 5;
 
 funcion1(x);
 
-## La variable z no puede ser alcnazada porque es local de funcion1
+## La variable z no puede ser alcanzada porque es local de funcion1
 
 x:= z;
 
