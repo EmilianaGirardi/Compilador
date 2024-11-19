@@ -208,7 +208,7 @@ public class TablaSimbolos {
 		map.get(lexema).add(2, uso);
 	}
 	public Integer getUso(String lexema){
-		if (map.containsKey(lexema))
+		if (map.containsKey(lexema)&& map.get(lexema).size()>=3)
 			return map.get(lexema).get(2);
 		else return null;
 	}

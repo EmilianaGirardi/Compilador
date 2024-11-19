@@ -160,11 +160,15 @@ public class Generador {
 		// TODO Auto-generated method stub
 		TablaSimbolos TS = Lexico.getInstance().getTablaSimbolos();
 		
-		String operando1, operando2;
+		String operador, operando1, operando2;
 		for (Terceto t : this.tercetos) {
+			operador = t.getOperador();
 			operando1 = t.getOperando1();
 			operando2 = t.getOperando2();
 			
+			operador = operador.replace('.', '_');
+			t.setPrimerParametro(operador);
+				
 			if(operando1!=null && !operando1.matches("\\[T\\d+\\]")) {
 				if(TS.estaToken(operando1) && TS.getToken(operando1)!=262) {
 					operando1=operando1.replace('.', '_');

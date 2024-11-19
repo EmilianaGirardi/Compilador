@@ -109,7 +109,7 @@ declar_compuesto : ID lista_var{
             generador.setError();
         }
         else{
-            if (tiposUsuario.contains($1.sval)){
+            if (tiposUsuario.contains(id)){
                 Integer t = TS.getTipo(id);
                     switch(t){
                         case(TIPO_TRIPLE_UNSIGNED):
@@ -924,8 +924,8 @@ condicion_else	: ELSE {
 							generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
 							generador.agregarPila($$.sval);
 
-							generador.addTerceto(label, null, null);
-							generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
+							String posT = generador.addTerceto(label, null, null);
+							generador.getTerceto(Integer.parseInt(posT.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 				  }
 				;
 	
@@ -1140,7 +1140,7 @@ comparador : MAYORIGUAL {$$.sval = ">=";}
 repeat_until : sentencia_repeat bloque_sentencias_ejecutables UNTIL  condicion {
 					int pos = Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 
-					$$.sval = generador.addTerceto("BT", $4.sval, generador.getTerceto(pos).getOperador());
+					$$.sval = generador.addTerceto("BF", $4.sval, generador.getTerceto(pos).getOperador());
 					generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_SALTO);
     				generador.eliminarPila();
 				}
@@ -1248,27 +1248,26 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
        if(result>0.0f) {
 	        if (infPositivo > result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = infPositivo.toString().replace('E', 's');
+	            String nuevaCte = infPositivo.toString();
 	            return nuevaCte;
 
 	        }else if(supPositivo < result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = supPositivo.toString().replace('E', 's');
+	            String nuevaCte = supPositivo.toString();
 	            return nuevaCte;
 	        }
        }else {
        	if(infNegativo > result) {
        		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = infNegativo.toString().replace('E', 's');
+	            String nuevaCte = infNegativo.toString();
 	            return nuevaCte;
 	        }else if(supNegativo < result) {
 	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
-	            String nuevaCte = supNegativo.toString().replace('E', 's');
+	            String nuevaCte = supNegativo.toString();
 	            return nuevaCte;
 	        }
        }
 
-       cte = cte.replace('e', 's');
        return cte;
    }
 

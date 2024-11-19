@@ -73,11 +73,14 @@ public class TraductorAssembler {
 		for (String lexema : TS.getMap().keySet()){
 			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=50){ //IDENTIFICADORES
 				
-				if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
-					encabezado.append(lexema + " DD ? " +saltoLinea);
-				}
-				else { //unsigned y octal de 16 bits
-					encabezado.append(lexema + " DW ? " + saltoLinea);
+				if(TS.getUso(lexema)==null || (TS.getUso(lexema)!=null && TS.getUso(lexema)!=102) ){
+					
+					if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
+						encabezado.append(lexema + " DD ? " +saltoLinea);
+					}
+					else { //unsigned y octal de 16 bits
+						encabezado.append(lexema + " DW ? " + saltoLinea);
+					}
 				}
 			}
 			if (TS.getToken(lexema) == 265){ //MULTILINEA
@@ -170,7 +173,7 @@ public class TraductorAssembler {
 		this.encabezado.close();
 		this.salida.close(); 
 		
-		this.assembler.flush();
+		
 		this.assembler.close();
 		
 	}
@@ -262,7 +265,8 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("MUL AX, " + op2 + saltoLinea);
+		salida.append("MOV BX, " + op2 + saltoLinea);
+		salida.append("MUL BX " + saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
@@ -285,9 +289,12 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("DIV AX, " + op2 + saltoLinea);
+		salida.append("MOV BX, " + op2 + saltoLinea);
+		salida.append("DIV BX "+ saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
+		
+		
 		terceto.setAux(result);
 		
 	}
@@ -316,7 +323,7 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_FLOAT);
 
 		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FADD ST, " + op2 + saltoLinea);
+		salida.append("FADD "+ op2 + saltoLinea);
 		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
@@ -346,7 +353,7 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_FLOAT);
 
 		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FSUB ST, " + op2 + saltoLinea);
+		salida.append("FSUB " + op2 + saltoLinea);
 		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
@@ -555,7 +562,7 @@ public class TraductorAssembler {
 		}else{
 
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("MOV  AX, " + op1 + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETA CL" + saltoLinea);
 			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
@@ -780,17 +787,6 @@ public class TraductorAssembler {
 		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
 	}
 	
-	private void branchTrue(Terceto terceto) throws IOException {
-		//el primer operando tiene la condicion
-		//el segundo operando tiene la etiqueta
-		String etiqueta = terceto.getOperando2();
-		int pos = Integer.parseInt(terceto.getOperando1().replaceAll("\\D", ""));
-		Terceto condicion = generador.getTerceto(pos);
-		String resultCondicion = condicion.getAux();
-		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
-		salida.append("JNZ " + etiqueta +saltoLinea); //salta si no es cero
-	}
-	
 	private void asignacion(Terceto terceto) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
@@ -859,10 +855,10 @@ public class TraductorAssembler {
 			}	
 			
 			this.salida.append("MOV EAX, "+operando+saltoLinea);
-			this.salida.append("CMP EAX, 0");
+			this.salida.append("CMP EAX, 0"+saltoLinea);
 			this.salida.append("JL ??errorConversionNegativo"+saltoLinea);
 			
-			this.salida.append("FLD dword["+operando+"]"+saltoLinea);
+			this.salida.append("FLD ["+operando+"]"+saltoLinea);
 			
 			String result = this.crearAux(TIPO_AUX_ENTERO);
 			this.salida.append("FISTP "+result+saltoLinea);
@@ -942,10 +938,6 @@ public class TraductorAssembler {
 
 			case "BF":
 				this.branchFalse(t);
-				break;
-
-			case "BT":
-				this.branchTrue(t);
 				break;
 
 			case "AND":
