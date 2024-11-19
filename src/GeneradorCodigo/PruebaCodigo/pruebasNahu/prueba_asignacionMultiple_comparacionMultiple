@@ -4,7 +4,7 @@ program_asigMul_compMul BEGIN
 	
 	TIPO_SINGLE d;
 	
-	d:=2.025;
+	d:=2.025s+10;
 	
 	IF((x,y) <= (z,u))THEN
 		BEGIN
