@@ -1,0 +1,14 @@
+aritmeticas BEGIN
+
+TIPO_SINGLE x, y, z, variable1, variable2;
+
+    x:= 80.9s24
+    y:= 95.5s14;
+    z:= 7.7;
+
+    variable1:= x+y-z*2.0
+    variable2:= x-y-z/variable1;
+
+
+
+END;

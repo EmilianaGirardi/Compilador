@@ -16,6 +16,11 @@ TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
 
 	    END;
 
+TIPO_SINGLE FUN funcion2 ( TIPO_SINGLE x )
+	    BEGIN
+	        RET(X+2.0);
+	    END;
+
 TIPO_OCTAL x;
 x:= 047;
 
@@ -23,5 +28,10 @@ funcion1(x);
 
 TIPO_UNSIGNED y;
 y:= 45;
+
+TIPO_SINGLE Z;
+Z:= 5.0s10;
+
+funcion2(z);
 
 END;

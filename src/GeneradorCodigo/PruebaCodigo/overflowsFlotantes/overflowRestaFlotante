@@ -1,0 +1,10 @@
+restaFlotante BEGIN
+
+    TIPO_SINGLE x, y;
+
+    x:= -3.40282347s38;
+    y:= 2.0;
+
+    x:= x - y;
+
+END;

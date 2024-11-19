@@ -1,0 +1,31 @@
+prueba BEGIN
+
+TIPO_SINGLE x;
+x:= 2.5s10;
+
+TIPO_UNSIGNED FUN funcion1 ( TIPO_SINGLE x )
+BEGIN
+    TIPO_SINGLE y;
+    y:= 2.0;
+    TIPO_UNSIGNED z;
+    z:= 40;
+    TIPO_UNSIGNED FUN funcion2 ( TIPO_UNSIGNED x )
+    BEGIN
+        IF ( x = 45)  THEN
+    	BEGIN
+    	    RET (x);
+    	END
+    	END_IF;
+        TIPO_UNSIGNED FUN funcion3 ( TIPO_UNSIGNED x )
+        BEGIN
+            RET(x+5);
+        END;
+        RET(x*2);
+    END;
+    z:= funcion3(z);
+    RET(z);
+END;
+
+funcion1(x);
+
+END;
