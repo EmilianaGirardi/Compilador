@@ -9,6 +9,11 @@ program_asigMul_compMul BEGIN
 	IF((x,y) <= (z,u))THEN
 		BEGIN
 			z:=x+y+u;
+			IF(d=d)THEN
+			BEGIN
+				d:=2.0;
+			END
+			END_IF
 		END
 	END_IF;
 

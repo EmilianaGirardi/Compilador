@@ -1,61 +1,58 @@
-funcion1.global:
-MOV AX, [EBP+8]
-MOV x.global.funcion1, AX
-MOV AX, 50
-MOV z.global.funcion1, AX
+FLD _float0_
+FST d_global
 MOV CX, 0 
-<<<<<<< HEAD
-MOV x.global.funcion1, AX
-CMP AX, 45
-SETA CL
-MOV @aux1, CL
-CMP @aux1, 0
-JE ET5
-MOV AX,x.global.funcion1
-MOV @aux2, AX
-RET
-ET5:
-MOV AX, x.global.funcion1
-ADD AX, z.global.funcion1
-=======
-MOV AX, x.global
-CMP AX, z.global
+MOV AX, x_global
+CMP AX, z_global
 SETBE CL
-MOV @aux1, CL
+MOV CH, 0 
+MOV @aux1, CX
 MOV CX, 0 
-MOV AX, y.global
-CMP AX, u.global
+MOV AX, y_global
+CMP AX, u_global
 SETBE CL
-MOV @aux2, CL
-MOV @aux1, AX
+MOV CH, 0 
+MOV @aux2, CX
+MOV CX, 0 
+MOV AX, @aux1
 AND AX, @aux2
 CMP AX, 0
-SETNZ @aux3
+SETNZ CL
+MOV CH, 0 
+MOV @aux3, CX
 CMP @aux3, 0
-JE ET8
-MOV AX, x.global
-ADD AX, y.global
->>>>>>> 69f5747 (acomodo la matriz de acc sem)
+JE ET12
+MOV AX, x_global
+ADD AX, y_global
 JC ??errorOverflow
-MOV @aux3, AX
-MOV AX,@aux3
 MOV @aux4, AX
-RET
-FDL _float0_
-FST x.global
-MOV EAX, x.global
-CMP EAX, 0JL ??errorConversionNegativo
-FLD dword[x.global]
-FISTP @aux5
-PUSH @aux5
-CALL funcion1.global
-J END_START
+MOV AX, @aux4
+ADD AX, u_global
+JC ??errorOverflow
+MOV @aux5, AX
+MOV AX, @aux5
+MOV z_global, AX
+MOV CX, 0 
+FLD d_global
+FLD d_global
+FCOM ST(1)
+FSTSW AX
+SAHF
+SETZ  CL
+MOV CH, 0 
+MOV @aux6, CX
+CMP @aux6, 0
+JE ET11
+FLD _float1_
+FST d_global
+ET11:
+ET12:
+JMP END_START
 ??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
-J END_START
+JMP END_START
 ??errorConversionNegativo
 invoke StdOut, addr errorMsgConversionNegativa
-J END_START
+JMP END_START
 ??errorRestaNegativa
 invoke StdOut, addr errorMsgRestaNegativa
-END START
+END START:

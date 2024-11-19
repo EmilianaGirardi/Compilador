@@ -1,4 +1,3 @@
-.MODEL flat, stdcall
 option casemap :none
 include \masm32\include\masm32rt.inc
 includelib \masm32\lib\kernel32.lib
@@ -9,22 +8,16 @@ includelib \masm32\lib\masm32.lib
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
-<<<<<<< HEAD
-x.global DD ? 
-x.global.funcion1 DW ? 
-z.global.funcion1 DW ? 
-funcion1.global DW ? 
-_float0_ DD 1.1s+25
-=======
-z.global DW ? 
-v.global DW ? 
-x.global DW ? 
-y.global DW ? 
-u.global DW ? 
-d.global DD ? 
-_float0_ DD 2.025s+1
+d_global DD ? 
+_float0_ DD 2.025s+10
+z_global DW ? 
+x_global DW ? 
+y_global DW ? 
+v_global DW ? 
+u_global DW ? 
+_float1_ DD 2.0
+@aux6 DW ? 
 @aux5 DW ? 
->>>>>>> 69f5747 (acomodo la matriz de acc sem)
 @aux4 DW ? 
 @aux3 DW ? 
 @aux2 DW ? 
@@ -32,58 +25,61 @@ _float0_ DD 2.025s+1
 
 .CODE
 START:
-funcion1.global:
-MOV AX, [EBP+8]
-MOV x.global.funcion1, AX
-MOV AX, 50
-MOV z.global.funcion1, AX
+FLD _float0_
+FST d_global
 MOV CX, 0 
-<<<<<<< HEAD
-MOV x.global.funcion1, AX
-CMP AX, 45
-SETA CL
-MOV @aux1, CL
-CMP @aux1, 0
-JE ET5
-MOV AX,x.global.funcion1
-MOV @aux2, AX
-RET
-ET5:
-MOV AX, x.global.funcion1
-ADD AX, z.global.funcion1
-=======
-MOV AX, x.global
-CMP AX, z.global
+MOV AX, x_global
+CMP AX, z_global
 SETBE CL
-MOV @aux1, CL
+MOV CH, 0 
+MOV @aux1, CX
 MOV CX, 0 
-MOV AX, y.global
-CMP AX, u.global
+MOV AX, y_global
+CMP AX, u_global
 SETBE CL
-MOV @aux2, CL
-MOV @aux1, AX
+MOV CH, 0 
+MOV @aux2, CX
+MOV CX, 0 
+MOV AX, @aux1
 AND AX, @aux2
 CMP AX, 0
-SETNZ @aux3
+SETNZ CL
+MOV CH, 0 
+MOV @aux3, CX
 CMP @aux3, 0
-JE ET8
-MOV AX, x.global
-ADD AX, y.global
->>>>>>> 69f5747 (acomodo la matriz de acc sem)
+JE ET12
+MOV AX, x_global
+ADD AX, y_global
 JC ??errorOverflow
-MOV @aux3, AX
-MOV AX,@aux3
 MOV @aux4, AX
-RET
-FDL _float0_
-FST x.global
-J END_START
+MOV AX, @aux4
+ADD AX, u_global
+JC ??errorOverflow
+MOV @aux5, AX
+MOV AX, @aux5
+MOV z_global, AX
+MOV CX, 0 
+FLD d_global
+FLD d_global
+FCOM ST(1)
+FSTSW AX
+SAHF
+SETZ  CL
+MOV CH, 0 
+MOV @aux6, CX
+CMP @aux6, 0
+JE ET11
+FLD _float1_
+FST d_global
+ET11:
+ET12:
+JMP END_START
 ??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
-J END_START
+JMP END_START
 ??errorConversionNegativo
 invoke StdOut, addr errorMsgConversionNegativa
-J END_START
+JMP END_START
 ??errorRestaNegativa
 invoke StdOut, addr errorMsgRestaNegativa
-END START
+END START:
