@@ -1,92 +1,51 @@
-FDL _float0_
-FST d.global
 MOV AX, 5
 MOV x.global, AX
-MOV AX, 8
+MOV AX, 48
 MOV y.global, AX
-MOV AX, 5
+MOV AX, 59
 MOV z.global, AX
-MOV AX, 3
-MOV u.global, AX
+MOV AX, 84
+MOV i.global, AX
+MOV AX, 95
+MOV j.global, AX
+MOV AX, 105
+MOV k.global, AX
 MOV CX, 0 
-MOV AX, x.global
-CMP AX, z.global
-SETBE CL
+MOV AX, z.global
+CMP AX, 80
+SETB CL
 MOV @aux1, CL
+CMP @aux1, 0
+JE ET15
+ET8:
 MOV CX, 0 
 MOV AX, y.global
-CMP AX, u.global
+CMP AX, 26
 SETBE CL
 MOV @aux2, CL
-MOV @aux1, AX
-AND AX, @aux2
-CMP AX, 0
-SETNZ @aux3
+CMP @aux2, 0
+JE ET12
+JMP salir@.global
+ET12:
+MOV CX, 0 
+MOV x.global, AX
+CMP AX, 25
+SETA CL
+MOV @aux3, CL
 CMP @aux3, 0
-JE ET13
+JNZ ET8
+ET15:
+MOV AX, 05
+MOV var.global, AX
 MOV AX, x.global
-ADD AX, y.global
+ADD AX, 25
 JC ??errorOverflow
 MOV @aux4, AX
 MOV AX, @aux4
-ADD AX, u.global
-JC ??errorOverflow
-MOV @aux5, AX
-MOV AX, @aux5
-MOV z.global, AX
-BI:
-JMP ET31
-MOV AX, 02
-MOV v1.global, AX
-MOV AX, 06
-MOV v2.global, AX
-MOV AX, 025
-MOV v3.global, AX
-MOV AX, 044
-MOV v4.global, AX
-MOV AX, 057
-MOV v5.global, AX
-MOV AX, 035
-MOV v6.global, AX
-MOV CX, 0 
-MOV AX, v1.global
-CMP AX, v4.global
-SETAE CL
-MOV @aux6, CL
-MOV CX, 0 
-MOV AX, v2.global
-CMP AX, v5.global
-SETAE CL
-MOV @aux7, CL
-MOV @aux6, AX
-AND AX, @aux7
-CMP AX, 0
-SETNZ @aux8
-MOV CX, 0 
-MOV AX, v3.global
-CMP AX, v6.global
-SETAE CL
-MOV @aux9, CL
-MOV @aux8, AX
-AND AX, @aux9
-CMP AX, 0
-SETNZ @aux10
-CMP @aux10, 0
-JE ET30
-MOV AX, v1.global
-MUL AX, v2.global
-MOV @aux11, AX
-MOV AX, @aux11
-MUL AX, v3.global
-MOV @aux12, AX
-MOV AX, @aux12
-ADD AX, v5.global
-JC ??errorOverflow
-MOV @aux13, AX
-MOV AX, @aux13
-MOV v1.global, AX
-ET30:
-ET31:
+MOV x.global, AX
+salir@.global:
+MOV AX, 10
+MOV x.global, AX
 J END_START
 ??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
