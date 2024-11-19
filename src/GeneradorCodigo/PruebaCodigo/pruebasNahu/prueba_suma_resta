@@ -3,13 +3,17 @@ program_suma_resta BEGIN
 	TIPO_OCTAL x;
 	TIPO_UNSIGNED y;
 	TIPO_SINGLE z;
+	 
+	y:=1;
 	
-	##Sumas y Restas correctas. 
+	REPEAT
+		BEGIN
+			y:=y+1;
+			OUTF([hola]);
+		END
+	UNTIL(y>5);
 	
-	z:=z+1.01s-2-z;
-	y:=y+1-6;
-	x:=x+054-04;
-	
+	OUTF([COMPILO]);
 	
 	##Sumas y restas con Error.
 	

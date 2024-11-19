@@ -1,6 +1,7 @@
 package GeneradorCodigo;
 
 import AnalizadorLexico.Lexico;
+import AnalizadorLexico.TablaSimbolos;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -143,6 +144,9 @@ public class Generador {
     /*Traduccion*/
     public void generarCodigoMaquina() throws IOException {
     	if((!this.error) && (this.mapGoto.isEmpty())) {
+    		
+    		this.replaceLexema();
+    		
     		this.traductor.inicializarAssembler();
     		for (Terceto t : this.tercetos) {
         		this.traductor.traducir(t);
@@ -151,5 +155,53 @@ public class Generador {
     	}
     	
     }
+
+	private void replaceLexema() throws IOException {
+		// TODO Auto-generated method stub
+		TablaSimbolos TS = Lexico.getInstance().getTablaSimbolos();
+		
+		String operador, operando1, operando2;
+		for (Terceto t : this.tercetos) {
+			operador = t.getOperador();
+			operando1 = t.getOperando1();
+			operando2 = t.getOperando2();
+			
+			operador = operador.replace('.', '_');
+			t.setPrimerParametro(operador);
+				
+			if(operando1!=null && !operando1.matches("\\[T\\d+\\]")) {
+				if(TS.estaToken(operando1) && TS.getToken(operando1)!=262) {
+					operando1=operando1.replace('.', '_');
+					t.setSegundoParamtero(operando1);
+				}
+			}
+			
+			if(operando2!=null && !operando2.matches("\\[T\\d+\\]")) {
+				if(TS.estaToken(operando2) && TS.getToken(operando2)!=262) {
+					operando2=operando2.replace('.', '_');
+					t.setTercerParametro(operando2);
+				}
+			}
+		}
+		
+		
+		
+		HashMap<String, String> mapaNuevosLexemas = new HashMap<String, String>();
+		String nuevoLexema;
+		
+		for (String lexema : TS.getMap().keySet()){
+			if( TS.getToken(lexema)!=262) {
+				nuevoLexema = lexema.replace('.', '_');
+				mapaNuevosLexemas.put(nuevoLexema, lexema);	
+			}
+		}
+		
+		for(String nLexema : mapaNuevosLexemas.keySet()) {
+			TS.editarLexema(mapaNuevosLexemas.get(nLexema), nLexema);
+		}
+		
+		
+		
+	}
     
 }

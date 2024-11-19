@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 MOV AX, 5
 MOV x.global, AX
 MOV AX, 48
@@ -55,4 +56,35 @@ invoke StdOut, addr errorMsgConversionNegativa
 J END_START
 ??errorRestaNegativa
 invoke StdOut, addr errorMsgRestaNegativa
+=======
+MOV AX, 1
+MOV y_global, AX
+ET1:
+MOV AX, y_global
+ADD AX, 1
+JC ??errorOverflow
+MOV @aux1, AX
+MOV AX, @aux1
+MOV y_global, AX
+invoke StdOut, addr _cadena0_
+MOV CX, 0 
+MOV  AX, y_global
+CMP AX, 5
+SETA CL
+MOV CH, 0 
+MOV @aux2, CX
+CMP @aux2, 0
+JE ET1
+invoke StdOut, addr _cadena1_
+JMP END_START
+??errorOverflow:
+invoke StdOut, addr errorMsgOverflow
+JMP END_START
+??errorConversionNegativo:
+invoke StdOut, addr errorMsgConversionNegativa
+JMP END_START
+??errorRestaNegativa:
+invoke StdOut, addr errorMsgRestaNegativa
+END_START: 
+>>>>>>> main
 END START

@@ -57,8 +57,7 @@ public class TraductorAssembler {
 	}
 
 	public void inicializarAssembler() throws IOException {
-		encabezado.append(".MODEL flat, stdcall\n" +
-				"option casemap :none\n" +
+		encabezado.append("option casemap :none\n" +
 				"include \\masm32\\include\\masm32rt.inc\n" +
 				"includelib \\masm32\\lib\\kernel32.lib\n" +
 				"includelib \\masm32\\lib\\masm32.lib" + saltoLinea);
@@ -74,11 +73,14 @@ public class TraductorAssembler {
 		for (String lexema : TS.getMap().keySet()){
 			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=50){ //IDENTIFICADORES
 				
-				if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
-					encabezado.append(lexema + " DD ? " +saltoLinea);
-				}
-				else { //unsigned y octal de 16 bits
-					encabezado.append(lexema + " DW ? " + saltoLinea);
+				if(TS.getUso(lexema)==null || (TS.getUso(lexema)!=null && TS.getUso(lexema)!=102) ){
+					
+					if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
+						encabezado.append(lexema + " DD ? " +saltoLinea);
+					}
+					else { //unsigned y octal de 16 bits
+						encabezado.append(lexema + " DW ? " + saltoLinea);
+					}
 				}
 			}
 			if (TS.getToken(lexema) == 265){ //MULTILINEA
@@ -107,12 +109,12 @@ public class TraductorAssembler {
 
 	public void addCadena(String lexema) throws IOException {
 		if(!mapaCadenas.containsKey(lexema)) {
-			String etq = "_cadena"+this.numCadena+"_";
+			String etq = "cadena"+this.numCadena;
 			this.numCadena++;
 			
-			mapaCadenas.put(lexema, etq);
+			mapaCadenas.put(lexema, "_"+etq+"_");
 			
-			encabezado.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
+			encabezado.append("_"+etq+"_ DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
 		}
 	}
 	
@@ -145,19 +147,19 @@ public class TraductorAssembler {
 	}
 
 	public void cerrarTraduccion() throws IOException {
-		salida.append("J END_START"+saltoLinea);
+		salida.append("JMP END_START"+saltoLinea);
 		salida.append("");
 		salida.append("??errorOverflow:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
-		salida.append("J END_START"+saltoLinea);
+		salida.append("JMP END_START"+saltoLinea);
 		salida.append("");
-		salida.append("??errorConversionNegativo"+saltoLinea);
+		salida.append("??errorConversionNegativo:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
-		salida.append("J END_START"+saltoLinea);
+		salida.append("JMP END_START"+saltoLinea);
 		salida.append("");
-		salida.append("??errorRestaNegativa"+saltoLinea);
+		salida.append("??errorRestaNegativa:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
-		
+		salida.append("END_START: "+saltoLinea);
 		salida.append("END START"); 
 		
 		
@@ -170,6 +172,8 @@ public class TraductorAssembler {
 		
 		this.encabezado.close();
 		this.salida.close(); 
+		
+		
 		this.assembler.close();
 		
 	}
@@ -261,7 +265,8 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("MUL AX, " + op2 + saltoLinea);
+		salida.append("MOV BX, " + op2 + saltoLinea);
+		salida.append("MUL BX " + saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
@@ -284,9 +289,12 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_ENTERO);
 
 		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("DIV AX, " + op2 + saltoLinea);
+		salida.append("MOV BX, " + op2 + saltoLinea);
+		salida.append("DIV BX "+ saltoLinea);
 		salida.append("MOV " + result + ", AX" + saltoLinea);
 
+		
+		
 		terceto.setAux(result);
 		
 	}
@@ -315,7 +323,7 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_FLOAT);
 
 		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FADD ST, " + op2 + saltoLinea);
+		salida.append("FADD "+ op2 + saltoLinea);
 		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
@@ -345,7 +353,7 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_FLOAT);
 
 		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FSUB ST, " + op2 + saltoLinea);
+		salida.append("FSUB " + op2 + saltoLinea);
 		salida.append("FST " + result + saltoLinea);
 
 		terceto.setAux(result);
@@ -491,14 +499,18 @@ public class TraductorAssembler {
 		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
+    		
 			salida.append("SETGE  CL" + saltoLinea);
 			//En este punto, CL contendrá:
 			//1 si op1 <= op2 (verdadero)
 			//0 si op1 > op2 (falso)
-
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		} else{
 			
@@ -509,9 +521,9 @@ public class TraductorAssembler {
 					//En este punto, CL contendrá:
 					//1 si op1 <= op2 (verdadero)
 					//0 si op1 > op2 (falso)
-			
+					salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
 					String result = crearAux(TIPO_AUX_ENTERO);
-					salida.append("MOV " + result + ", CL" + saltoLinea);
+					salida.append("MOV " + result + ", CX" + saltoLinea);
 					terceto.setAux(result);
 		
 		}
@@ -537,21 +549,26 @@ public class TraductorAssembler {
 		if (terceto.getTipo() == null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
 			salida.append("SETG  CL" + saltoLinea);
-
+			
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV " + op1 + ", AX" + saltoLinea);
+			salida.append("MOV  AX, " + op1 + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETA CL" + saltoLinea);
-
+			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
@@ -576,20 +593,24 @@ public class TraductorAssembler {
 		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
 			salida.append("SETLE  CL" + saltoLinea);
 
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("MOV AX, " + op1  + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETBE CL" + saltoLinea);
-	
+			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 
 		}
@@ -615,11 +636,15 @@ public class TraductorAssembler {
 		if (terceto.getTipo()!=null && terceto.getTipo()== 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
 			salida.append("SETL  CL" + saltoLinea);
 
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 
@@ -627,9 +652,10 @@ public class TraductorAssembler {
 			salida.append("MOV AX, " + op1  + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETB CL" + saltoLinea); // ¿QUE HACE ESTA INSTRUCCION?
-	
+			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
@@ -654,21 +680,26 @@ public class TraductorAssembler {
 		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
 			salida.append("SETZ  CL" + saltoLinea);
 			
 					
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("MOV AX, " + op1  + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETE CL" + saltoLinea);
+			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
 
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 
 		}
@@ -693,20 +724,25 @@ public class TraductorAssembler {
 		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-    		salida.append("FCOMI  " + op2 + saltoLinea);  // Comparar ST(0) con op2
+			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append("FSTSW AX"+saltoLinea);
+    		salida.append("SAHF"+saltoLinea);
 			salida.append("SETNZ  CL" + saltoLinea);
 
+			salida.append("MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append("MOV AX, " + op1  + saltoLinea);
 			salida.append("CMP AX, " + op2 + saltoLinea);
 			salida.append("SETNE CL" + saltoLinea);
+			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
 	
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CL" + saltoLinea);
+			salida.append("MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
@@ -719,13 +755,18 @@ public class TraductorAssembler {
 		op1 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
+		
+		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
 
-		salida.append("MOV " + op1 + ", AX" + saltoLinea);
+		salida.append("MOV AX, "+op1+ saltoLinea);
 		salida.append("AND AX, "+ op2 + saltoLinea); //AND
 		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
-
+		
+		salida.append("SETNZ CL" + saltoLinea);
+		salida.append("MOV CH, 0 " + saltoLinea); //Me aseguro de que la parte alta sea cero.
+		
 		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("SETNZ " + result + saltoLinea);
+		salida.append("MOV " + result+", CX"+ saltoLinea);
 		terceto.setAux(result);
 	}
 	
@@ -744,17 +785,6 @@ public class TraductorAssembler {
 		String resultCondicion = condicion.getAux();
 		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
 		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
-	}
-	
-	private void branchTrue(Terceto terceto) throws IOException {
-		//el primer operando tiene la condicion
-		//el segundo operando tiene la etiqueta
-		String etiqueta = terceto.getOperando2();
-		int pos = Integer.parseInt(terceto.getOperando1().replaceAll("\\D", ""));
-		Terceto condicion = generador.getTerceto(pos);
-		String resultCondicion = condicion.getAux();
-		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
-		salida.append("JNZ " + etiqueta +saltoLinea); //salta si no es cero
 	}
 	
 	private void asignacion(Terceto terceto) throws IOException{
@@ -783,13 +813,13 @@ public class TraductorAssembler {
 		}
 		
 		
-		salida.append("FDL "+operando2 + saltoLinea);
+		salida.append("FLD "+operando2 + saltoLinea);
 		salida.append("FST "+terceto.getOperando1() + saltoLinea);
 	}
 	
 	private void impresion(Terceto terceto) throws IOException{
 		String lexema = terceto.getOperando1();
-		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
+		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema)+saltoLinea);
 	}
 
 	private void conversionItoS(Terceto terceto) throws IOException {
@@ -825,10 +855,10 @@ public class TraductorAssembler {
 			}	
 			
 			this.salida.append("MOV EAX, "+operando+saltoLinea);
-			this.salida.append("CMP EAX, 0");
+			this.salida.append("CMP EAX, 0"+saltoLinea);
 			this.salida.append("JL ??errorConversionNegativo"+saltoLinea);
 			
-			this.salida.append("FLD dword["+operando+"]"+saltoLinea);
+			this.salida.append("FLD ["+operando+"]"+saltoLinea);
 			
 			String result = this.crearAux(TIPO_AUX_ENTERO);
 			this.salida.append("FISTP "+result+saltoLinea);
@@ -908,10 +938,6 @@ public class TraductorAssembler {
 
 			case "BF":
 				this.branchFalse(t);
-				break;
-
-			case "BT":
-				this.branchTrue(t);
 				break;
 
 			case "AND":
