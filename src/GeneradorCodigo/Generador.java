@@ -83,7 +83,7 @@ public class Generador {
         System.out.println("Tercetos");
         System.out.println("");
         for (Terceto terceto: tercetos) {
-            System.out.println(terceto.toString());
+            System.out.println("T"+this.tercetos.indexOf(terceto)+". "+terceto.toString());
         }
     }
 

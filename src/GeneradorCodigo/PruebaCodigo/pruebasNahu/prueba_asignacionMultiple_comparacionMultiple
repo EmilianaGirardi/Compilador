@@ -1,0 +1,15 @@
+program_asigMul_compMul BEGIN
+
+	TIPO_UNSIGNED x,y,z,u,v;
+	
+	TIPO_SINGLE d;
+	
+	d:=2.025;
+	
+	IF((x,y) <= (z,u))THEN
+		BEGIN
+			z:=x+y+u;
+		END
+	END_IF;
+
+END;

@@ -1,0 +1,23 @@
+program_suma_resta BEGIN
+
+	TIPO_OCTAL x;
+	TIPO_UNSIGNED y;
+	TIPO_SINGLE z;
+	
+	##Sumas y Restas correctas. 
+	
+	z:=z+1.01s-2-z;
+	y:=y+1-6;
+	x:=x+054-04;
+	
+	
+	##Sumas y restas con Error.
+	
+	## x:=x+y;
+	## x:=x-y;
+	## y:=z+y;
+	## y:=z-y;
+	## z:=z+x;
+	## z:=z-x;
+
+END;
