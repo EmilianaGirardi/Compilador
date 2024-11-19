@@ -870,7 +870,7 @@ salida : OUTF '(' MULTILINEA ')' {
         }
 
     |OUTF '(' ')'  {System.err.println("Error: falta parametro " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
-    |OUTF '(' error ')' {System.err.println("Error: parametro invalido " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+    //|OUTF '(' error ')' {System.err.println("Error: parametro invalido " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 ;
 
 /*------*/
