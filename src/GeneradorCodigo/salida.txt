@@ -1,81 +1,54 @@
-<<<<<<< HEAD
 MOV AX, 5
-MOV x.global, AX
+MOV x_global, AX
 MOV AX, 48
-MOV y.global, AX
+MOV y_global, AX
 MOV AX, 59
-MOV z.global, AX
+MOV z_global, AX
 MOV AX, 84
-MOV i.global, AX
+MOV i_global, AX
 MOV AX, 95
-MOV j.global, AX
+MOV j_global, AX
 MOV AX, 105
-MOV k.global, AX
+MOV k_global, AX
 MOV CX, 0 
-MOV AX, z.global
+MOV AX, z_global
 CMP AX, 80
 SETB CL
-MOV @aux1, CL
+MOV CH, 0 
+MOV @aux1, CX
 CMP @aux1, 0
 JE ET15
 ET8:
 MOV CX, 0 
-MOV AX, y.global
+MOV AX, y_global
 CMP AX, 26
 SETBE CL
-MOV @aux2, CL
+MOV CH, 0 
+MOV @aux2, CX
 CMP @aux2, 0
 JE ET12
 JMP salir@.global
 ET12:
 MOV CX, 0 
-MOV x.global, AX
+MOV  AX, x_global
 CMP AX, 25
 SETA CL
-MOV @aux3, CL
+MOV CH, 0 
+MOV @aux3, CX
 CMP @aux3, 0
-JNZ ET8
+JE ET8
 ET15:
 MOV AX, 05
-MOV var.global, AX
-MOV AX, x.global
+MOV var_global, AX
+MOV AX, x_global
 ADD AX, 25
 JC ??errorOverflow
 MOV @aux4, AX
 MOV AX, @aux4
-MOV x.global, AX
-salir@.global:
+MOV x_global, AX
+salir@_global:
 MOV AX, 10
-MOV x.global, AX
-J END_START
-??errorOverflow:
-invoke StdOut, addr errorMsgOverflow
-J END_START
-??errorConversionNegativo
-invoke StdOut, addr errorMsgConversionNegativa
-J END_START
-??errorRestaNegativa
-invoke StdOut, addr errorMsgRestaNegativa
-=======
-MOV AX, 1
-MOV y_global, AX
-ET1:
-MOV AX, y_global
-ADD AX, 1
-JC ??errorOverflow
-MOV @aux1, AX
-MOV AX, @aux1
-MOV y_global, AX
-invoke StdOut, addr _cadena0_
-MOV CX, 0 
-MOV  AX, y_global
-CMP AX, 5
-SETA CL
-MOV CH, 0 
-MOV @aux2, CX
-CMP @aux2, 0
-JE ET1
-invoke StdOut, addr _cadena1_
+MOV x_global, AX
 JMP END_START
 ??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
@@ -86,5 +59,4 @@ JMP END_START
 ??errorRestaNegativa:
 invoke StdOut, addr errorMsgRestaNegativa
 END_START: 
->>>>>>> main
 END START
