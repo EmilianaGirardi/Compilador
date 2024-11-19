@@ -1276,38 +1276,29 @@ private String mappeoTipo(Integer tipo){
 	switch(tipo){
 		case T_UNSIGNED:
 			return "UNSIGNED";
-			break;
 		case T_SINGLE:
 			return "SINGLE";
-			break;
 		case T_OCTAL:
 			return "OCTAL";
-			break;
 		case TIPO_MULTILINEA:
 			return "MULTILINEA";
-			break;
 		case TIPO_TRIPLE_UNSIGNED:
 			return "TRIPLE_UNSIGNED";
-			break;
 		case TIPO_TRIPLE_SINGLE:
 			return "TRIPLE_SINGLE";
-			break;
 		case TIPO_TRIPLE_OCTAL:
 			return "TRIPLE_OCTAL";
-			break;
 		case TIPO_ETIQUETA:
 			return "ETIQUETA";
-			break;	
 		case TIPO_SALTO:
 			return "SALTO";
-			break;	
 		case TIPO_FUNCION:
 			return "FUNCION";
-			break;
 		case 11:
 			return "AUXILIAR";
-			break;
 	}
+
+	return " ";
 }
 
 public static void main(String[] args) throws IOException {
