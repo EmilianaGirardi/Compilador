@@ -2,9 +2,9 @@ prueba BEGIN
 
 TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
 	    BEGIN
-	        TIPO_OCTAL z;
-	        z:= 05;
-	        IF ( x > 045)  THEN
+	        TIPO_UNSIGNED z;
+	        z:= 50;
+	        IF ( x > 45)  THEN
             BEGIN
                 RET (x);
             END
@@ -12,10 +12,10 @@ TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
 	        RET (x+z);
 	    END;
 
-TIPO_UNSIGNED x;
-x:= 25;
+TIPO_SINGLE x;
+x:= 1.1s+25;
 
-funcion1(01);
+funcion1(TIPO_UNSIGNED(x));
 
 
 END;

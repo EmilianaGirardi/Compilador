@@ -1,32 +1,34 @@
-FDL _float0_
-FST d.global
+funcion1.global:
+MOV AX, [EBP+8]
+MOV x.global.funcion1, AX
+MOV AX, 50
+MOV z.global.funcion1, AX
 MOV CX, 0 
-MOV x.global, AX
-CMP AX, z.global
-SETBE CL
+MOV x.global.funcion1, AX
+CMP AX, 45
+SETA CL
 MOV @aux1, CL
-MOV CX, 0 
-MOV y.global, AX
-CMP AX, u.global
-SETBE CL
-MOV @aux2, CL
-MOV @aux1, AX
-AND AX, @aux2
-CMP AX, 0
-SETNZ @aux3
-CMP @aux3, 0
-JE ET8
-MOV AX, x.global
-ADD AX, y.global
+CMP @aux1, 0
+JE ET5
+MOV AX,x.global.funcion1
+MOV @aux2, AX
+RET
+ET5:
+MOV AX, x.global.funcion1
+ADD AX, z.global.funcion1
 JC ??errorOverflow
+MOV @aux3, AX
+MOV AX,@aux3
 MOV @aux4, AX
-MOV AX, @aux4
-ADD AX, u.global
-JC ??errorOverflow
-MOV @aux5, AX
-MOV AX, @aux5
-MOV z.global, AX
-ET8:
+RET
+FDL _float0_
+FST x.global
+MOV EAX, x.global
+CMP EAX, 0JL ??errorConversionNegativo
+FLD dword[x.global]
+FISTP @aux5
+PUSH @aux5
+CALL funcion1.global
 J END_START
 ??errorOverflow:
 invoke StdOut, addr errorMsgOverflow
