@@ -2284,6 +2284,10 @@ break;
  */
 public void run() throws IOException {
   yyparse();
+  generador.generarCodigoMaquina();
+  lexico.getTablaSimbolos().imprimirTabla();
+  generador.imprimirTercetos();
+  
 }
 //## end of method run() ########################################
 

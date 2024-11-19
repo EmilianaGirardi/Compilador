@@ -1,0 +1,59 @@
+FLD _float0_
+FST d_global
+invoke StdOut, addr _cadena0_
+MOV CX, 0 
+MOV AX, x_global
+CMP AX, z_global
+SETBE CL
+MOV CH, 0 
+MOV @aux1, CX
+MOV CX, 0 
+MOV AX, y_global
+CMP AX, u_global
+SETBE CL
+MOV CH, 0 
+MOV @aux2, CX
+MOV CX, 0 
+MOV AX, @aux1
+AND AX, @aux2
+CMP AX, 0
+SETNZ CL
+MOV CH, 0 
+MOV @aux3, CX
+CMP @aux3, 0
+JE ET13
+MOV AX, x_global
+ADD AX, y_global
+JC ??errorOverflow
+MOV @aux4, AX
+MOV AX, @aux4
+ADD AX, u_global
+JC ??errorOverflow
+MOV @aux5, AX
+MOV AX, @aux5
+MOV z_global, AX
+MOV CX, 0 
+FLD d_global
+FLD d_global
+FCOM ST(1)
+FSTSW AX
+SAHF
+SETZ  CL
+MOV CH, 0 
+MOV @aux6, CX
+CMP @aux6, 0
+JE ET12
+invoke StdOut, addr _cadena0_
+ET12:
+ET13:
+JMP END_START
+??errorOverflow:
+invoke StdOut, addr errorMsgOverflow
+JMP END_START
+??errorConversionNegativo:
+invoke StdOut, addr errorMsgConversionNegativa
+JMP END_START
+??errorRestaNegativa:
+invoke StdOut, addr errorMsgRestaNegativa
+END_START: 
+END START

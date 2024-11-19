@@ -106,12 +106,12 @@ public class TraductorAssembler {
 
 	public void addCadena(String lexema) throws IOException {
 		if(!mapaCadenas.containsKey(lexema)) {
-			String etq = "_cadena"+this.numCadena+"_";
+			String etq = "cadena"+this.numCadena;
 			this.numCadena++;
 			
-			mapaCadenas.put(lexema, etq);
+			mapaCadenas.put(lexema, "_"+etq+"_");
 			
-			encabezado.append(etq+" DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
+			encabezado.append("_"+etq+"_ DB "+ "\""+lexema+"\", 10, 0" + saltoLinea);
 		}
 	}
 	
@@ -823,7 +823,7 @@ public class TraductorAssembler {
 	
 	private void impresion(Terceto terceto) throws IOException{
 		String lexema = terceto.getOperando1();
-		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema));
+		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema)+saltoLinea);
 	}
 
 	private void conversionItoS(Terceto terceto) throws IOException {

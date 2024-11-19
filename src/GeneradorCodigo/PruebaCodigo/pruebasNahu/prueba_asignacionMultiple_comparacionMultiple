@@ -5,13 +5,13 @@ program_asigMul_compMul BEGIN
 	TIPO_SINGLE d;
 	
 	d:=2.025s+10;
-	OUTF(HOLA MUNDO);
+	OUTF([HOLA MUNDO]);
 	IF((x,y) <= (z,u))THEN
 		BEGIN
 			z:=x+y+u;
 			IF(d=d)THEN
 			BEGIN
-				OUTF(HOLA MUNDO);
+				OUTF([HOLA MUNDO]);
 			END
 			END_IF
 		END
