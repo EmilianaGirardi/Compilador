@@ -8,16 +8,23 @@ includelib \masm32\lib\masm32.lib
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
-z_global DD ? 
-x_global DW ? 
-y_global DW ? 
-_float0_ DD 45.0123e+2
-@aux6 DD ? 
-@aux5 DW ? 
-@aux4 DW ? 
-@aux3 DD ? 
-@aux2 DW ? 
-@aux1 DW ? 
+k_global DW 0 
+salir DD 0.0 
+j_global DW 0 
+i_global DW 0 
+var_global DW 0 
+z_global DW 0 
+_cadena0_ DB "Sumo x, resto y", 10, 0
+x_global DW 0 
+_cadena1_ DB "SALI", 10, 0
+y_global DW 0 
+_cadena2_ DB "Sali por etiqueta", 10, 0
+@aux6 DW 0 
+@aux5 DW 0 
+@aux4 DW 0 
+@aux3 DW 0 
+@aux2 DW 0 
+@aux1 DW 0 
 
 .CODE
 START:

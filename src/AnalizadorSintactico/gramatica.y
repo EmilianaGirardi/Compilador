@@ -71,8 +71,8 @@ sentencias_ejecutables : ejecutable ';'
  	| ejecutable {System.err.println("Error: Falta ;"); generador.setError();}
  	| sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
  	| declarvar ';'
- 	| declar_compuesto
- 	| def_triple
+ 	| declar_compuesto ';'
+ 	| def_triple ';'
 	;
 
 
@@ -272,8 +272,8 @@ invocacion_fun : ID '(' exp_arit ')'{
             entonces lo comparamos con el tipo de exp_arit.
             */
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("Error no se admiten funciones recursivas");
-                                    generador.setError();
+             	System.err.println("Error: llamado recursivo invalido. Linea: "+lexico.getContadorLinea());
+                generador.setError();
              }
             Integer tipoExp = null;
             String expresion = TS.buscarVariable($3.sval);

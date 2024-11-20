@@ -3,7 +3,7 @@ prueba BEGIN
 TIPO_UNSIGNED x, y, z, i, j , k;
 
 x:= 5;
-y:= 48;
+y:= 45;
 z:= 59;
 i:= 84;
 j:= 95;
@@ -11,10 +11,16 @@ k:= 105;
 
 IF (z < 80) THEN BEGIN
     REPEAT BEGIN
-        IF(y <= 26) THEN BEGIN
-            GOTO salir@;
-        END
+    	y:=y-5;
+        IF(y <= 25) THEN 
+        	BEGIN
+        		OUTF([Sali por etiqueta]);
+            	GOTO salir@;
+        	END
         END_IF;
+        
+        x:=x+5;
+        OUTF([Sumo x, resto y]);
     END
     UNTIL(x > 25);
 END
@@ -26,7 +32,7 @@ var:= 05;
 x:= x+25;
 
 salir@;
-
+OUTF([SALI]);
 x:= 10;
 
 END;

@@ -76,10 +76,10 @@ public class TraductorAssembler {
 				if(TS.getUso(lexema)==null || (TS.getUso(lexema)!=null && TS.getUso(lexema)!=102) ){
 					
 					if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
-						encabezado.append(lexema + " DD ? " +saltoLinea);
+						encabezado.append(lexema + " DD 0.0 " +saltoLinea);
 					}
 					else { //unsigned y octal de 16 bits
-						encabezado.append(lexema + " DW ? " + saltoLinea);
+						encabezado.append(lexema + " DW 0 " + saltoLinea);
 					}
 				}
 			}
@@ -97,9 +97,9 @@ public class TraductorAssembler {
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		for (String lexema : TS.getMap().keySet()){
 			if(TS.getTipo(lexema)==TIPO_AUX_ENTERO) {
-				encabezado.append(lexema + " DW ? "+ saltoLinea);
+				encabezado.append(lexema + " DW 0 "+ saltoLinea);
 			}else if(TS.getTipo(lexema)==TIPO_AUX_FLOAT) {
-				encabezado.append(lexema + " DD ? "+ saltoLinea);
+				encabezado.append(lexema + " DD 0.0 "+ saltoLinea);
 			}
 		}
 		encabezado.append(saltoLinea);
@@ -148,17 +148,18 @@ public class TraductorAssembler {
 
 	public void cerrarTraduccion() throws IOException {
 		salida.append("JMP END_START"+saltoLinea);
-		salida.append("");
+		salida.append(saltoLinea);
 		salida.append("??errorOverflow:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
 		salida.append("JMP END_START"+saltoLinea);
-		salida.append("");
+		salida.append(saltoLinea);
 		salida.append("??errorConversionNegativo:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
 		salida.append("JMP END_START"+saltoLinea);
-		salida.append("");
+		salida.append(saltoLinea);
 		salida.append("??errorRestaNegativa:"+saltoLinea);
 		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
+		salida.append(saltoLinea);
 		salida.append("END_START: "+saltoLinea);
 		salida.append("END START"); 
 		
@@ -431,12 +432,25 @@ public class TraductorAssembler {
 	    salida.append("PUSH " + parametro + saltoLinea);
 	    salida.append("CALL " + terceto.getOperando1() + saltoLinea);  
 	    
+	    String result;
+	    if(terceto.getTipo()==2) {
+	    	result = this.crearAux(TIPO_AUX_FLOAT);
+	    	salida.append("FST "+result+ saltoLinea);
+	    }else {
+	    	result = this.crearAux(TIPO_AUX_ENTERO);
+	    	salida.append("MOV "+result+", AX"+ saltoLinea);
+	    }
+	    
+	    terceto.addAux(result);
 	}
 
 
 	private void funcion(Terceto terceto) throws IOException {
 		// TODO Auto-generated method stub
 		this.salida.append(terceto.getOperador()+":" + saltoLinea);
+		this.salida.append("PUSH EBP"+ saltoLinea);
+		this.salida.append("MOV EBP, ESP"+ saltoLinea); //Mantengo el puntero a la base 
+		
 		
 		String parametro = terceto.getOperando1(); 
 		Integer tipo = lexico.getTablaSimbolos().getTipo(parametro);
@@ -458,22 +472,17 @@ public class TraductorAssembler {
 			int pos = Integer.parseInt(retorno.replaceAll("\\D", ""));
 			retorno = generador.getTerceto(pos).getAux();
 		}
-
-		String result;
 		
 		if(tipo == 2) {
-			result = this.crearAux(TIPO_AUX_FLOAT);
 			salida.append("FLD "+retorno+ saltoLinea);
-			salida.append("FST "+result+ saltoLinea);
-			salida.append("RET"+ saltoLinea);
 		}else {
-			result = this.crearAux(TIPO_AUX_ENTERO);
 			salida.append("MOV AX,"+retorno+ saltoLinea);
-			salida.append("MOV "+result+", AX"+ saltoLinea);
-			salida.append("RET"+ saltoLinea);
 		}
 		
-		terceto.addAux(result);
+		
+		this.salida.append("MOV ESP, EBP"+ saltoLinea);
+		this.salida.append("POP EBP"+ saltoLinea);
+		salida.append("RET"+ saltoLinea);
 	}
 
 	private void mayorIgual(Terceto terceto) throws IOException{
@@ -973,5 +982,7 @@ public class TraductorAssembler {
 				break;
 
 		}
+		
+		this.salida.append(saltoLinea);
 	}
 }
