@@ -26,7 +26,7 @@ public class AS10 extends AccionSemantica {
 				e.printStackTrace();
 			}
 		}else {
-			System.out.println("Warning: asignación incompleta. Línea: "+lexico.getContadorLinea());
+			System.out.println(YELLOW+"Warning: asignación incompleta. Línea: "+lexico.getContadorLinea()+RESET);
 		}
 		
 		ArrayList<Integer> atributos = new ArrayList<Integer>();

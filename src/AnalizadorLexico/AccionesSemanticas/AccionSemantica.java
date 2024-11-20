@@ -33,6 +33,8 @@ public abstract class AccionSemantica {
 
     public final static int NOMBRE_VAR = 101;
 
+    public static final String YELLOW = "\u001B[33m"; //color amarillo para warnings.
+    public static final String RESET = "\u001B[0m"; //color blanco para texto plano.
     
     public abstract Optional<Integer> ejecutar(Character caracterActual) throws IOException;
 

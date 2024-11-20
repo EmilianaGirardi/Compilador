@@ -11,7 +11,7 @@ public class AS18 extends AccionSemantica{
     public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
     	Lexico lexico = Lexico.getInstance();
         if(caracterActual!=' ' && caracterActual!='\t') {
-            System.out.println("Warning: caracter invalido eliminado. Línea: " + lexico.getContadorLinea());
+            System.out.println(YELLOW+"Warning: caracter invalido eliminado. Línea: " + lexico.getContadorLinea()+RESET);
         }
         lexico.leerSiguiente();
         return Optional.empty();

@@ -9,7 +9,7 @@ i:= 84;
 j:= 95;
 k:= 105;
 
-IF (z < 80) THEN BEGIN
+IF (z ! 60) THEN BEGIN
     REPEAT BEGIN
     	y:=y-5;
         IF(y <= 25) THEN 
@@ -34,5 +34,9 @@ x:= x+25;
 salir@;
 OUTF([SALI]);
 x:= 10;
+
+TIPO_SINGLE w;
+w:= 2.;
+w:=-255.255s+80;
 
 END;

@@ -30,7 +30,7 @@ conjunto_sentencias : declarativa ';'
 			| conjunto_sentencias declarativa ';'
 			| conjunto_sentencias declarativa {System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 			| conjunto_sentencias ejecutable ';'
-			| conjunto_sentencias ejecutable {System.out.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+			| conjunto_sentencias ejecutable {System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 			;
 /*------*/
 
@@ -69,10 +69,19 @@ bloque_sentencias_ejecutables : BEGIN sentencias_ejecutables END
 sentencias_ejecutables : ejecutable ';'
  	| sentencias_ejecutables ejecutable ';'
  	| ejecutable {System.err.println("Error: Falta ;"); generador.setError();}
- 	| sentencias_ejecutables ejecutable {System.out.println("Falta ;");}
+ 	| sentencias_ejecutables ejecutable {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| sentencias_ejecutables declarvar ';'
  	| declarvar ';'
+ 	| sentencias_ejecutables declarvar {System.err.println("ErrorFalta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| declarvar {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| sentencias_ejecutables declar_compuesto ';'
  	| declar_compuesto ';'
+ 	| sentencias_ejecutables declar_compuesto {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| declar_compuesto {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| sentencias_ejecutables def_triple ';' 
  	| def_triple ';'
+ 	| sentencias_ejecutables def_triple {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
+ 	| def_triple {System.err.println("Error: Falta ; . Linea: "+lexico.getContadorLinea()); generador.setError();}
 	;
 
 
@@ -418,7 +427,10 @@ invocacion_fun : ID '(' exp_arit ')'{
                 
                 //crear terceto de conversion
                 String conversion = generador.getConversion(tipoExp, tipoCast);
-                if (conversion == null) {System.out.println("Error de conversion en linea: " + lexico.getContadorLinea());}
+                if (conversion == null) {
+                	System.err.println("Error de conversion en linea: " + lexico.getContadorLinea()); 
+                	generador.setError()
+                }
                 String operando1;
                 if (expresion == "Terceto") operando1 = $1.sval;
                 else operando1 = expresion;
@@ -903,7 +915,7 @@ sentencia_if : condicion_if bloque_sentencias_ejecutables END_IF {
 		$$.sval=generador.addTerceto(label, null, null);
 		generador.getTerceto(Integer.parseInt($$.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 	 }
-	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables {System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+	| condicion_if bloque_sentencias_ejecutables condicion_else bloque_sentencias_ejecutables {System.err.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea()); generador.setError()}
 	| condicion_if END_IF {System.err.println("Error: Falta de contenido en el bloque then " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	| condicion_if condicion_else END_IF {System.err.println("Error: Falta de contenido en el bloque else " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
 	;
@@ -1232,7 +1244,7 @@ public int yylex() throws IOException {
 }
 
 public void yyerror(String mensaje) {
-    System.out.println("Error: " + mensaje);
+    System.err.println("Error: " + mensaje);
 }
 
 public Parser(String archivo, String salida) throws IOException {
@@ -1250,22 +1262,22 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
 
        if(result>0.0f) {
 	        if (infPositivo > result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infPositivo.toString();
 	            return nuevaCte;
 
 	        }else if(supPositivo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supPositivo.toString();
 	            return nuevaCte;
 	        }
        }else {
        	if(infNegativo > result) {
-       		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+       		System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infNegativo.toString();
 	            return nuevaCte;
 	        }else if(supNegativo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supNegativo.toString();
 	            return nuevaCte;
 	        }
@@ -1317,7 +1329,7 @@ public static void main(String[] args) throws IOException {
           }
         }
         else {
-          System.out.println("Se debe ingresar un archivo a compilar");
+          System.err.println("Error: Se debe ingresar un archivo a compilar.");
         }
 }
 

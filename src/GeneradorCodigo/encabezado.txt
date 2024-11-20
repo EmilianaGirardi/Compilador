@@ -18,6 +18,9 @@ _cadena0_ DB "Sumo x, resto y", 10, 0
 x_global DW 0 
 _cadena1_ DB "SALI", 10, 0
 y_global DW 0 
+w_global DD 0.0 
+_float0_ DD 2.0
+_float1_ DD -3.4028235E38
 _cadena2_ DB "Sali por etiqueta", 10, 0
 @aux6 DW 0 
 @aux5 DW 0 

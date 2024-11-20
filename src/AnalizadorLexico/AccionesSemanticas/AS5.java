@@ -32,7 +32,7 @@ public class AS5 extends AccionSemantica {
             atributos.add(TIPO_OCTAL);
             int numero = Integer.parseInt(token, 8);
             if (numero < 0 || numero > limite){
-                System.out.println("Octal fuera de rango. Linea:"+lexico.getContadorLinea());
+                System.out.println(YELLOW+"Warning: Octal fuera de rango. Linea:"+lexico.getContadorLinea()+RESET);
                 token = '0' + truncaEntero(numero);
             }
         }

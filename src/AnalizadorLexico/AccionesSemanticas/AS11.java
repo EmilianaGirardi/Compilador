@@ -26,10 +26,11 @@ public class AS11 extends AccionSemantica {
 				e.printStackTrace();
 			}
 		}else {
-			System.out.println("Warning: sentencia de inequidad incompleta. Línea: "+lexico.getContadorLinea());
+			System.out.println(YELLOW+"Warning: sentencia de inequidad incompleta. Línea: "+lexico.getContadorLinea()+RESET);
 		}
 		
-		ArrayList<Integer> atributos = new ArrayList<Integer>(DISTINTO);
+		ArrayList<Integer> atributos = new ArrayList<Integer>();
+		atributos.add(DISTINTO);
 		atributos.add(TIPO_SIMBOLO);
 		if(!TS.estaToken(token)) {
 			TS.agregarToken(token, atributos);

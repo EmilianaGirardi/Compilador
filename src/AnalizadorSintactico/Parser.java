@@ -669,22 +669,22 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
 
        if(result>0.0f) {
 	        if (infPositivo > result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infPositivo.toString();
 	            return nuevaCte;
 
 	        }else if(supPositivo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supPositivo.toString();
 	            return nuevaCte;
 	        }
        }else {
        	if(infNegativo > result) {
-       		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+       		System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infNegativo.toString();
 	            return nuevaCte;
 	        }else if(supNegativo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supNegativo.toString();
 	            return nuevaCte;
 	        }
@@ -922,7 +922,7 @@ case 9:
 break;
 case 11:
 //#line 33 "gramatica.y"
-{System.out.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 12:
 //#line 39 "gramatica.y"
