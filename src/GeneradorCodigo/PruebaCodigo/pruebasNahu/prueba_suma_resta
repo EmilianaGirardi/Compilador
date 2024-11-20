@@ -4,7 +4,7 @@ program_suma_resta BEGIN
 	TIPO_UNSIGNED y;
 	TIPO_SINGLE z;
 	 
-	y:=1;
+	y:=0;
 	
 	REPEAT
 		BEGIN

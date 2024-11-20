@@ -165,21 +165,18 @@ public class TraductorAssembler {
 		
 		this.cerrarDeclaracion();
 		
+		this.encabezado.close();
+		this.salida.close();
+		
 		cargarArchivo("/GeneradorCodigo/encabezado.txt", this.assembler);
 		
 		cargarArchivo("/GeneradorCodigo/salida.txt", this.assembler);
-		
-		
-		this.encabezado.close();
-		this.salida.close(); 
-		
-		
+	
 		this.assembler.close();
 		
 	}
 
-    private String cargarArchivo(String pathArchivoOrigen, FileWriter archivoDestino) throws IOException {
-        StringBuilder contenido = new StringBuilder();
+    private void cargarArchivo(String pathArchivoOrigen, FileWriter archivoDestino) throws IOException {
         InputStream archivo = getClass().getResourceAsStream(pathArchivoOrigen);
         
         if (archivo == null) {
@@ -195,7 +192,6 @@ public class TraductorAssembler {
         }
 
         reader.close();
-        return contenido.toString();
     }
 	
 	private void suma(Terceto terceto) throws IOException {

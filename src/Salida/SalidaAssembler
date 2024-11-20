@@ -1,0 +1,68 @@
+option casemap :none
+include \masm32\include\masm32rt.inc
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+.STACK 200h
+
+.DATA
+errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
+errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
+errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
+z_global DD ? 
+x_global DW ? 
+y_global DW ? 
+_float0_ DD 45.0123e+2
+@aux6 DD ? 
+@aux5 DW ? 
+@aux4 DW ? 
+@aux3 DD ? 
+@aux2 DW ? 
+@aux1 DW ? 
+
+.CODE
+START:
+MOV AX, x_global
+MOV BX, 2
+MUL BX 
+MOV @aux1, AX
+MOV AX, @aux1
+MOV x_global, AX
+MOV AX, y_global
+MOV BX, 06
+MUL BX 
+MOV @aux2, AX
+MOV AX, @aux2
+MOV y_global, AX
+FLD z_global
+FMUL _float0_
+FST @aux3
+FLD @aux3
+FST z_global
+MOV AX, x_global
+MOV BX, 2
+DIV BX 
+MOV @aux4, AX
+MOV AX, @aux4
+MOV x_global, AX
+MOV AX, y_global
+MOV BX, 06
+DIV BX 
+MOV @aux5, AX
+MOV AX, @aux5
+MOV y_global, AX
+FLD z_global
+FDIV _float0_
+FST @aux6
+FLD @aux6
+FST z_global
+JMP END_START
+??errorOverflow:
+invoke StdOut, addr errorMsgOverflow
+JMP END_START
+??errorConversionNegativo:
+invoke StdOut, addr errorMsgConversionNegativa
+JMP END_START
+??errorRestaNegativa:
+invoke StdOut, addr errorMsgRestaNegativa
+END_START: 
+END START
