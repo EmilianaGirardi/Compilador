@@ -1,0 +1,17 @@
+
+  JMP END_START
+
+  ??errorOverflow:
+    invoke StdOut, addr errorMsgOverflow
+    JMP END_START
+
+  ??errorConversionNegativo:
+    invoke StdOut, addr errorMsgConversionNegativa
+    JMP END_START
+
+  ??errorRestaNegativa:
+    invoke StdOut, addr errorMsgRestaNegativa
+
+END_START: 
+invoke ExitProcess, 0
+END START

@@ -209,11 +209,15 @@ declaracionFun : encabezadoFun BEGIN conjunto_sentencias retorno END{
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 String lexemaFun = TS.getUltimoAmbito(); //obtengo el lexema de la funcion
                 Integer tipoFun = TS.getTipo(lexemaFun); //obtengo el tipo de la funcion
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt($4.sval.replaceAll("\\D", ""))).getTipo();
+                Terceto ret = generador.getTerceto(Integer.parseInt($4.sval.replaceAll("\\D", "")));
+                
+                Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
                     System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                     generador.setError();
                 }
+
+                ret.setTipo(TIPO_RETORNO);
 
                 //desapilar el ambito de la funcion
                 TS.eliminarAmbito();
@@ -1218,15 +1222,16 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int  T_SINGLE = 2;
     public final static int  T_OCTAL = 3;
     public final static int  TIPO_MULTILINEA = 4;
-    //¿sEtiqueta seria uso?
-    public final static int  TIPO_ETIQUETA = 8;
-    public final static int  TIPO_SALTO = 9;
-    public final static int  TIPO_FUNCION = 10;
-
-    public final static int  TIPO_DESCONOCIDO = 50;
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
     public final static int TIPO_TRIPLE_OCTAL = 7;
+    public final static int  TIPO_ETIQUETA = 8;
+    public final static int  TIPO_SALTO = 9;
+    public final static int  TIPO_FUNCION = 10;
+    public final static int TIPO_RETORNO = 11; 
+
+    public final static int  TIPO_DESCONOCIDO = 50;
+    
 
     public final static int NOMBRE_VAR = 101;
     public final static int NOMBRE_FUN = 102;
@@ -1287,32 +1292,34 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
    }
 
 private String mappeoTipo(Integer tipo){
-	switch(tipo){
-		case T_UNSIGNED:
-			return "UNSIGNED";
-		case T_SINGLE:
-			return "SINGLE";
-		case T_OCTAL:
-			return "OCTAL";
-		case TIPO_MULTILINEA:
-			return "MULTILINEA";
-		case TIPO_TRIPLE_UNSIGNED:
-			return "TRIPLE_UNSIGNED";
-		case TIPO_TRIPLE_SINGLE:
-			return "TRIPLE_SINGLE";
-		case TIPO_TRIPLE_OCTAL:
-			return "TRIPLE_OCTAL";
-		case TIPO_ETIQUETA:
-			return "ETIQUETA";
-		case TIPO_SALTO:
-			return "SALTO";
-		case TIPO_FUNCION:
-			return "FUNCION";
-		case 11:
-			return "AUXILIAR";
+	if(tipo!=null){
+		switch(tipo){
+			case T_UNSIGNED:
+				return "UNSIGNED";
+			case T_SINGLE:
+				return "SINGLE";
+			case T_OCTAL:
+				return "OCTAL";
+			case TIPO_MULTILINEA:
+				return "MULTILINEA";
+			case TIPO_TRIPLE_UNSIGNED:
+				return "TRIPLE_UNSIGNED";
+			case TIPO_TRIPLE_SINGLE:
+				return "TRIPLE_SINGLE";
+			case TIPO_TRIPLE_OCTAL:
+				return "TRIPLE_OCTAL";
+			case TIPO_ETIQUETA:
+				return "ETIQUETA";
+			case TIPO_SALTO:
+				return "SALTO";
+			case TIPO_FUNCION:
+				return "FUNCION";
+			case 11:
+				return "AUXILIAR";
+		}
 	}
 
-	return "";
+	return " ";
 
 }
 

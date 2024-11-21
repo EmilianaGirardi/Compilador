@@ -18,21 +18,31 @@ public class TraductorAssembler {
 	private String path;
 	
 	private FileWriter encabezado;
-	private FileWriter salida;
+	private FileWriter cuerpo;
+	private FileWriter funciones;
+	
 	private FileWriter assembler;
 	
+	private boolean funcion;
 	
 	private Integer numAux;
-
 	private Integer numCadena;
 	private Integer numFloat;
+	
 	private HashMap<String, String> mapaCadenas; //key: lexema; valor: etiqueta del .data
 	private HashMap<String, String> mapaSingles; //key: cte; valor: etiqueta del .data
 	private Generador generador;
 	private Lexico lexico;
 
-	private static Integer TIPO_AUX_ENTERO = 11;
-	private static Integer TIPO_AUX_FLOAT = 12;
+	private final static int  T_SINGLE = 2;
+    
+    private final static int  TIPO_ETIQUETA = 8;
+ 
+    private final static int  TIPO_FUNCION = 10;
+    private final static int TIPO_RETORNO = 11; 
+    private final static int  TIPO_DESCONOCIDO = 50;
+	private final static int TIPO_AUX_ENTERO = 12;
+	private final static int TIPO_AUX_FLOAT = 13;
 	
 	private static String saltoLinea = "\r\n";
 	private String identacion;
@@ -41,19 +51,23 @@ public class TraductorAssembler {
 		this.path = archivoSalida;
 		
 		this.assembler = new FileWriter(path, false);
+		this.cuerpo  = new FileWriter("src/GeneradorCodigo/cuerpo.txt",false);
 		
-		this.salida  = new FileWriter("src/GeneradorCodigo/salida.txt",false);
 		this.encabezado= new FileWriter("src/GeneradorCodigo/encabezado.txt",false);
+		this.funciones= new FileWriter("src/GeneradorCodigo/funciones.txt",false);
 		
 		this.numAux = 0;
 		this.numCadena = 0;
 		this.numFloat = 0;
+		
+		this.funcion = false;
+		
 		this.generador = Generador.getInstance();
 		this.lexico = Lexico.getInstance();
 		this.mapaCadenas = new HashMap<String, String>();
 		this.mapaSingles = new HashMap<String, String>();
 		
-		this.identacion = "";
+		this.identacion = "  ";
 	}
 
 	public void inicializarAssembler() throws IOException {
@@ -71,11 +85,11 @@ public class TraductorAssembler {
 		//mapeo de variables y cadenas
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		for (String lexema : TS.getMap().keySet()){
-			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=50){ //IDENTIFICADORES
+			if (TS.getToken(lexema) == 258 && TS.getTipo(lexema) !=TIPO_DESCONOCIDO){ //IDENTIFICADORES
 				
 				if(TS.getUso(lexema)==null || (TS.getUso(lexema)!=null && TS.getUso(lexema)!=102) ){
 					
-					if (TS.getTipo(lexema) == 2){ //tipo single (32 bits)
+					if (TS.getTipo(lexema) == T_SINGLE){ //tipo single (32 bits)
 						encabezado.append(lexema + " DD 0.0 " +saltoLinea);
 					}
 					else { //unsigned y octal de 16 bits
@@ -104,7 +118,6 @@ public class TraductorAssembler {
 		}
 		encabezado.append(saltoLinea);
 		encabezado.append(".CODE" + saltoLinea);
-		encabezado.append("START:" + saltoLinea);
 	}
 
 	public void addCadena(String lexema) throws IOException {
@@ -147,31 +160,36 @@ public class TraductorAssembler {
 	}
 
 	public void cerrarTraduccion() throws IOException {
-		salida.append("JMP END_START"+saltoLinea);
-		salida.append(saltoLinea);
-		salida.append("??errorOverflow:"+saltoLinea);
-		salida.append("invoke StdOut, addr errorMsgOverflow"+saltoLinea);
-		salida.append("JMP END_START"+saltoLinea);
-		salida.append(saltoLinea);
-		salida.append("??errorConversionNegativo:"+saltoLinea);
-		salida.append("invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
-		salida.append("JMP END_START"+saltoLinea);
-		salida.append(saltoLinea);
-		salida.append("??errorRestaNegativa:"+saltoLinea);
-		salida.append("invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
-		salida.append(saltoLinea);
-		salida.append("END_START: "+saltoLinea);
-		salida.append("END START"); 
+		this.cuerpo.append(this.identacion+"JMP END_START"+saltoLinea);
+		this.cuerpo.append(saltoLinea);
+		this.cuerpo.append(this.identacion+"??errorOverflow:"+saltoLinea);
+		this.cuerpo.append(this.identacion+"  invoke StdOut, addr errorMsgOverflow"+saltoLinea);
+		this.cuerpo.append(this.identacion+"  JMP END_START"+saltoLinea);
+		this.cuerpo.append(saltoLinea);
+		this.cuerpo.append(this.identacion+"??errorConversionNegativo:"+saltoLinea);
+		this.cuerpo.append(this.identacion+"  invoke StdOut, addr errorMsgConversionNegativa"+saltoLinea);
+		this.cuerpo.append(this.identacion+"  JMP END_START"+saltoLinea);
+		this.cuerpo.append(saltoLinea);
+		this.cuerpo.append(this.identacion+"??errorRestaNegativa:"+saltoLinea);
+		this.cuerpo.append(this.identacion+"  invoke StdOut, addr errorMsgRestaNegativa"+saltoLinea);
+		this.cuerpo.append(saltoLinea);
+		this.cuerpo.append("END_START: "+saltoLinea);
+		this.cuerpo.append("invoke ExitProcess, 0"+saltoLinea);
+		this.cuerpo.append("END START"); 
 		
+		this.funciones.append("START:" + saltoLinea);
 		
 		this.cerrarDeclaracion();
 		
 		this.encabezado.close();
-		this.salida.close();
+		this.cuerpo.close();
+		this.funciones.close();
 		
 		cargarArchivo("/GeneradorCodigo/encabezado.txt", this.assembler);
 		
-		cargarArchivo("/GeneradorCodigo/salida.txt", this.assembler);
+		cargarArchivo("/GeneradorCodigo/funciones.txt", this.assembler);
+		
+		cargarArchivo("/GeneradorCodigo/cuerpo.txt", this.assembler);
 	
 		this.assembler.close();
 		
@@ -195,7 +213,7 @@ public class TraductorAssembler {
         reader.close();
     }
 	
-	private void suma(Terceto terceto) throws IOException {
+	private void suma(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -212,16 +230,16 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_ENTERO);
 		
 
-		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("ADD AX, " + op2 + saltoLinea);
-		salida.append("JC ??errorOverflow"+ saltoLinea);
-		salida.append("MOV " + result + ", AX" + saltoLinea);
+		salida.append(this.identacion+"MOV AX, " + op1 + saltoLinea);
+		salida.append(this.identacion+"ADD AX, " + op2 + saltoLinea);
+		salida.append(this.identacion+"JC ??errorOverflow"+ saltoLinea);
+		salida.append(this.identacion+"MOV " + result + ", AX" + saltoLinea);
 		
 
 		terceto.setAux(result);
 	}
 
-	private void resta(Terceto terceto) throws IOException {
+	private void resta(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -237,15 +255,15 @@ public class TraductorAssembler {
 
 		result = crearAux(TIPO_AUX_ENTERO);
 
-		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("SUB AX, " + op2 + saltoLinea);
-		salida.append("JS ??errorRestaNegativa"+ saltoLinea);
-		salida.append("MOV " + result + ", AX" + saltoLinea);
+		salida.append(this.identacion+"MOV AX, " + op1 + saltoLinea);
+		salida.append(this.identacion+"SUB AX, " + op2 + saltoLinea);
+		salida.append(this.identacion+"JS ??errorRestaNegativa"+ saltoLinea);
+		salida.append(this.identacion+"MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
 	}
 	
-	private void multiplicacion(Terceto terceto) throws IOException {
+	private void multiplicacion(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -261,15 +279,15 @@ public class TraductorAssembler {
 
 		result = crearAux(TIPO_AUX_ENTERO);
 
-		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("MOV BX, " + op2 + saltoLinea);
-		salida.append("MUL BX " + saltoLinea);
-		salida.append("MOV " + result + ", AX" + saltoLinea);
+		salida.append(this.identacion+"MOV AX, " + op1 + saltoLinea);
+		salida.append(this.identacion+"MOV BX, " + op2 + saltoLinea);
+		salida.append(this.identacion+"MUL BX " + saltoLinea);
+		salida.append(this.identacion+"MOV " + result + ", AX" + saltoLinea);
 
 		terceto.setAux(result);
 	}
 	
-	private void division(Terceto terceto) throws IOException {
+	private void division(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -285,10 +303,10 @@ public class TraductorAssembler {
 
 		result = crearAux(TIPO_AUX_ENTERO);
 
-		salida.append("MOV AX, " + op1 + saltoLinea);
-		salida.append("MOV BX, " + op2 + saltoLinea);
-		salida.append("DIV BX "+ saltoLinea);
-		salida.append("MOV " + result + ", AX" + saltoLinea);
+		salida.append(this.identacion+"MOV AX, " + op1 + saltoLinea);
+		salida.append(this.identacion+"MOV BX, " + op2 + saltoLinea);
+		salida.append(this.identacion+"DIV BX "+ saltoLinea);
+		salida.append(this.identacion+"MOV " + result + ", AX" + saltoLinea);
 
 		
 		
@@ -297,7 +315,7 @@ public class TraductorAssembler {
 	}
 
 	//Punto Flotante
-	private void sumaPuntoFlotante(Terceto terceto) throws IOException {
+	private void sumaPuntoFlotante(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -319,44 +337,14 @@ public class TraductorAssembler {
 
 		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FADD "+ op2 + saltoLinea);
-		salida.append("FST " + result + saltoLinea);
+		salida.append(this.identacion+"FLD "+ op1 + saltoLinea);
+		salida.append(this.identacion+"FADD "+ op2 + saltoLinea);
+		salida.append(this.identacion+"FST " + result + saltoLinea);
 
 		terceto.setAux(result);
 	}
 
-	private void restaPuntoFlotante(Terceto terceto) throws IOException {
-		String op1, op2, result;
-		Integer pos;
-		op1 = terceto.getOperando1();
-		if (op1.matches("\\[T\\d+\\]")){
-			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
-			op1 = generador.getTerceto(pos).getAux();
-		}
-		if (mapaSingles.containsKey(op1)) {
-			op1 = mapaSingles.get(op1);
-		}
-		
-		op2 = terceto.getOperando2();
-		if (op2.matches("\\[T\\d+\\]")){
-			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
-			op2 = generador.getTerceto(pos).getAux();
-		}
-		if (mapaSingles.containsKey(op2)) {
-			op2 = mapaSingles.get(op2);
-		}
-
-		result = crearAux(TIPO_AUX_FLOAT);
-
-		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FSUB " + op2 + saltoLinea);
-		salida.append("FST " + result + saltoLinea);
-
-		terceto.setAux(result);
-	}
-
-	private void multiplicacionPuntoFlotante(Terceto terceto) throws IOException {
+	private void restaPuntoFlotante(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -379,14 +367,44 @@ public class TraductorAssembler {
 
 		result = crearAux(TIPO_AUX_FLOAT);
 
-		salida.append("FLD "+ op1 + saltoLinea);
-		salida.append("FMUL " + op2 + saltoLinea);
-		salida.append("FST " + result + saltoLinea);
+		salida.append(this.identacion+"FLD "+ op1 + saltoLinea);
+		salida.append(this.identacion+"FSUB " + op2 + saltoLinea);
+		salida.append(this.identacion+"FST " + result + saltoLinea);
 
 		terceto.setAux(result);
 	}
 
-	private void divisionPuntoFlotante(Terceto terceto) throws IOException {
+	private void multiplicacionPuntoFlotante(Terceto terceto, FileWriter salida) throws IOException {
+		String op1, op2, result;
+		Integer pos;
+		op1 = terceto.getOperando1();
+		if (op1.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
+			op1 = generador.getTerceto(pos).getAux();
+		}
+		if (mapaSingles.containsKey(op1)) {
+			op1 = mapaSingles.get(op1);
+		}
+		
+		op2 = terceto.getOperando2();
+		if (op2.matches("\\[T\\d+\\]")){
+			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
+			op2 = generador.getTerceto(pos).getAux();
+		}
+		if (mapaSingles.containsKey(op2)) {
+			op2 = mapaSingles.get(op2);
+		}
+
+		result = crearAux(TIPO_AUX_FLOAT);
+
+		salida.append(this.identacion+"FLD "+ op1 + saltoLinea);
+		salida.append(this.identacion+"FMUL " + op2 + saltoLinea);
+		salida.append(this.identacion+"FST " + result + saltoLinea);
+
+		terceto.setAux(result);
+	}
+
+	private void divisionPuntoFlotante(Terceto terceto, FileWriter salida) throws IOException {
 		String op1, op2, result;
 		Integer pos;
 		op1 = terceto.getOperando1();
@@ -410,18 +428,18 @@ public class TraductorAssembler {
 		result = crearAux(TIPO_AUX_FLOAT);
 
 		
-		salida.append("FLD " + op1 + saltoLinea);
-		salida.append("FDIV " + op2 + saltoLinea);
-		salida.append("FST " + result + saltoLinea);
+		salida.append(this.identacion+"FLD " + op1 + saltoLinea);
+		salida.append(this.identacion+"FDIV " + op2 + saltoLinea);
+		salida.append(this.identacion+"FST " + result + saltoLinea);
 
 		terceto.setAux(result);
 	}
 
-	private void etiqueta(Terceto terceto) throws IOException {
-		this.salida.append(terceto.getOperador()+":" + saltoLinea);
+	private void etiqueta(Terceto terceto, FileWriter salida) throws IOException {
+		salida.append(this.identacion+terceto.getOperador()+":" + saltoLinea);
 	}
 
-	private void call(Terceto terceto) throws IOException {
+	private void call(Terceto terceto, FileWriter salida) throws IOException {
 		String parametro = terceto.getOperando2();
 
 	    if (parametro.matches("\\[T\\d+\\]")) {
@@ -429,16 +447,16 @@ public class TraductorAssembler {
 	        parametro = generador.getTerceto(pos).getAux();
 	    }
 	    
-	    salida.append("PUSH " + parametro + saltoLinea);
-	    salida.append("CALL " + terceto.getOperando1() + saltoLinea);  
+	    salida.append(this.identacion+"PUSH " + parametro + saltoLinea);
+	    salida.append(this.identacion+"CALL " + terceto.getOperando1() + saltoLinea);  
 	    
 	    String result;
-	    if(terceto.getTipo()==2) {
+	    if(terceto.getTipo()==T_SINGLE) {
 	    	result = this.crearAux(TIPO_AUX_FLOAT);
-	    	salida.append("FST "+result+ saltoLinea);
+	    	salida.append(this.identacion+"FST "+result+ saltoLinea);
 	    }else {
 	    	result = this.crearAux(TIPO_AUX_ENTERO);
-	    	salida.append("MOV "+result+", AX"+ saltoLinea);
+	    	salida.append(this.identacion+"MOV "+result+", AX"+ saltoLinea);
 	    }
 	    
 	    terceto.addAux(result);
@@ -447,20 +465,22 @@ public class TraductorAssembler {
 
 	private void funcion(Terceto terceto) throws IOException {
 		// TODO Auto-generated method stub
-		this.salida.append(terceto.getOperador()+":" + saltoLinea);
-		this.salida.append("PUSH EBP"+ saltoLinea);
-		this.salida.append("MOV EBP, ESP"+ saltoLinea); //Mantengo el puntero a la base 
+		this.funcion=true;
+		this.funciones.append(this.identacion+terceto.getOperador()+":" + saltoLinea);
+		this.identacion+="  ";
+		this.funciones.append(this.identacion+"PUSH EBP"+ saltoLinea);
+		this.funciones.append(this.identacion+"MOV EBP, ESP"+ saltoLinea); //Mantengo el puntero a la base 
 		
 		
 		String parametro = terceto.getOperando1(); 
 		Integer tipo = lexico.getTablaSimbolos().getTipo(parametro);
 		
 		if(tipo == 2) {
-			this.salida.append("FLD [EBP+8]"+saltoLinea);
-			this.salida.append("FST "+parametro);
+			this.funciones.append(this.identacion+"FLD [EBP+8]"+saltoLinea);
+			this.funciones.append(this.identacion+"FST "+parametro);
 		}else {
-			this.salida.append("MOV AX, [EBP+8]" + saltoLinea);
-			this.salida.append("MOV "+parametro+", AX" + saltoLinea);
+			this.funciones.append(this.identacion+"MOV AX, [EBP+8]" + saltoLinea);
+			this.funciones.append(this.identacion+"MOV "+parametro+", AX" + saltoLinea);
 		}
 	}
 	
@@ -473,19 +493,24 @@ public class TraductorAssembler {
 			retorno = generador.getTerceto(pos).getAux();
 		}
 		
-		if(tipo == 2) {
-			salida.append("FLD "+retorno+ saltoLinea);
+		if(tipo == T_SINGLE) {
+			this.funciones.append(this.identacion+"FLD "+retorno+ saltoLinea);
 		}else {
-			salida.append("MOV AX,"+retorno+ saltoLinea);
+			this.funciones.append(this.identacion+"MOV AX,"+retorno+ saltoLinea);
 		}
 		
 		
-		this.salida.append("MOV ESP, EBP"+ saltoLinea);
-		this.salida.append("POP EBP"+ saltoLinea);
-		salida.append("RET"+ saltoLinea);
+		this.funciones.append(this.identacion+"MOV ESP, EBP"+ saltoLinea);
+		this.funciones.append(this.identacion+"POP EBP"+ saltoLinea);
+		this.identacion= this.identacion.substring(0, this.identacion.length() - 2);
+		this.funciones.append(this.identacion+"RET"+ saltoLinea);
+		
+		if(terceto.getTipo()==TIPO_RETORNO) { // VERIFICAAAAAAR...
+			this.funcion = false;
+		}
 	}
 
-	private void mayorIgual(Terceto terceto) throws IOException{
+	private void mayorIgual(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -501,41 +526,41 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
+		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
     		
-			salida.append("SETGE  CL" + saltoLinea);
+			salida.append(this.identacion+"SETGE  CL" + saltoLinea);
 			//En este punto, CL contendrá:
 			//1 si op1 <= op2 (verdadero)
 			//0 si op1 > op2 (falso)
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		} else{
 			
-					salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-					salida.append("MOV AX, " + op1  + saltoLinea);
-					salida.append("CMP AX, " + op2 + saltoLinea);
-					salida.append("SETAE CL" + saltoLinea);
+					salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+					salida.append(this.identacion+"MOV AX, " + op1  + saltoLinea);
+					salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+					salida.append(this.identacion+"SETAE CL" + saltoLinea);
 					//En este punto, CL contendrá:
 					//1 si op1 <= op2 (verdadero)
 					//0 si op1 > op2 (falso)
-					salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+					salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 					String result = crearAux(TIPO_AUX_ENTERO);
-					salida.append("MOV " + result + ", CX" + saltoLinea);
+					salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 					terceto.setAux(result);
 		
 		}
 		
 	}
 
-	private void mayor(Terceto terceto) throws IOException{
+	private void mayor(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -551,35 +576,35 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == null && terceto.getTipo() == 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
-			salida.append("SETG  CL" + saltoLinea);
+		if (terceto.getTipo() == null && terceto.getTipo() == T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
+			salida.append(this.identacion+"SETG  CL" + saltoLinea);
 			
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV  AX, " + op1 + saltoLinea);
-			salida.append("CMP AX, " + op2 + saltoLinea);
-			salida.append("SETA CL" + saltoLinea);
-			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV  AX, " + op1 + saltoLinea);
+			salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+			salida.append(this.identacion+"SETA CL" + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 			
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
 	}
 
-	private void menorIgual(Terceto terceto) throws IOException{
+	private void menorIgual(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -595,34 +620,34 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
-			salida.append("SETLE  CL" + saltoLinea);
+		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
+			salida.append(this.identacion+"SETLE  CL" + saltoLinea);
 
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV AX, " + op1  + saltoLinea);
-			salida.append("CMP AX, " + op2 + saltoLinea);
-			salida.append("SETBE CL" + saltoLinea);
-			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV AX, " + op1  + saltoLinea);
+			salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+			salida.append(this.identacion+"SETBE CL" + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 
 		}
 
 	}
 
-	private void menor(Terceto terceto) throws IOException{
+	private void menor(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -638,35 +663,35 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo()!=null && terceto.getTipo()== 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
-			salida.append("SETL  CL" + saltoLinea);
+		if (terceto.getTipo()!=null && terceto.getTipo()== T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
+			salida.append(this.identacion+"SETL  CL" + saltoLinea);
 
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
 
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV AX, " + op1  + saltoLinea);
-			salida.append("CMP AX, " + op2 + saltoLinea);
-			salida.append("SETB CL" + saltoLinea); // ¿QUE HACE ESTA INSTRUCCION?
-			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV AX, " + op1  + saltoLinea);
+			salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+			salida.append(this.identacion+"SETB CL" + saltoLinea); // ¿QUE HACE ESTA INSTRUCCION?
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 			
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
 	}
 
-	private void igual(Terceto terceto) throws IOException{
+	private void igual(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -682,35 +707,35 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
-			salida.append("SETZ  CL" + saltoLinea);
+		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
+			salida.append(this.identacion+"SETZ  CL" + saltoLinea);
 			
 					
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV AX, " + op1  + saltoLinea);
-			salida.append("CMP AX, " + op2 + saltoLinea);
-			salida.append("SETE CL" + saltoLinea);
-			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV AX, " + op1  + saltoLinea);
+			salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+			salida.append(this.identacion+"SETE CL" + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 
 		}
 	}
 
-	private void distinto(Terceto terceto) throws IOException{
+	private void distinto(Terceto terceto, FileWriter salida) throws IOException{
 		String op1, op2;
 		Integer pos;
 
@@ -726,34 +751,34 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo()!=null && terceto.getTipo() == 2){
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
-			salida.append("FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
-    		salida.append("FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
-    		salida.append("FSTSW AX"+saltoLinea);
-    		salida.append("SAHF"+saltoLinea);
-			salida.append("SETNZ  CL" + saltoLinea);
+		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
+			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
+    		salida.append(this.identacion+"FCOM ST(1)" + saltoLinea);  // Comparar ST(0) con op2
+    		salida.append(this.identacion+"FSTSW AX"+saltoLinea);
+    		salida.append(this.identacion+"SAHF"+saltoLinea);
+			salida.append(this.identacion+"SETNZ  CL" + saltoLinea);
 
-			salida.append("MOV CH, 0 " + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea);
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}else{
-			salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
-			salida.append("MOV AX, " + op1  + saltoLinea);
-			salida.append("CMP AX, " + op2 + saltoLinea);
-			salida.append("SETNE CL" + saltoLinea);
-			salida.append("MOV CH, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
+			salida.append(this.identacion+"MOV AX, " + op1  + saltoLinea);
+			salida.append(this.identacion+"CMP AX, " + op2 + saltoLinea);
+			salida.append(this.identacion+"SETNE CL" + saltoLinea);
+			salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //inicializamos en false
 	
 			String result = crearAux(TIPO_AUX_ENTERO);
-			salida.append("MOV " + result + ", CX" + saltoLinea);
+			salida.append(this.identacion+"MOV " + result + ", CX" + saltoLinea);
 			terceto.setAux(result);
 		}
 
 	}
 	
-	private void and(Terceto terceto) throws IOException{
+	private void and(Terceto terceto, FileWriter salida) throws IOException{
 		String op1 = terceto.getOperando1();
 		String op2 = terceto.getOperando2();
 		int pos = Integer.parseInt(op1.replaceAll("\\D", ""));
@@ -761,38 +786,38 @@ public class TraductorAssembler {
 		pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 		op2 = generador.getTerceto(pos).getAux(); //resultado condicion 1
 		
-		salida.append("MOV CX, 0 " + saltoLinea); //inicializamos en false
+		salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 
-		salida.append("MOV AX, "+op1+ saltoLinea);
-		salida.append("AND AX, "+ op2 + saltoLinea); //AND
-		salida.append("CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
+		salida.append(this.identacion+"MOV AX, "+op1+ saltoLinea);
+		salida.append(this.identacion+"AND AX, "+ op2 + saltoLinea); //AND
+		salida.append(this.identacion+"CMP AX, 0" + saltoLinea); //compara el resultado con cero (false)
 		
-		salida.append("SETNZ CL" + saltoLinea);
-		salida.append("MOV CH, 0 " + saltoLinea); //Me aseguro de que la parte alta sea cero.
+		salida.append(this.identacion+"SETNZ CL" + saltoLinea);
+		salida.append(this.identacion+"MOV CH, 0 " + saltoLinea); //Me aseguro de que la parte alta sea cero.
 		
 		String result = crearAux(TIPO_AUX_ENTERO);
-		salida.append("MOV " + result+", CX"+ saltoLinea);
+		salida.append(this.identacion+"MOV " + result+", CX"+ saltoLinea);
 		terceto.setAux(result);
 	}
 	
-	private void branchIncondicional(Terceto terceto) throws IOException {
+	private void branchIncondicional(Terceto terceto, FileWriter salida) throws IOException {
 		String etiqueta = terceto.getOperando2();
-		salida.append("JMP " + etiqueta + saltoLinea);
+		salida.append(this.identacion+"JMP " + etiqueta + saltoLinea);
 
 	}
 	
-	private void branchFalse(Terceto terceto) throws IOException {
+	private void branchFalse(Terceto terceto, FileWriter salida) throws IOException {
 		//el primer operando tiene la condicion
 		//el segundo operando tiene la etiqueta
 		String etiqueta = terceto.getOperando2();
 		int pos = Integer.parseInt(terceto.getOperando1().replaceAll("\\D", ""));
 		Terceto condicion = generador.getTerceto(pos);
 		String resultCondicion = condicion.getAux();
-		salida.append("CMP " + resultCondicion + ", 0" + saltoLinea);
-		salida.append("JE " + etiqueta +saltoLinea); //salta si es igual a cero
+		salida.append(this.identacion+"CMP " + resultCondicion + ", 0" + saltoLinea);
+		salida.append(this.identacion+"JE " + etiqueta +saltoLinea); //salta si es igual a cero
 	}
 	
-	private void asignacion(Terceto terceto) throws IOException{
+	private void asignacion(Terceto terceto, FileWriter salida) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
 		if (operando2.matches("\\[T\\d+\\]")) {
@@ -800,13 +825,13 @@ public class TraductorAssembler {
 	        operando2 = generador.getTerceto(pos).getAux();
 	    }
 		
-		salida.append("MOV AX, "+operando2 + saltoLinea);
-		salida.append("MOV "+terceto.getOperando1()+", AX" + saltoLinea);
+		salida.append(this.identacion+"MOV AX, "+operando2 + saltoLinea);
+		salida.append(this.identacion+"MOV "+terceto.getOperando1()+", AX" + saltoLinea);
 
 
 	}
 	
-	private void asignacionPuntoFlotante(Terceto terceto) throws IOException{
+	private void asignacionPuntoFlotante(Terceto terceto, FileWriter salida) throws IOException{
 		String operando2 = terceto.getOperando2();
 		
 		if (operando2.matches("\\[T\\d+\\]")) {
@@ -818,16 +843,16 @@ public class TraductorAssembler {
 		}
 		
 		
-		salida.append("FLD "+operando2 + saltoLinea);
-		salida.append("FST "+terceto.getOperando1() + saltoLinea);
+		salida.append(this.identacion+"FLD "+operando2 + saltoLinea);
+		salida.append(this.identacion+"FST "+terceto.getOperando1() + saltoLinea);
 	}
 	
-	private void impresion(Terceto terceto) throws IOException{
+	private void impresion(Terceto terceto, FileWriter salida) throws IOException{
 		String lexema = terceto.getOperando1();
-		salida.append("invoke StdOut, addr "+mapaCadenas.get(lexema)+saltoLinea);
+		salida.append(this.identacion+"invoke StdOut, addr "+mapaCadenas.get(lexema)+saltoLinea);
 	}
 
-	private void conversionItoS(Terceto terceto) throws IOException {
+	private void conversionItoS(Terceto terceto, FileWriter salida) throws IOException {
 		String operando = terceto.getOperando1();
 		Integer pos;
 		
@@ -837,18 +862,13 @@ public class TraductorAssembler {
 		}
 		
 		String result = this.crearAux(TIPO_AUX_FLOAT);
-		salida.append("FILD "+operando+saltoLinea);
+		salida.append(this.identacion+"FILD "+operando+saltoLinea);
 		
-		salida.append("MOV "+result+", ST"+saltoLinea);
+		salida.append(this.identacion+"MOV "+result+", ST"+saltoLinea);
 		terceto.addAux(result);
-		
-		/*salida.append("MOV BX, " + operando);
-		salida.append("MOV ECX, 0")	;
-		salida.append("MOV CX, BX");
-		salida.append("MOV EBX, ECX");*/
 	}
 	
-	private void conversionStoI(Terceto terceto) throws IOException {
+	private void conversionStoI(Terceto terceto, FileWriter salida) throws IOException {
 			String operando = terceto.getOperando1();
 			Integer pos;
 			
@@ -859,66 +879,74 @@ public class TraductorAssembler {
 					operando = this.mapaSingles.get(operando);
 			}	
 			
-			this.salida.append("MOV EAX, "+operando+saltoLinea);
-			this.salida.append("CMP EAX, 0"+saltoLinea);
-			this.salida.append("JL ??errorConversionNegativo"+saltoLinea);
+			salida.append(this.identacion+"MOV EAX, "+operando+saltoLinea);
+			salida.append(this.identacion+"CMP EAX, 0"+saltoLinea);
+			salida.append(this.identacion+"JL ??errorConversionNegativo"+saltoLinea);
 			
-			this.salida.append("FLD ["+operando+"]"+saltoLinea);
+			salida.append(this.identacion+"FLD ["+operando+"]"+saltoLinea);
 			
 			String result = this.crearAux(TIPO_AUX_ENTERO);
-			this.salida.append("FISTP "+result+saltoLinea);
+			salida.append(this.identacion+"FISTP "+result+saltoLinea);
 			
 			terceto.setAux(result);
 	}
 	
+	//En el mapero deberia preguntar si el booleano es true o false y pasar por paramentro el FileWriter
 	public void traducir(Terceto t) throws IOException {
 		// TODO El metodo debe tomar el terceto y mapear hacia que metodo de traduccion debe dirigirse
 		String operador = t.getOperador();
 		Integer tipo = t.getTipo();
+		
+		FileWriter salida;
+		if(this.funcion) {
+			salida=this.funciones;
+		}else {
+			salida=this.cuerpo;
+		}
+		
+		if(tipo!=null && tipo == TIPO_ETIQUETA) {
+			this.etiqueta(t,salida);
 
-		if(tipo!=null && tipo == 8) {
-			this.etiqueta(t);
-
-		}else if(tipo!=null && tipo == 10) {
+		}else if(tipo!=null && tipo == TIPO_FUNCION) {
 			this.funcion(t);
-		}else if (tipo!=null && tipo == 2) { //FLOAT
+		}else if (tipo!=null && tipo == T_SINGLE) { //FLOAT
 			switch (operador) {
 				case "+":
-					this.sumaPuntoFlotante(t);
+					this.sumaPuntoFlotante(t,salida);
 					break;
 
 				case "-":
-					this.restaPuntoFlotante(t);
+					this.restaPuntoFlotante(t,salida);
 					break;
 
 				case "*":
-					this.multiplicacionPuntoFlotante(t);
+					this.multiplicacionPuntoFlotante(t,salida);
 					break;
 
 				case "/":
-					this.divisionPuntoFlotante(t);
+					this.divisionPuntoFlotante(t,salida);
 					break;
 
 				case ":=":
-					this.asignacionPuntoFlotante(t);
+					this.asignacionPuntoFlotante(t,salida);
 					break;
 			}
 		}else{
 			switch (operador) {
 				case "+":
-					this.suma(t);
+					this.suma(t,salida);
 					break;
 				case "-":
-					this.resta(t);
+					this.resta(t,salida);
 					break;
 				case "*":
-					this.multiplicacion(t);
+					this.multiplicacion(t,salida);
 					break;
 				case "/":
-					this.division(t);
+					this.division(t,salida);
 					break;
 				case ":=":
-					this.asignacion(t);
+					this.asignacion(t,salida);
 					break;
 			}
 		}
@@ -926,7 +954,7 @@ public class TraductorAssembler {
 		//Verifico en caso de no ser una exp_arit.
 		switch (operador) {
 			case "SALIDA":
-				this.impresion(t);
+				this.impresion(t,salida);
 				break;
 
 			case "RETORNO":
@@ -934,55 +962,55 @@ public class TraductorAssembler {
 				break;
 
 			case "CALL":
-				this.call(t);
+				this.call(t,salida);
 				break;
 
 			case "BI":
-				this.branchIncondicional(t);
+				this.branchIncondicional(t,salida);
 				break;
 
 			case "BF":
-				this.branchFalse(t);
+				this.branchFalse(t,salida);
 				break;
 
 			case "AND":
-				this.and(t);
+				this.and(t,salida);
 				break;
 
 			case "!=":
-				this.distinto(t);
+				this.distinto(t,salida);
 				break;
 
 			case ">":
-				this.mayor(t);
+				this.mayor(t,salida);
 				break;
 
 			case ">=":
-				this.mayorIgual(t);
+				this.mayorIgual(t,salida);
 				break;
 
 			case "<":
-				this.menor(t);
+				this.menor(t,salida);
 				break;
 
 			case "<=":
-				this.menorIgual(t);
+				this.menorIgual(t,salida);
 				break;
 
 			case "=":
-				this.igual(t);
+				this.igual(t,salida);
 				break;
 				
 			case "itoS":
-				this.conversionItoS(t);
+				this.conversionItoS(t,salida);
 				break;
 			
 			case "stoI":
-				this.conversionStoI(t);
+				this.conversionStoI(t,salida);
 				break;
 
 		}
 		
-		this.salida.append(saltoLinea);
+		salida.append(saltoLinea);
 	}
 }

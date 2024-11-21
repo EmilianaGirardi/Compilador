@@ -694,33 +694,35 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
    }
 
 private String mappeoTipo(Integer tipo){
-	switch(tipo){
-		case T_UNSIGNED:
-			return "UNSIGNED";
-		case T_SINGLE:
-			return "SINGLE";
-		case T_OCTAL:
-			return "OCTAL";
-		case TIPO_MULTILINEA:
-			return "MULTILINEA";
-		case TIPO_TRIPLE_UNSIGNED:
-			return "TRIPLE_UNSIGNED";
-		case TIPO_TRIPLE_SINGLE:
-			return "TRIPLE_SINGLE";
-		case TIPO_TRIPLE_OCTAL:
-			return "TRIPLE_OCTAL";
-		case TIPO_ETIQUETA:
-			return "ETIQUETA";
-		case TIPO_SALTO:
-			return "SALTO";
-		case TIPO_FUNCION:
-			return "FUNCION";
-		case 11:
-			return "AUXILIAR";
+	if(tipo!=null) {
+	
+		switch(tipo){
+			case T_UNSIGNED:
+				return "UNSIGNED";
+			case T_SINGLE:
+				return "SINGLE";
+			case T_OCTAL:
+				return "OCTAL";
+			case TIPO_MULTILINEA:
+				return "MULTILINEA";
+			case TIPO_TRIPLE_UNSIGNED:
+				return "TRIPLE_UNSIGNED";
+			case TIPO_TRIPLE_SINGLE:
+				return "TRIPLE_SINGLE";
+			case TIPO_TRIPLE_OCTAL:
+				return "TRIPLE_OCTAL";
+			case TIPO_ETIQUETA:
+				return "ETIQUETA";
+			case TIPO_SALTO:
+				return "SALTO";
+			case TIPO_FUNCION:
+				return "FUNCION";
+			case 11:
+				return "AUXILIAR";
+		}
 	}
-
+	
 	return "";
-
 }
 
 public static void main(String[] args) throws IOException {
