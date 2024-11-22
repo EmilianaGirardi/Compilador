@@ -8,142 +8,200 @@ includelib \masm32\lib\masm32.lib
 errorMsgOverflow db "Overflow: en suma!.", 10, 0 ;
 errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single negativo a Entero!.", 10, 0 ;
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
-_cadena0_ DB "y menor a 50 => el RET fue x", 10, 0
-_cadena1_ DB "y mayor a 50 => el RET fue x+z", 10, 0
-_cadena2_ DB "ADENTRO DE FUN 3", 10, 0
-_cadena3_ DB "ADENTRO DE FUN 2", 10, 0
-_cadena4_ DB "ADENTRO DE FUN 1", 10, 0
-y_global_funcion1_funcion2 DW 0 
-z_global_funcion1_funcion2_funcion3 DD 0.0 
-_cadena5_ DB "FUERA de funcion1", 10, 0
+i_global_funcion DW 0 
+i_global_funcion_funcion2 DW 0 
 x_global DW 0 
 y_global DW 0 
-_cadena6_ DB "z>4", 10, 0
-_cadena7_ DB "z<4", 10, 0
-_float0_ DD 4.0
-x_global_funcion1 DW 0 
+l_global_funcion DW 0 
 @aux7 DW 0 
 @aux6 DW 0 
 @aux5 DW 0 
 @aux4 DW 0 
+@aux9 DW 0 
 @aux8 DW 0 
-funcion1_global@param DW 0 
 @aux3 DW 0 
-@aux2 DD 0.0 
+@aux2 DW 0 
 @aux1 DW 0 
-funcion2_global_funcion1@param DW 0 
+funcion2_global_funcion@param DW 0 
+funcion_global@param DW 0 
+@aux11 DW 0 
+@aux12 DW 0 
+@aux13 DW 0 
+@aux14 DW 0 
+@aux10 DW 0 
+@aux15 DW 0 
+@aux16 DW 0 
 
 .CODE
-  funcion1_global:
-    MOV AX, funcion1_global@param
-    MOV x_global_funcion1, AX
-    invoke StdOut, addr _cadena4_
+  funcion_global:
+    MOV AX, funcion_global@param
+    MOV l_global_funcion, AX
+    funcion2_global_funcion:
+      MOV AX, funcion2_global_funcion@param
+      MOV i_global_funcion_funcion2, AX
 
-    funcion2_global_funcion1:
-      MOV AX, funcion2_global_funcion1@param
-      MOV y_global_funcion1_funcion2, AX
-
-      invoke StdOut, addr _cadena3_
-
-      funcion3_global_funcion1_funcion2:
-        FST z_global_funcion1_funcion2_funcion3
-
-        invoke StdOut, addr _cadena2_
-
-        MOV CX, 0 
-        FLD z_global_funcion1_funcion2_funcion3
-        FLD _float0_
-        FCOM ST(1)
-        FSTSW AX
-        SAHF
-        SETG  CL
-        MOV CH, 0 
-        MOV @aux1, CX
-
-        CMP @aux1, 0
-        JE ET11
-
-        invoke StdOut, addr _cadena6_
-
-        MOV AX,8
-        RET
-
-        JMP ET14
-
-        ET11:
-
-        invoke StdOut, addr _cadena7_
-
-        MOV AX,2
-        RET
-
-        ET14:
-
-        MOV AX,0
-      RET
-
-      FILD y_global_funcion1_funcion2
-      FST @aux2
-
-      FLD @aux2
-      CALL funcion3_global_funcion1_funcion2
+      MOV AX, i_global_funcion_funcion2
+      MOV BX, 2
+      MUL BX 
       MOV @aux3, AX
 
-      MOV AX, @aux3
-      ADD AX, 2
+      MOV AX, l_global_funcion
+      ADD AX, @aux3
       JC ??errorOverflow
       MOV @aux4, AX
 
       MOV AX,@aux4
     RET
 
-    MOV AX, x_global_funcion1
-    MOV funcion2_global_funcion1@param, AX
-    CALL funcion2_global_funcion1
-    MOV @aux5, AX
+    ET10:
 
-    MOV AX, @aux5
-    ADD AX, x_global_funcion1
-    JC ??errorOverflow
+    MOV CX, 0 
+    MOV AX, l_global_funcion
+    CMP AX, 80
+    SETBE CL
+    MOV CH, 0 
+    MOV @aux5, CX
+
+    CMP @aux5, 0
+    JE ET31
+
+    MOV AX, l_global_funcion
+    MOV funcion2_global_funcion@param, AX
+    CALL funcion2_global_funcion
     MOV @aux6, AX
 
-    MOV AX,@aux6
+    MOV AX, @aux6
+    MOV l_global_funcion, AX
+
+    MOV CX, 0 
+    MOV AX, l_global_funcion
+    CMP AX, 80
+    SETB CL
+    MOV CH, 0 
+    MOV @aux7, CX
+
+    CMP @aux7, 0
+    JE ET23
+
+    ET17:
+
+    MOV AX, i_global_funcion
+    ADD AX, 1
+    JC ??errorOverflow
+    MOV @aux8, AX
+
+    MOV AX, @aux8
+    MOV i_global_funcion, AX
+
+    MOV CX, 0 
+    MOV  AX, i_global_funcion
+    CMP AX, 7
+    SETA CL
+    MOV CH, 0 
+    MOV @aux9, CX
+
+    CMP @aux9, 0
+    JE ET17
+
+    JMP ET29
+
+    ET23:
+
+    MOV CX, 0 
+    MOV  AX, l_global_funcion
+    CMP AX, 80
+    SETA CL
+    MOV CH, 0 
+    MOV @aux10, CX
+
+    CMP @aux10, 0
+    JE ET28
+
+    MOV AX, l_global_funcion
+    ADD AX, 5
+    JC ??errorOverflow
+    MOV @aux11, AX
+
+    MOV AX, @aux11
+    MOV l_global_funcion, AX
+
+    ET28:
+
+    ET29:
+
+    JMP ET33
+
+    ET31:
+
+    MOV AX,l_global_funcion
+    RET
+
+    ET33:
+
+    MOV CX, 0 
+    MOV AX, l_global_funcion
+    CMP AX, 100
+    SETAE CL
+    MOV CH, 0 
+    MOV @aux12, CX
+
+    CMP @aux12, 0
+    JE ET10
+
+    MOV AX,l_global_funcion
   RET
 
 START:
-
-  MOV AX, 1
-  MOV x_global, AX
+  reinicio@_global:
 
   MOV AX, x_global
-  MOV funcion1_global@param, AX
-  CALL funcion1_global
-  MOV @aux7, AX
+  ADD AX, 5
+  JC ??errorOverflow
+  MOV @aux1, AX
 
-  MOV AX, @aux7
+  MOV AX, @aux1
+  MOV x_global, AX
+
+  MOV AX, y_global
+  ADD AX, 2
+  JC ??errorOverflow
+  MOV @aux2, AX
+
+  MOV AX, @aux2
   MOV y_global, AX
 
-  invoke StdOut, addr _cadena5_
+
+  MOV AX, x_global
+  ADD AX, y_global
+  JC ??errorOverflow
+  MOV @aux13, AX
+
+  MOV AX, x_global
+  MOV funcion_global@param, AX
+  CALL funcion_global
+  MOV @aux14, AX
+
+  MOV AX, @aux13
+  ADD AX, @aux14
+  JC ??errorOverflow
+  MOV @aux15, AX
+
+  MOV AX, @aux15
+  MOV x_global, AX
 
   MOV CX, 0 
-  MOV AX, y_global
-  CMP AX, 50
+  MOV AX, x_global
+  CMP AX, 150
   SETB CL
   MOV CH, 0 
-  MOV @aux8, CX
+  MOV @aux16, CX
 
-  CMP @aux8, 0
-  JE ET31
+  CMP @aux16, 0
+  JE ET44
 
-  invoke StdOut, addr _cadena0_
+  JMP reinicio@_global
 
-  JMP ET33
-
-  ET31:
-
-  invoke StdOut, addr _cadena1_
-
-  ET33:
+  ET44:
 
   JMP END_START
 

@@ -1,36 +1,29 @@
 
-  MOV AX, 1
+
+  MOV AX, 047
   MOV x_global, AX
+
+  MOV AX, 45
+  MOV y_global, AX
+
+  FLD _float1_
+  FST z_global
 
   MOV AX, x_global
   MOV funcion1_global@param, AX
   CALL funcion1_global
-  MOV @aux7, AX
+  MOV @aux3, AX
 
-  MOV AX, @aux7
+  MOV AX, @aux3
   MOV y_global, AX
 
-  invoke StdOut, addr _cadena5_
+  MOV AX, z_global
+  MOV funcion2_global@param, AX
+  CALL funcion2_global
+  FST @aux4
 
-  MOV CX, 0 
-  MOV AX, y_global
-  CMP AX, 50
-  SETB CL
-  MOV CH, 0 
-  MOV @aux8, CX
-
-  CMP @aux8, 0
-  JE ET31
-
-  invoke StdOut, addr _cadena0_
-
-  JMP ET33
-
-  ET31:
-
-  invoke StdOut, addr _cadena1_
-
-  ET33:
+  FLD @aux4
+  FST z_global
 
   JMP END_START
 

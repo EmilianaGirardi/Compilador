@@ -5,6 +5,7 @@ import AnalizadorLexico.TablaSimbolos;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,6 +17,9 @@ import java.util.HashMap;
 public class TraductorAssembler {
 	
 	private String path;
+	private String pathEncabezado;
+	private String pathCuerpo;
+	private String pathFunciones;
 	
 	private FileWriter encabezado;
 	private FileWriter cuerpo;
@@ -51,11 +55,23 @@ public class TraductorAssembler {
 	public TraductorAssembler(String archivoSalida) throws IOException {
 		this.path = archivoSalida;
 		
-		this.assembler = new FileWriter(path, false);
-		this.cuerpo  = new FileWriter("src/GeneradorCodigo/cuerpo.txt",false);
+		int indice = archivoSalida.lastIndexOf('/');
+		if(indice!= -1) {
+			this.pathEncabezado = archivoSalida.substring(0,indice)+"/encabezado.txt";
+			this.pathCuerpo = archivoSalida.substring(0,indice)+"/cuerpo.txt";
+			this.pathFunciones = archivoSalida.substring(0,indice)+"/funciones.txt";
+		}else {
+			this.pathEncabezado ="encabezado.txt";
+			this.pathCuerpo = "cuerpo.txt";
+			this.pathFunciones = "funciones.txt";
+		}
 		
-		this.encabezado= new FileWriter("src/GeneradorCodigo/encabezado.txt",false);
-		this.funciones= new FileWriter("src/GeneradorCodigo/funciones.txt",false);
+		this.assembler = new FileWriter(path, false);
+		
+		this.cuerpo  = new FileWriter(this.pathCuerpo,false);
+		
+		this.encabezado= new FileWriter(this.pathEncabezado,false);
+		this.funciones= new FileWriter(this.pathFunciones,false);
 		
 		this.numAux = 0;
 		this.numCadena = 0;
@@ -187,22 +203,20 @@ public class TraductorAssembler {
 		this.cuerpo.close();
 		this.funciones.close();
 		
-		cargarArchivo("/GeneradorCodigo/encabezado.txt", this.assembler);
 		
-		cargarArchivo("/GeneradorCodigo/funciones.txt", this.assembler);
 		
-		cargarArchivo("/GeneradorCodigo/cuerpo.txt", this.assembler);
+		cargarArchivo(this.pathEncabezado, this.assembler);
+		
+		cargarArchivo(this.pathFunciones, this.assembler);
+		
+		cargarArchivo(this.pathCuerpo, this.assembler);
 	
 		this.assembler.close();
 		
 	}
 
     private void cargarArchivo(String pathArchivoOrigen, FileWriter archivoDestino) throws IOException {
-        InputStream archivo = getClass().getResourceAsStream(pathArchivoOrigen);
-        
-        if (archivo == null) {
-            throw new IOException("No se pudo encontrar uno de los archivos de Assembler en el classpath");
-        }
+    	InputStream archivo = new FileInputStream(pathArchivoOrigen);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(archivo));
         String linea= reader.readLine();
@@ -213,6 +227,7 @@ public class TraductorAssembler {
         }
 
         reader.close();
+        new File(pathArchivoOrigen).delete();
     }
 	
 	private void suma(Terceto terceto, FileWriter salida) throws IOException {

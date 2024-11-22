@@ -1,5 +1,5 @@
 package AnalizadorLexico.AccionesSemanticas;
-
+  
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;

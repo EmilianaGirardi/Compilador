@@ -20,9 +20,6 @@ pattern BEGIN
     		ELSE 
 	    		BEGIN
 	    			OUTF([(x,y)<=(z,u)]);
-	    			
-					
-					
 	                v1:= 02;
 	                v2:= 06;
 	                v3:= 025;
