@@ -901,59 +901,59 @@ case 1:
 //#line 19 "gramatica.y"
 {
         lexico.getTablaSimbolos().agregarUso(val_peek(4).sval, NOMBRE_PROGRAMA);
-        System.out.println("Se detecto: Programa");}
+        }
 break;
 case 2:
 //#line 22 "gramatica.y"
-{System.err.println("Error: Falta nombre de programa"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta nombre de programa"+"\u001B[0m"); generador.setError();}
 break;
 case 3:
 //#line 23 "gramatica.y"
-{System.err.println("Error: Falta delimitador de programa ");generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta delimitador de programa."+"\u001B[0m");generador.setError();}
 break;
 case 5:
 //#line 27 "gramatica.y"
-{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 7:
 //#line 29 "gramatica.y"
-{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea());generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()+"\u001B[0m");generador.setError();}
 break;
 case 9:
 //#line 31 "gramatica.y"
-{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 11:
 //#line 33 "gramatica.y"
-{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 12:
 //#line 39 "gramatica.y"
-{System.out.println("Se detecto: Sentencia if ");}
+{}
 break;
 case 13:
 //#line 40 "gramatica.y"
-{System.out.println("Se detecto: Invocacion a funcion " + " en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 14:
 //#line 41 "gramatica.y"
-{System.out.println("Se detecto: Asignacion " + " en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 15:
 //#line 42 "gramatica.y"
-{System.out.println("Se detecto: Ciclo repeat until ");}
+{}
 break;
 case 16:
 //#line 43 "gramatica.y"
-{System.out.println("Se detecto: Sentencia GOTO " + " en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 17:
 //#line 44 "gramatica.y"
-{System.out.println("Se detecto: Salida " + " en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 18:
 //#line 45 "gramatica.y"
-{System.out.println("Se detecto: Etiqueta " + " en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 20:
 //#line 49 "gramatica.y"
@@ -963,7 +963,7 @@ case 20:
                                                                                             Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
                                                                                             Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
                                                                                             if (tipoFun != tipoRetorno){
-                                                                                                System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                                                                                                System.err.println("\u001B[31m"+"Error: tipo de retorno invalido en funcion: " + lexemaFun+"\u001B[0m");
                                                                                                 generador.setError();
                                                                                             }}
 break;
@@ -975,33 +975,33 @@ case 21:
                                                                      Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
                                                                      Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
                                                                      if (tipoFun != tipoRetorno){
-                                                                         System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                                                                         System.err.println("\u001B[31m"+"Error: tipo de retorno invalido en funcion: " + lexemaFun+"\u001B[0m");
                                                                          generador.setError();
                                                                      }}
 break;
 case 24:
 //#line 71 "gramatica.y"
-{System.err.println("Error: Falta ;"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta ; .Linea:"+lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 25:
 //#line 72 "gramatica.y"
-{System.out.println("Falta ;");}
+{System.err.println("\u001B[31m"+"Error: Falta ; .Linea:"+lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 29:
 //#line 83 "gramatica.y"
-{System.out.println("Se detecto: Declaracion de funcion ");}
+{}
 break;
 case 30:
 //#line 84 "gramatica.y"
-{System.out.println("Se detecto: Declaración de variable " + "en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 31:
 //#line 85 "gramatica.y"
-{System.out.println("Se detecto: Declaración de tipo triple " + "en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 32:
 //#line 86 "gramatica.y"
-{System.out.println("Se detecto: Declaración de variable tipo triple " + "en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 33:
 //#line 89 "gramatica.y"
@@ -1014,7 +1014,7 @@ case 33:
             TS.editarTipo(var, tipo);
             TS.agregarUso(var, NOMBRE_VAR);
             if (TS.estaToken(var + ambito)){
-                System.err.println("Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea());
+                System.err.println("\u001B[31m"+"Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                 generador.setError();
             }
             TS.editarLexema(var, var + ambito);
@@ -1028,7 +1028,7 @@ case 34:
         TablaSimbolos TS = lexico.getTablaSimbolos();
         String id = TS.buscarVariable(val_peek(1).sval);
         if (id == null){
-            System.err.println("Error: variable no declarad. Linea: " + lexico.getContadorLinea());
+            System.err.println("\u001B[31m"+"Error: variable no declarad. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             generador.setError();
         }
         else{
@@ -1055,7 +1055,7 @@ case 34:
                         atributos.add(t);
                         atributos.add(NOMBRE_VAR);
                         if (TS.estaToken(token + ambito)){
-                           System.err.println("Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea());
+                           System.err.println("\u001B[31m"+"Error: ya existe la variable " + var + " en el ambito " + ambito + ". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                            generador.setError();
                         }
                         TS.agregarToken(token + ambito, atributos);
@@ -1114,19 +1114,19 @@ case 40:
 break;
 case 41:
 //#line 192 "gramatica.y"
-{System.err.println("Error: Falta nombre de funcion"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta nombre de funcion"+"\u001B[0m"); generador.setError();}
 break;
 case 42:
 //#line 193 "gramatica.y"
-{System.err.println("Error: Falta parametro de funcion"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta parametro de funcion"+"\u001B[0m"); generador.setError();}
 break;
 case 43:
 //#line 194 "gramatica.y"
-{System.err.println("Error: falta nombre del parametro formal"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta nombre del parametro formal"+"\u001B[0m"); generador.setError();}
 break;
 case 44:
 //#line 195 "gramatica.y"
-{System.err.println("Error: falta tipo del parametro formal"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta tipo del parametro formal"+"\u001B[0m"); generador.setError();}
 break;
 case 45:
 //#line 198 "gramatica.y"
@@ -1138,7 +1138,7 @@ case 45:
                 Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
                 Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
-                    System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                    System.err.println("\u001B[31m"+"Error: tipo de retorno invalido en funcion: " + lexemaFun+"\u001B[0m");
                     generador.setError();
                 }
                 ret.setTipo(TIPO_RETORNO);
@@ -1157,7 +1157,7 @@ case 46:
                  Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
                  Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
-                     System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
+                     System.err.println("\u001B[31m"+"Error: tipo de retorno invalido en funcion: " + lexemaFun+"\u001B[0m");
                      generador.setError();
                 }
                 /*desapilar el ambito de la funcion*/
@@ -1168,7 +1168,7 @@ case 46:
 break;
 case 47:
 //#line 229 "gramatica.y"
-{System.err.println("Error: falta retorno en funcion"); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta retorno en funcion"+"\u001B[0m"); generador.setError();}
 break;
 case 48:
 //#line 234 "gramatica.y"
@@ -1177,7 +1177,7 @@ case 48:
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable(val_peek(2).sval);
             if(expresion == null){
-            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             	generador.setError();
                 yyval.sval = generador.addTerceto("RETORNO",expresion , null);
             }else{
@@ -1205,7 +1205,7 @@ case 49:
 
         String id = TS.buscarVariable(val_peek(3).sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            System.err.println("\u001B[31m"+"Error: funcion no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             generador.setError();
         }
         else{ /*es una funcion alcanzable*/
@@ -1214,13 +1214,13 @@ case 49:
             entonces lo comparamos con el tipo de exp_arit.
             */
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("Error no se admiten funciones recursivas");
+                                    System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
                                     generador.setError();
              }
             Integer tipoExp = null;
             String expresion = TS.buscarVariable(val_peek(1).sval);
             if(expresion == null){
-            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             	generador.setError();
             }else{
             	switch (expresion){
@@ -1235,7 +1235,7 @@ case 49:
             
 
             if (tipoExp != TS.getTipoParam(id)){
-                System.err.println("Error: Invocación a una función con un parametro incorrecto. Linea: " + lexico.getContadorLinea());
+                System.err.println("\u001B[31m"+"Error: Invocación a una función con un parametro incorrecto. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 generador.setError();
             }
             /* TODO implementar logica de etiquetas para llamar a la funcion*/
@@ -1256,12 +1256,12 @@ case 50:
         /*verificar que el uso de ID sea nombre de función.*/
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(val_peek(4).sval.equals(TS.getUltimoAmbito())) {
-                            System.err.println("Error no se admiten funciones recursivas");
+                            System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
             generador.setError();
         }
         String id = TS.buscarVariable(val_peek(4).sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            System.err.println("\u001B[31m"+"Error: funcion no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             generador.setError();
         }
         else { /*es una función alcanzable*/
@@ -1273,19 +1273,19 @@ case 50:
             Integer tipoCast = Integer.parseInt(val_peek(2).sval);
 
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("Error no se admiten funciones recursivas");
+                                    System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
                                     generador.setError();
                                 }
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
+                System.err.println("\u001B[31m"+"Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 generador.setError();
             }
             else{
                 Integer tipoExp = null;
                 String expresion = TS.buscarVariable(val_peek(1).sval);
                 if(expresion == null){
-                	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 	generador.setError();
                 }else{
 					switch (expresion){
@@ -1301,7 +1301,7 @@ case 50:
                 /*crear terceto de conversion*/
                 String conversion = generador.getConversion(tipoExp, tipoCast);
                 if (conversion == null) {
-                	System.err.println("Error: conversion invalida. No se puede convertir"+this.mappeoTipo(tipoExp)+ " a "+this.mappeoTipo(tipoCast) +" .Linea: " + lexico.getContadorLinea());
+                	System.err.println("\u001B[31m"+"Error: conversion invalida. No se puede convertir"+this.mappeoTipo(tipoExp)+ " a "+this.mappeoTipo(tipoCast) +" .Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 	generador.setError();
                 }
 
@@ -1327,7 +1327,7 @@ case 51:
 
         String id = TS.buscarVariable(val_peek(6).sval);
         if (id == null || TS.getUso(id) != NOMBRE_FUN){
-            System.err.println("Error: funcion no declarada. Linea: " + lexico.getContadorLinea());
+            System.err.println("\u001B[31m"+"Error: funcion no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             generador.setError();
         }
         else { /*es una función alcanzable*/
@@ -1336,21 +1336,21 @@ case 51:
             entonces lo comparamos con el tipo de exp_arit.
             */
             if(id.equals(TS.getUltimoAmbito())) {
-                        System.err.println("Error no se admiten funciones recursivas");
+                        System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
                         generador.setError();
                     }
             Integer tipoParam = TS.getTipoParam(id);
             Integer tipoCast = Integer.parseInt(val_peek(4).sval);
 
             if (tipoParam != tipoCast){
-                System.err.println("Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea());
+                System.err.println("\u001B[31m"+"Error: tipo de parametro incompatible. Se esperaba un parametro del tipo "+this.mappeoTipo(tipoParam)+". Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 generador.setError();
             }
             else{
                 Integer tipoExp = null;
                 String expresion = TS.buscarVariable(val_peek(2).sval);
                 if(expresion == null){
-                	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                 	generador.setError();
                 }else{
                 	switch (expresion){
@@ -1365,7 +1365,7 @@ case 51:
                 
                 /*crear terceto de conversion*/
                 String conversion = generador.getConversion(tipoExp, tipoCast);
-                if (conversion == null) {System.out.println("Error de conversion en linea: " + lexico.getContadorLinea());}
+                if (conversion == null) {System.err.println("\u001B[31m"+"Error de conversion en linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
                 String operando1;
                 if (expresion == "Terceto") operando1 = val_peek(6).sval;
                 else operando1 = expresion;
@@ -1382,7 +1382,7 @@ case 51:
 break;
 case 52:
 //#line 435 "gramatica.y"
-{System.err.println("Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parámetro en invocación a función. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 53:
 //#line 442 "gramatica.y"
@@ -1395,7 +1395,7 @@ case 53:
 
                     String expresion = TS.buscarVariable(val_peek(2).sval);
                     if(expresion == null){
-						System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+						System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
 						generador.setError();
                     }else{
                     	switch (expresion){
@@ -1411,7 +1411,7 @@ case 53:
 
                     String termino = TS.buscarVariable(val_peek(0).sval);
                     if(termino == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else{
                     	switch (termino){
@@ -1427,7 +1427,7 @@ case 53:
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en suma. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("\u001B[31m"+"Error: Incompatibilidad de tipos en suma. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                         generador.setError();
                     }
                     else{
@@ -1439,7 +1439,7 @@ case 53:
 
                         yyval.sval = generador.addTerceto("+", operando1, operando2);
                         generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
-                        System.out.println("Se detecto: Suma " + "en linea: " + lexico.getContadorLinea());
+                        
                     }
            }
 break;
@@ -1454,7 +1454,7 @@ case 54:
 
                     String expresion = TS.buscarVariable(val_peek(2).sval);
                     if(expresion == null){
-						System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+						System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
 						generador.setError();
                     }else{
                     	switch (expresion){
@@ -1471,7 +1471,7 @@ case 54:
                     String termino = TS.buscarVariable(val_peek(0).sval);
 
                     if(termino == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else{
 						switch (termino){
@@ -1486,7 +1486,7 @@ case 54:
                     
 
                     if(tipoExp != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en resta. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("\u001B[31m"+"Error: Incompatibilidad de tipos en resta. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                         generador.setError();
                     }
                     else{
@@ -1498,21 +1498,21 @@ case 54:
 
                         yyval.sval = generador.addTerceto("-", operando1, operando2);
                         generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(tipoExp);
-                        System.out.println("Se detecto: Resta " + "en linea: " + lexico.getContadorLinea());
+                        
                     }
            }
 break;
 case 55:
 //#line 556 "gramatica.y"
 {
-                    System.err.println("Error: Falta el término después de '+' en expresion aritmetica. Línea: " + lexico.getContadorLinea());
+                    System.err.println("\u001B[31m"+"Error: Falta el término después de '+' en expresion aritmetica. Línea: " + lexico.getContadorLinea()+"\u001B[0m");
                     generador.setError();
            }
 break;
 case 56:
 //#line 561 "gramatica.y"
 {
-                    System.err.println("Error: Falta el término después de '-' en expresión aritmetica. Línea: " + lexico.getContadorLinea());
+                    System.err.println("\u001B[31m"+"Error: Falta el término después de '-' en expresión aritmetica. Línea: " + lexico.getContadorLinea()+"\u001B[0m");
                     generador.setError();
            }
 break;
@@ -1543,7 +1543,7 @@ case 60:
 
                     String factor = TS.buscarVariable(val_peek(0).sval);
                     if(factor == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else{
 	                    switch (factor){
@@ -1559,7 +1559,7 @@ case 60:
 
                     String termino = TS.buscarVariable(val_peek(2).sval);
                     if(termino == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else {
 	                    switch (termino){
@@ -1573,7 +1573,7 @@ case 60:
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("\u001B[31m"+"Error: Incompatibilidad de tipos en multiplicacion. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                         generador.setError();
                     }
                     else{
@@ -1585,7 +1585,7 @@ case 60:
 
                         yyval.sval = generador.addTerceto("*", operando1, operando2);
                         generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(tipoTermino);
-                        System.out.println("Se detecto: Multiplicacion " + "en linea: " + lexico.getContadorLinea());
+                        
                     }
            }
 break;
@@ -1600,7 +1600,7 @@ case 61:
 
                     String factor = TS.buscarVariable(val_peek(0).sval);
                     if(factor == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else{
 	                    switch (factor){
@@ -1616,7 +1616,7 @@ case 61:
 
                     String termino = TS.buscarVariable(val_peek(2).sval);
                     if(termino == null){
-                    	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+                    	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
                     	generador.setError();
                     }else {
 	                    switch (termino){
@@ -1630,7 +1630,7 @@ case 61:
                     }
 
                     if(tipoFactor != tipoTermino){
-                        System.err.println("Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea());
+                        System.err.println("\u001B[31m"+"Error: Incompatibilidad de tipos en division. No se puede operar entre "+this.mappeoTipo(tipoFactor)+" y "+this.mappeoTipo(tipoTermino)+". Linea " + lexico.getContadorLinea()+"\u001B[0m");
                         generador.setError();
                     }
                     else{
@@ -1642,7 +1642,7 @@ case 61:
 
                         yyval.sval = generador.addTerceto("/", operando1, operando2);
                         generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(tipoTermino);
-                        System.out.println("Se detecto: Division " + "en linea: " + lexico.getContadorLinea());
+                       
                     }
            }
 break;
@@ -1654,22 +1654,22 @@ case 62:
 break;
 case 63:
 //#line 692 "gramatica.y"
-{System.err.println("Error: Falta el factor después de '*' en expresion aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta el factor después de '*' en expresion aritmetica. Línea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 64:
 //#line 693 "gramatica.y"
-{System.err.println("Error: Falta el factor después de '/' en expresión aritmetica. Línea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta el factor después de '/' en expresión aritmetica. Línea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 65:
 //#line 696 "gramatica.y"
 {
             yyval.sval = val_peek(0).sval;
-            System.out.println("Se detecto: Identificador " + val_peek(0).sval + " en linea: " + lexico.getContadorLinea());
+            
             }
 break;
 case 66:
 //#line 700 "gramatica.y"
-{System.out.println("Se detecto: Invocación a función " + "en linea: " + lexico.getContadorLinea());}
+{}
 break;
 case 67:
 //#line 701 "gramatica.y"
@@ -1713,7 +1713,7 @@ case 72:
         yyval.sval = token;
     }
     else {
-        System.err.println("Error: Variable inexistenet o Intento de acceso a una posición de triple inexistente. Linea " + lexico.getContadorLinea());
+        System.err.println("\u001B[31m"+"Error: Variable inexistenet o Intento de acceso a una posición de triple inexistente. Linea " + lexico.getContadorLinea()+"\u001B[0m");
         generador.setError();
         yyval.sval = token;
         /*en este punto, los tercetos se generan igual,
@@ -1732,7 +1732,7 @@ case 73:
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable(val_peek(0).sval);
             if(expresion==null){
-				System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+				System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
 				generador.setError();
             }else{
 				switch (expresion){
@@ -1748,14 +1748,14 @@ case 73:
 
             String id = TS.buscarVariable(val_peek(2).sval);
             if(id == null){
-            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             	generador.setError();
             }else{
             	/*es una var valida*/
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                     System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
+                     System.err.println("\u001B[31m"+"Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea()+"\u001B[0m");
                      generador.setError();
                 }else{
                    String operando2;
@@ -1777,7 +1777,7 @@ case 74:
             TablaSimbolos TS = lexico.getTablaSimbolos();
             String expresion = TS.buscarVariable(val_peek(0).sval);
             if(expresion==null){
-            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             	generador.setError();
             }else{
             	switch (expresion){
@@ -1793,13 +1793,13 @@ case 74:
 
             String id = TS.buscarVariable(val_peek(2).sval);
             if(id == null){
-            	System.err.println("Error: variable no declarada. Linea: " + lexico.getContadorLinea());
+            	System.err.println("\u001B[31m"+"Error: variable no declarada. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
             	generador.setError();
             }else{
                 tipoID = TS.getTipo(id);
 
                 if (tipoID != tipoExp){
-                      System.err.println("Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea());
+                      System.err.println("\u001B[31m"+"Error: tipos invalidos en asignación. No se puede operar entre "+this.mappeoTipo(tipoExp)+" y "+this.mappeoTipo(tipoID)+". Linea: " +lexico.getContadorLinea()+"\u001B[0m");
                  }
                 else{
                     String operando2;
@@ -1828,7 +1828,7 @@ case 75:
     				generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(TIPO_ETIQUETA);
 
     			}else{
-    				System.err.println("Error: la etiqueta "+etq+" ya existente. Linea: "+lexico.getContadorLinea());
+    				System.err.println("\u001B[31m"+"Error: la etiqueta "+etq+" ya existente. Linea: "+lexico.getContadorLinea()+"\u001B[0m");
     			}
     		}
 break;
@@ -1850,7 +1850,7 @@ case 76:
 break;
 case 77:
 //#line 864 "gramatica.y"
-{System.err.println("Error: falta de etiqueta en la sentencia GOTO" + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de etiqueta en la sentencia GOTO" + ". Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 78:
 //#line 867 "gramatica.y"
@@ -1866,7 +1866,7 @@ case 79:
 break;
 case 80:
 //#line 875 "gramatica.y"
-{System.err.println("Error: falta parametro " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta parametro " + ". Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 81:
 //#line 883 "gramatica.y"
@@ -1883,12 +1883,12 @@ case 81:
 break;
 case 82:
 //#line 894 "gramatica.y"
-{System.err.println("Error: Falta END_IF de cierre " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta END_IF de cierre " + ". Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 83:
 //#line 895 "gramatica.y"
 {
-		System.out.println("Se detecto: Sentencia if " + "en linea: " + lexico.getContadorLinea());
+		
 		int pos =Integer.parseInt(generador.obtenerElementoPila().replaceAll("\\D", ""));
 		generador.eliminarPila();
 		Terceto t = generador.getTerceto(pos);
@@ -1901,15 +1901,15 @@ case 83:
 break;
 case 84:
 //#line 906 "gramatica.y"
-{System.out.println("Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());}
+{System.err.println("\u001B[31m"+"Error, Falta END_IF de cierre " + "en linea: " + lexico.getContadorLinea());generador.setError();}
 break;
 case 85:
 //#line 907 "gramatica.y"
-{System.err.println("Error: Falta de contenido en el bloque then " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta de contenido en el bloque then " + ". Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 86:
 //#line 908 "gramatica.y"
-{System.err.println("Error: Falta de contenido en el bloque else " + ". Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: Falta de contenido en el bloque else " + ". Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 87:
 //#line 911 "gramatica.y"
@@ -1948,7 +1948,7 @@ case 89:
                     		Integer pos;
 
                     		if(primer_exp_arit == null){
-                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
                     			generador.setError();
                     		}else{
                     			switch(primer_exp_arit){
@@ -1966,7 +1966,7 @@ case 89:
                     		Integer t_segunda_exp_arit = null;
 
                     		if(segunda_exp_arit == null){
-                    			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                    			System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
                     			generador.setError();
                     		}else{
                     			switch(segunda_exp_arit){
@@ -1981,7 +1981,7 @@ case 89:
                     		}
 
                     		if(t_primer_exp_arit != t_segunda_exp_arit){
-                    			System.err.println("Error: comparación entre dos expresiones de tipos diferentes. No se puede comparar entre "+this.mappeoTipo(t_primer_exp_arit)+" y "+this.mappeoTipo(t_segunda_exp_arit)+". Linea: "+lexico.getContadorLinea());
+                    			System.err.println("\u001B[31m"+"Error: comparación entre dos expresiones de tipos diferentes. No se puede comparar entre "+this.mappeoTipo(t_primer_exp_arit)+" y "+this.mappeoTipo(t_segunda_exp_arit)+". Linea: "+lexico.getContadorLinea()+"\u001B[0m");
                     			generador.setError();
                     		}
 
@@ -1994,7 +1994,7 @@ case 89:
 
                     		yyval.sval = generador.addTerceto(val_peek(2).sval, operando1, operando2);
                             generador.getTerceto(Integer.parseInt(yyval.sval.replaceAll("\\D", ""))).setTipo(t_primer_exp_arit);
-                    		System.out.println("Se detecto: comparación");
+                    		
 
                     	}
 break;
@@ -2005,7 +2005,7 @@ case 90:
           	        String[] lista1 = val_peek(6).sval.split(",");
           	        String[] lista2 = val_peek(2).sval.split(",");
           	        if (lista1.length != lista2.length){
-          	            System.err.println("Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea());
+          	            System.err.println("\u001B[31m"+"Error: Los tamaños de las listas en la condicion no coinciden. Linea: " + lexico.getContadorLinea()+"\u001B[0m");
           	            generador.setError();
           	        }else{
 
@@ -2023,7 +2023,7 @@ case 90:
           				String operando1, operando2;
 
                   		if(primer_exp_arit == null){
-                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
                   			generador.setError();
                   		}else{
                   			switch(primer_exp_arit){
@@ -2040,7 +2040,7 @@ case 90:
 
 
                   		if(segunda_exp_arit == null){
-                  			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  			System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
                   			generador.setError();
                   		}else{
                   			switch(segunda_exp_arit){
@@ -2076,7 +2076,7 @@ case 90:
 
 
           	                    if(primer_exp_arit == null){
-                  					System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+                  					System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
                   					generador.setError();
           		        		}else{
           		        			switch(primer_exp_arit){
@@ -2092,7 +2092,7 @@ case 90:
 
 
           		        		if(segunda_exp_arit == null){
-          		        			System.err.println("Error: variable no declarada. Linea "+lexico.getContadorLinea());
+          		        			System.err.println("\u001B[31m"+"Error: variable no declarada. Linea "+lexico.getContadorLinea()+"\u001B[0m");
           		        			generador.setError();
           		        		}else{
           		        			switch(segunda_exp_arit){
@@ -2119,46 +2119,46 @@ case 90:
           	                }
 
           	                if(error_comparacion){
-          	                	System.err.println("Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea());
+          	                	System.err.println("\u001B[31m"+"Error: comparación entre dos expresiones de tipos diferentes. Linea: "+lexico.getContadorLinea()+"\u001B[0m");
           	                	generador.setError();
           	                }
           	            }
 
           	        }
-          		    System.out.println("Se detecto: comparación múltiple");
+          		    
           		  }
 break;
 case 91:
 //#line 1123 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 92:
 //#line 1124 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 93:
 //#line 1125 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 94:
 //#line 1126 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 95:
 //#line 1127 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 96:
 //#line 1128 "gramatica.y"
-{System.err.println("Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de parentesis en la condicion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 97:
 //#line 1130 "gramatica.y"
-{System.err.println("Error: falta de comparador. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de comparador. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 98:
 //#line 1131 "gramatica.y"
-{System.err.println("Error, falta de lista de expresión aritmetica en comparación. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error, falta de lista de expresión aritmetica en comparación. Linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 99:
 //#line 1135 "gramatica.y"
@@ -2196,11 +2196,11 @@ case 105:
 break;
 case 106:
 //#line 1151 "gramatica.y"
-{System.err.println("Error: falta cuerpo en la iteracion. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta cuerpo en la iteracion. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 107:
 //#line 1152 "gramatica.y"
-{System.err.println("Error: falta de until en la iteracion repeat. Linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("\u001B[31m"+"Error: falta de until en la iteracion repeat. Linea: " + lexico.getContadorLinea()+"\u001B[0m"); generador.setError();}
 break;
 case 108:
 //#line 1156 "gramatica.y"

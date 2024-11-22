@@ -10,8 +10,10 @@ errorMsgConversionNegativa db "Conversion invalida: no puede convertir un Single
 errorMsgRestaNegativa db "Resta invalida: resultado negativo!.", 10, 0 ;
 i_global_funcion DW 0 
 i_global_funcion_funcion2 DW 0 
+z_global DD 0.0 
 x_global DW 0 
 y_global DW 0 
+_float0_ DD 2.0
 l_global_funcion DW 0 
 @aux7 DW 0 
 @aux6 DW 0 
@@ -53,7 +55,7 @@ funcion_global@param DW 0
       MOV AX,@aux4
     RET
 
-    ET10:
+    ET11:
 
     MOV CX, 0 
     MOV AX, l_global_funcion
@@ -63,7 +65,7 @@ funcion_global@param DW 0
     MOV @aux5, CX
 
     CMP @aux5, 0
-    JE ET31
+    JE ET32
 
     MOV AX, l_global_funcion
     MOV funcion2_global_funcion@param, AX
@@ -81,9 +83,9 @@ funcion_global@param DW 0
     MOV @aux7, CX
 
     CMP @aux7, 0
-    JE ET23
+    JE ET24
 
-    ET17:
+    ET18:
 
     MOV AX, i_global_funcion
     ADD AX, 1
@@ -101,11 +103,11 @@ funcion_global@param DW 0
     MOV @aux9, CX
 
     CMP @aux9, 0
-    JE ET17
+    JE ET18
 
-    JMP ET29
+    JMP ET30
 
-    ET23:
+    ET24:
 
     MOV CX, 0 
     MOV  AX, l_global_funcion
@@ -115,7 +117,7 @@ funcion_global@param DW 0
     MOV @aux10, CX
 
     CMP @aux10, 0
-    JE ET28
+    JE ET29
 
     MOV AX, l_global_funcion
     ADD AX, 5
@@ -125,18 +127,18 @@ funcion_global@param DW 0
     MOV AX, @aux11
     MOV l_global_funcion, AX
 
-    ET28:
-
     ET29:
 
-    JMP ET33
+    ET30:
 
-    ET31:
+    JMP ET34
+
+    ET32:
 
     MOV AX,l_global_funcion
     RET
 
-    ET33:
+    ET34:
 
     MOV CX, 0 
     MOV AX, l_global_funcion
@@ -146,12 +148,15 @@ funcion_global@param DW 0
     MOV @aux12, CX
 
     CMP @aux12, 0
-    JE ET10
+    JE ET11
 
     MOV AX,l_global_funcion
   RET
 
 START:
+  FLD _float0_
+  FST z_global
+
   reinicio@_global:
 
   MOV AX, x_global
@@ -197,11 +202,11 @@ START:
   MOV @aux16, CX
 
   CMP @aux16, 0
-  JE ET44
+  JE ET45
 
   JMP reinicio@_global
 
-  ET44:
+  ET45:
 
   JMP END_START
 

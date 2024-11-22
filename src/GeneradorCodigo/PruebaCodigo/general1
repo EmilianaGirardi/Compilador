@@ -1,6 +1,9 @@
 prueba BEGIN
 
 	TIPO_UNSIGNED x, y;
+	TIPO_SINGLE z;
+	
+	z:=2.;
 	
 	reinicio@;
 	x:= x+5;
