@@ -1,0 +1,43 @@
+
+
+  MOV AX, 047
+  MOV x_global, AX
+
+  MOV AX, 45
+  MOV y_global, AX
+
+  FLD _float1_
+  FST z_global
+
+  MOV AX, x_global
+  MOV funcion1_global@param, AX
+  CALL funcion1_global
+  MOV @aux3, AX
+
+  MOV AX, @aux3
+  MOV y_global, AX
+
+  MOV AX, z_global
+  MOV funcion2_global@param, AX
+  CALL funcion2_global
+  FST @aux4
+
+  FLD @aux4
+  FST z_global
+
+  JMP END_START
+
+  ??errorOverflow:
+    invoke StdOut, addr errorMsgOverflow
+    JMP END_START
+
+  ??errorConversionNegativo:
+    invoke StdOut, addr errorMsgConversionNegativa
+    JMP END_START
+
+  ??errorRestaNegativa:
+    invoke StdOut, addr errorMsgRestaNegativa
+
+END_START: 
+invoke ExitProcess, 0
+END START

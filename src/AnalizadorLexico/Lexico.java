@@ -262,20 +262,20 @@ public class Lexico {
         }
         //cuando sale del while retornar el int del token (los da yacc)
         //entrega 0 si es end of file
-       System.out.println("");
-       System.out.print("Token: "+this.getToken()+" -");
+       //System.out.println("");
+       //System.out.print("Token: "+this.getToken()+" -");
        defaultToken();
         
         if (t != null){
             if (t.isPresent()) {
-            	System.out.println(" Valor: "+t.get());
+            	//System.out.println(" Valor: "+t.get());
                 return t.get();
             }
         }
 
         if(caracterActual == FINAL_ARCHIVO) {
-        	System.out.println("Fin de Archivo (0)");
-            System.out.println();
+        	//System.out.println("Fin de Archivo (0)");
+            //System.out.println();
         	return 0;
         }
         

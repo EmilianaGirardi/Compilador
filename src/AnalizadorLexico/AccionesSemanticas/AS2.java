@@ -11,7 +11,7 @@ public class AS2 extends AccionSemantica{
     @Override
     public Optional<Integer> ejecutar(Character caracterActual) throws IOException {
     	Lexico lexico = Lexico.getInstance();
-        System.out.println("Error: cte mal escrita. Linea: "+ lexico.getContadorLinea());
+        System.out.println(YELLOW+"Warning: constante mal escrita. Linea: "+ lexico.getContadorLinea()+RESET);
         lexico.addCharToken('0');
         String token = lexico.getToken();
         

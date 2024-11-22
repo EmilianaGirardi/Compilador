@@ -1,19 +1,12 @@
 program_suma_resta BEGIN
 
-	TIPO_OCTAL x;
-	TIPO_UNSIGNED y;
-	TIPO_SINGLE z;
+	TIPO_UNSIGNED x;
+	TIPO_SINGLE y;
+	TIPO_OCTAL z;
 	 
-	y:=0;
-	
-	REPEAT
-		BEGIN
-			y:=y+1;
-			OUTF([hola]);
-		END
-	UNTIL(y>5);
-	
-	OUTF([COMPILO]);
+	x:=8+x-2;
+	y:=2.0s+23 - -1.0s-13 + y;
+	z:= 0456+0232-z;
 	
 	##Sumas y restas con Error.
 	

@@ -634,6 +634,7 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
     public final static int TIPO_TRIPLE_OCTAL = 7;
+    public final static int TIPO_RETORNO = 11;
 
     public final static int NOMBRE_VAR = 101;
     public final static int NOMBRE_FUN = 102;
@@ -669,22 +670,22 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
 
        if(result>0.0f) {
 	        if (infPositivo > result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infPositivo.toString();
 	            return nuevaCte;
 
 	        }else if(supPositivo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supPositivo.toString();
 	            return nuevaCte;
 	        }
        }else {
        	if(infNegativo > result) {
-       		System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+       		System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = infNegativo.toString();
 	            return nuevaCte;
 	        }else if(supNegativo < result) {
-	        	System.out.println("Warning: constante fuera de rango. Linea: "+ linea);
+	        	System.out.println("\u001B[33m"+"Warning: constante fuera de rango. Linea: "+ linea+"\u001B[0m");
 	            String nuevaCte = supNegativo.toString();
 	            return nuevaCte;
 	        }
@@ -694,33 +695,35 @@ private String truncarFueraRango(String cte, int linea) throws NumberFormatExcep
    }
 
 private String mappeoTipo(Integer tipo){
-	switch(tipo){
-		case T_UNSIGNED:
-			return "UNSIGNED";
-		case T_SINGLE:
-			return "SINGLE";
-		case T_OCTAL:
-			return "OCTAL";
-		case TIPO_MULTILINEA:
-			return "MULTILINEA";
-		case TIPO_TRIPLE_UNSIGNED:
-			return "TRIPLE_UNSIGNED";
-		case TIPO_TRIPLE_SINGLE:
-			return "TRIPLE_SINGLE";
-		case TIPO_TRIPLE_OCTAL:
-			return "TRIPLE_OCTAL";
-		case TIPO_ETIQUETA:
-			return "ETIQUETA";
-		case TIPO_SALTO:
-			return "SALTO";
-		case TIPO_FUNCION:
-			return "FUNCION";
-		case 11:
-			return "AUXILIAR";
+	if(tipo!=null) {
+	
+		switch(tipo){
+			case T_UNSIGNED:
+				return "UNSIGNED";
+			case T_SINGLE:
+				return "SINGLE";
+			case T_OCTAL:
+				return "OCTAL";
+			case TIPO_MULTILINEA:
+				return "MULTILINEA";
+			case TIPO_TRIPLE_UNSIGNED:
+				return "TRIPLE_UNSIGNED";
+			case TIPO_TRIPLE_SINGLE:
+				return "TRIPLE_SINGLE";
+			case TIPO_TRIPLE_OCTAL:
+				return "TRIPLE_OCTAL";
+			case TIPO_ETIQUETA:
+				return "ETIQUETA";
+			case TIPO_SALTO:
+				return "SALTO";
+			case TIPO_FUNCION:
+				return "FUNCION";
+			case 11:
+				return "AUXILIAR";
+		}
 	}
-
+	
 	return "";
-
 }
 
 public static void main(String[] args) throws IOException {
@@ -922,7 +925,7 @@ case 9:
 break;
 case 11:
 //#line 33 "gramatica.y"
-{System.out.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
+{System.err.println("Error: Falta ; " + "antes de la linea: " + lexico.getContadorLinea()); generador.setError();}
 break;
 case 12:
 //#line 39 "gramatica.y"
@@ -1132,12 +1135,13 @@ case 45:
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 String lexemaFun = TS.getUltimoAmbito(); /*obtengo el lexema de la funcion*/
                 Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
+                Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
+                Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
                     System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                     generador.setError();
                 }
-
+                ret.setTipo(TIPO_RETORNO);
                 /*desapilar el ambito de la funcion*/
                 TS.eliminarAmbito();
      }
@@ -1150,12 +1154,14 @@ case 46:
                  String lexemaFun = TS.getUltimoAmbito(); /*obtengo el lexema de la funcion*/
                  Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
 
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
+                 Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
+                 Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
                      System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                      generador.setError();
                 }
                 /*desapilar el ambito de la funcion*/
+                ret.setTipo(TIPO_RETORNO);
                 TS.eliminarAmbito();
 
 	}
@@ -2284,8 +2290,11 @@ break;
  */
 public void run() throws IOException {
   yyparse();
-  generador.imprimirTercetos();
   generador.generarCodigoMaquina();
+  lexico.getTablaSimbolos().imprimirTabla();
+  generador.imprimirTercetos();
+  
+  
 }
 //## end of method run() ########################################
 

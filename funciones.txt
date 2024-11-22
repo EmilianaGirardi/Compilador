@@ -1,0 +1,38 @@
+  funcion1_global:
+    MOV AX, funcion1_global@param
+    MOV x_global_funcion1, AX
+    MOV CX, 0 
+    MOV AX, x_global_funcion1
+    CMP AX, 045
+    SETE CL
+    MOV CH, 0 
+    MOV @aux1, CX
+
+    CMP @aux1, 0
+    JE ET5
+
+    MOV AX,45
+    RET
+
+    JMP ET7
+
+    ET5:
+
+    MOV AX,90
+    RET
+
+    ET7:
+
+    MOV AX,500
+  RET
+
+  funcion2_global:
+    FST x_global_funcion2
+    FLD x_global_funcion2
+    FADD _float0_
+    FST @aux2
+
+    MOV AX,@aux2
+  RET
+
+START:

@@ -1,11 +1,9 @@
 prueba BEGIN
 
 TIPO_UNSIGNED x, y, z;
-
-x:= 50;
-y:= 75;
-z:= x-y;
-
-
-
+	
+	x:= 50;
+	y:= 75;
+	z:= x-y;
+	
 END;

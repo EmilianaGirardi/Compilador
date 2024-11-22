@@ -1,18 +1,18 @@
 prueba BEGIN
 
-TIPO_SINGLE x;
-
-x:= 50.0s15;
-
-
-TIPO_SINGLE FUN funcion(TIPO_SINGLE x)
-BEGIN
-    TIPO_SINGLE y, z;
-    y:= 75.5s10;
-    z:= 7.7s14;
-    RET(x+y+z);
-END;
-
-funcion(x);
+	TIPO_SINGLE x;
+	
+	x:= 50.0s15;
+	
+	
+	TIPO_SINGLE FUN funcion(TIPO_SINGLE x)
+	BEGIN
+	    TIPO_SINGLE y, z;
+	    y:= 75.5s10;
+	    z:= 7.7s14;
+	    RET(x+y+z);
+	END;
+	
+	funcion(x);
 
 END;

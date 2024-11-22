@@ -172,12 +172,23 @@ public class Generador {
 			if(operando1!=null && !operando1.matches("\\[T\\d+\\]")) {
 				if(TS.estaToken(operando1) && TS.getToken(operando1)!=262) {
 					operando1=operando1.replace('.', '_');
+					operando1 = operando1.replace('{', '_');
+					operando1 = operando1.replace('}', '_');
+					t.setSegundoParamtero(operando1);
+					
+				}else if(operando1.contains("@")){
+					operando1=operando1.replace('.', '_');
 					t.setSegundoParamtero(operando1);
 				}
 			}
 			
 			if(operando2!=null && !operando2.matches("\\[T\\d+\\]")) {
 				if(TS.estaToken(operando2) && TS.getToken(operando2)!=262) {
+					operando2=operando2.replace('.', '_');
+					operando2 = operando2.replace('{', '_');
+					operando2 = operando2.replace('}', '_');
+					t.setTercerParametro(operando2);
+				}else if(operando2.contains("@")){
 					operando2=operando2.replace('.', '_');
 					t.setTercerParametro(operando2);
 				}
@@ -192,6 +203,8 @@ public class Generador {
 		for (String lexema : TS.getMap().keySet()){
 			if( TS.getToken(lexema)!=262) {
 				nuevoLexema = lexema.replace('.', '_');
+				nuevoLexema = nuevoLexema.replace('{', '_');
+				nuevoLexema = nuevoLexema.replace('}', '_');
 				mapaNuevosLexemas.put(nuevoLexema, lexema);	
 			}
 		}

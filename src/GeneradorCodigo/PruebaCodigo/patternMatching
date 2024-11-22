@@ -11,27 +11,30 @@ pattern BEGIN
     	z:= 5;
     	u:=3;
 
+		TIPO_OCTAL v1,v2,v3,v4,v5,v6;
+		
     	IF((x,y) <= (z,u))THEN
     		BEGIN
     			z:=x+y+u;
     		END
-    		ELSE BEGIN
-    		       TIPO_OCTAL v1,v2,v3,v4, v5, v6;
-                   v1:= 02;
-                   v2:= 06;
-                   v3:= 025;
-                   v4:= 044;
-                   v5:= 057;
-                   v6:= 035;
-    		    IF((v1,v2,v3) >= (v4, v5, v6)) THEN BEGIN
-    		        v1:= v1*v2*v3 + v5;
-    		    END
-    		    END_IF;
-    		END
+    		ELSE 
+	    		BEGIN
+	    			OUTF([(x,y)<=(z,u)]);
+	                v1:= 02;
+	                v2:= 06;
+	                v3:= 025;
+	                
+	                v4:= 044;
+	                v5:= 077;
+	                v6:= 035;
+	                
+	    		    IF((v4,v5,v6) >= (v1, v2, v3)) THEN 
+	    		    	BEGIN
+	    		    		OUTF([(v4,v5,v6)>=(v1,v2,v3)]);
+	    		        	v1:= v1*v2*v3 + v5;
+	    		 		END
+	    		    END_IF;
+	    		END
     	END_IF;
-
-
-
-
 
 END;
