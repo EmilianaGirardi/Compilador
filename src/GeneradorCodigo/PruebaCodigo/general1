@@ -53,7 +53,7 @@ prueba BEGIN
 	    RET(l);
 	END;
 	
-	x:= x + y + funcion(x);
+	x:= x - y + funcion(TIPO_UNSIGNED(z));
 	IF(x<150)THEN
 	 BEGIN
 		GOTO reinicio@;

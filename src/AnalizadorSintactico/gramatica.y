@@ -326,7 +326,7 @@ invocacion_fun : ID '(' exp_arit ')'{
         //verificar que el uso de ID sea nombre de función.
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if($1.sval.equals(TS.getUltimoAmbito())) {
-                            System.err.println("Error no se admiten funciones recursivas");
+                            System.err.println("Error: no se admiten funciones recursivas. Linea:"+lexico.getContadorLinea());
             generador.setError();
         }
         String id = TS.buscarVariable($1.sval);
@@ -343,7 +343,7 @@ invocacion_fun : ID '(' exp_arit ')'{
             Integer tipoCast = Integer.parseInt($3.sval);
 
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("Error no se admiten funciones recursivas");
+                                    System.err.println("Error: no se admiten funciones recursivasLinea. Linea:"+lexico.getContadorLinea());
                                     generador.setError();
                                 }
 

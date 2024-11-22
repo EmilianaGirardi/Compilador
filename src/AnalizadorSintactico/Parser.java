@@ -1214,7 +1214,7 @@ case 49:
             entonces lo comparamos con el tipo de exp_arit.
             */
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
+                                    System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas. Linea:"+lexico.getContadorLinea()+"\u001B[0m");
                                     generador.setError();
              }
             Integer tipoExp = null;
@@ -1256,7 +1256,7 @@ case 50:
         /*verificar que el uso de ID sea nombre de función.*/
         TablaSimbolos TS = lexico.getTablaSimbolos();
         if(val_peek(4).sval.equals(TS.getUltimoAmbito())) {
-                            System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
+                            System.err.println("\u001B[31m"+"Error: no se admiten funciones recursivas"+"\u001B[0m");
             generador.setError();
         }
         String id = TS.buscarVariable(val_peek(4).sval);
@@ -1273,7 +1273,7 @@ case 50:
             Integer tipoCast = Integer.parseInt(val_peek(2).sval);
 
              if(id.equals(TS.getUltimoAmbito())) {
-                                    System.err.println("\u001B[31m"+"Error no se admiten funciones recursivas");
+                                    System.err.println("\u001B[31m"+"Error: no se admiten funciones recursivas. Linea:"+lexico.getContadorLinea()+"\u001B[0m");
                                     generador.setError();
                                 }
 
