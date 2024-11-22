@@ -268,6 +268,7 @@ retorno : RET '(' exp_arit ')' ';'{
             }
             
         }
+        | RET '(' exp_arit ')' {System.err.println("Error: falta ; en el retorno. Linea: " + lexico.getContadorLinea());generador.setError();} 
 	    ;
 
 invocacion_fun : ID '(' exp_arit ')'{

@@ -24,6 +24,7 @@ public class TraductorAssembler {
 	private FileWriter assembler;
 	
 	private boolean funcion;
+	private int anidamiento;
 	
 	private Integer numAux;
 	private Integer numCadena;
@@ -61,6 +62,7 @@ public class TraductorAssembler {
 		this.numFloat = 0;
 		
 		this.funcion = false;
+		this.anidamiento = 0;
 		
 		this.generador = Generador.getInstance();
 		this.lexico = Lexico.getInstance();
@@ -110,9 +112,9 @@ public class TraductorAssembler {
 	public void cerrarDeclaracion() throws IOException {
 		TablaSimbolos TS = lexico.getTablaSimbolos();
 		for (String lexema : TS.getMap().keySet()){
-			if(TS.getTipo(lexema)==TIPO_AUX_ENTERO) {
+			if(TS.getTipo(lexema)!=null && TS.getTipo(lexema)==TIPO_AUX_ENTERO) {
 				encabezado.append(lexema + " DW 0 "+ saltoLinea);
-			}else if(TS.getTipo(lexema)==TIPO_AUX_FLOAT) {
+			}else if(TS.getTipo(lexema)!=null && TS.getTipo(lexema)==TIPO_AUX_FLOAT) {
 				encabezado.append(lexema + " DD 0.0 "+ saltoLinea);
 			}
 		}
@@ -440,14 +442,29 @@ public class TraductorAssembler {
 	}
 
 	private void call(Terceto terceto, FileWriter salida) throws IOException {
+		TablaSimbolos TS = lexico.getTablaSimbolos();
 		String parametro = terceto.getOperando2();
-
+		Integer tipoParam;
 	    if (parametro.matches("\\[T\\d+\\]")) {
 	        int pos = Integer.parseInt(parametro.replaceAll("\\D", ""));
 	        parametro = generador.getTerceto(pos).getAux();
 	    }
+	    tipoParam = TS.getTipo(parametro);
+	    //salida.append(this.identacion+"PUSH " + parametro + saltoLinea);
 	    
-	    salida.append(this.identacion+"PUSH " + parametro + saltoLinea);
+	    if(tipoParam!=null && tipoParam==TIPO_AUX_FLOAT) {
+	    	salida.append(this.identacion+"FLD "+parametro+saltoLinea);
+	    }else {
+	    	String auxParam = terceto.getOperando1()+"@param";
+		    if(!TS.estaToken(auxParam)) {
+		    	ArrayList<Integer> atributo = new ArrayList<Integer>();
+				atributo.add(0);
+				atributo.add(TIPO_AUX_ENTERO);
+				TS.agregarToken(auxParam, atributo);
+		    }
+		    salida.append(this.identacion+"MOV AX, "+parametro+saltoLinea);
+		    salida.append(this.identacion+"MOV "+auxParam+", AX"+saltoLinea);
+	    }
 	    salida.append(this.identacion+"CALL " + terceto.getOperando1() + saltoLinea);  
 	    
 	    String result;
@@ -466,20 +483,22 @@ public class TraductorAssembler {
 	private void funcion(Terceto terceto) throws IOException {
 		// TODO Auto-generated method stub
 		this.funcion=true;
+		this.anidamiento++;
+		
 		this.funciones.append(this.identacion+terceto.getOperador()+":" + saltoLinea);
 		this.identacion+="  ";
-		this.funciones.append(this.identacion+"PUSH EBP"+ saltoLinea);
-		this.funciones.append(this.identacion+"MOV EBP, ESP"+ saltoLinea); //Mantengo el puntero a la base 
+		//this.funciones.append(this.identacion+"PUSH EBP"+ saltoLinea);
+		//this.funciones.append(this.identacion+"MOV EBP, ESP"+ saltoLinea); //Mantengo el puntero a la base 
 		
 		
 		String parametro = terceto.getOperando1(); 
 		Integer tipo = lexico.getTablaSimbolos().getTipo(parametro);
 		
 		if(tipo == 2) {
-			this.funciones.append(this.identacion+"FLD [EBP+8]"+saltoLinea);
-			this.funciones.append(this.identacion+"FST "+parametro);
+			//this.funciones.append(this.identacion+"FLD DWORD PTR [EBP+8]"+saltoLinea);
+			this.funciones.append(this.identacion+"FST "+parametro+saltoLinea);
 		}else {
-			this.funciones.append(this.identacion+"MOV AX, [EBP+8]" + saltoLinea);
+			this.funciones.append(this.identacion+"MOV AX, "+terceto.getOperador()+"@param"+ saltoLinea);
 			this.funciones.append(this.identacion+"MOV "+parametro+", AX" + saltoLinea);
 		}
 	}
@@ -496,18 +515,25 @@ public class TraductorAssembler {
 		if(tipo == T_SINGLE) {
 			this.funciones.append(this.identacion+"FLD "+retorno+ saltoLinea);
 		}else {
-			this.funciones.append(this.identacion+"MOV AX,"+retorno+ saltoLinea);
+			this.funciones.append(this.identacion+"MOV AX,"+retorno+ saltoLinea); 
 		}
 		
 		
-		this.funciones.append(this.identacion+"MOV ESP, EBP"+ saltoLinea);
-		this.funciones.append(this.identacion+"POP EBP"+ saltoLinea);
-		this.identacion= this.identacion.substring(0, this.identacion.length() - 2);
+		//this.funciones.append(this.identacion+"MOV ESP, EBP"+ saltoLinea);
+		//this.funciones.append(this.identacion+"POP EBP"+ saltoLinea);
+		
+		if(terceto.getTipo()==TIPO_RETORNO) {
+			if(this.anidamiento==1) {
+				this.anidamiento=0;
+				this.funcion = false;	
+			}else {
+				this.anidamiento--;
+			}	
+			
+			this.identacion= this.identacion.substring(0, this.identacion.length() - 2);
+		}
+		
 		this.funciones.append(this.identacion+"RET"+ saltoLinea);
-		
-		if(terceto.getTipo()==TIPO_RETORNO) { // VERIFICAAAAAAR...
-			this.funcion = false;
-		}
 	}
 
 	private void mayorIgual(Terceto terceto, FileWriter salida) throws IOException{
@@ -519,7 +545,8 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op1.replaceAll("\\D", ""));
 			op1 = generador.getTerceto(pos).getAux();
 		}
-
+		
+		
 		op2 = terceto.getOperando2();
 		if (op2.matches("\\[T\\d+\\]")){
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
@@ -527,6 +554,12 @@ public class TraductorAssembler {
 		}
 
 		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -576,7 +609,13 @@ public class TraductorAssembler {
 			op2 = generador.getTerceto(pos).getAux();
 		}
 
-		if (terceto.getTipo() == null && terceto.getTipo() == T_SINGLE){
+		if (terceto.getTipo() != null && terceto.getTipo() == T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -619,8 +658,14 @@ public class TraductorAssembler {
 			pos = Integer.parseInt(op2.replaceAll("\\D", ""));
 			op2 = generador.getTerceto(pos).getAux();
 		}
-
+		
 		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -664,6 +709,12 @@ public class TraductorAssembler {
 		}
 
 		if (terceto.getTipo()!=null && terceto.getTipo()== T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -708,6 +759,12 @@ public class TraductorAssembler {
 		}
 
 		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -752,6 +809,12 @@ public class TraductorAssembler {
 		}
 
 		if (terceto.getTipo()!=null && terceto.getTipo() == T_SINGLE){
+			if (mapaSingles.containsKey(op1)) {
+				op1 = mapaSingles.get(op1);
+			}
+			if (mapaSingles.containsKey(op2)) {
+				op2 = mapaSingles.get(op2);
+			}
 			salida.append(this.identacion+"MOV CX, 0 " + saltoLinea); //inicializamos en false
 			salida.append(this.identacion+"FLD " + op1 + saltoLinea);  // Cargar op1 en ST(0)
 			salida.append(this.identacion+"FLD " + op2 + saltoLinea);  // Cargar op2 en ST(1)
@@ -864,7 +927,7 @@ public class TraductorAssembler {
 		String result = this.crearAux(TIPO_AUX_FLOAT);
 		salida.append(this.identacion+"FILD "+operando+saltoLinea);
 		
-		salida.append(this.identacion+"MOV "+result+", ST"+saltoLinea);
+		salida.append(this.identacion+"FST "+result+saltoLinea);
 		terceto.addAux(result);
 	}
 	

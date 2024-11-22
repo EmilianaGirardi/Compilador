@@ -1,48 +1,77 @@
   funcion1_global:
-    PUSH EBP
-    MOV EBP, ESP
-    MOV AX, [EBP+8]
+    MOV AX, funcion1_global@param
     MOV x_global_funcion1, AX
-    MOV AX, 10
+    invoke StdOut, addr _cadena4_
+
+    funcion2_global_funcion1:
+      MOV AX, funcion2_global_funcion1@param
+      MOV y_global_funcion1_funcion2, AX
+
+      invoke StdOut, addr _cadena3_
+
+      funcion3_global_funcion1_funcion2:
+        FST z_global_funcion1_funcion2_funcion3
+
+        invoke StdOut, addr _cadena2_
+
+        MOV CX, 0 
+        FLD z_global_funcion1_funcion2_funcion3
+        FLD _float0_
+        FCOM ST(1)
+        FSTSW AX
+        SAHF
+        SETG  CL
+        MOV CH, 0 
+        MOV @aux1, CX
+
+        CMP @aux1, 0
+        JE ET11
+
+        invoke StdOut, addr _cadena6_
+
+        MOV AX,8
+        RET
+
+        JMP ET14
+
+        ET11:
+
+        invoke StdOut, addr _cadena7_
+
+        MOV AX,2
+        RET
+
+        ET14:
+
+        MOV AX,0
+      RET
+
+      FILD y_global_funcion1_funcion2
+      FST @aux2
+
+      FLD @aux2
+      CALL funcion3_global_funcion1_funcion2
+      MOV @aux3, AX
+
+      MOV AX, @aux3
+      ADD AX, 2
+      JC ??errorOverflow
+      MOV @aux4, AX
+
+      MOV AX,@aux4
+    RET
+
+    MOV AX, x_global_funcion1
+    MOV funcion2_global_funcion1@param, AX
+    CALL funcion2_global_funcion1
+    MOV @aux5, AX
+
+    MOV AX, @aux5
     ADD AX, x_global_funcion1
     JC ??errorOverflow
-    MOV @aux1, AX
+    MOV @aux6, AX
 
-    MOV AX,@aux1
-    MOV ESP, EBP
-    POP EBP
+    MOV AX,@aux6
   RET
-
-  MOV AX, 1
-  MOV x_global, AX
-
-  PUSH x_global
-  CALL funcion1_global
-  MOV @aux2, AX
-
-  MOV AX, @aux2
-  MOV y_global, AX
-
-  invoke StdOut, addr _cadena2_
-
-  MOV CX, 0 
-  MOV AX, y_global
-  CMP AX, 50
-  SETB CL
-  MOV CH, 0 
-  MOV @aux3, CX
-
-  CMP @aux3, 0
-  JE ET11
-
-  invoke StdOut, addr _cadena0_
-
-  JMP ET13
-
-ET11:
-
-  invoke StdOut, addr _cadena1_
-
-ET13:
 
 START:

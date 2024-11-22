@@ -634,6 +634,7 @@ private final Float supNegativo = -1.17549435e-38f;//(float) Math.pow(-1.1754943
     public final static int TIPO_TRIPLE_UNSIGNED = 5;
     public final static int TIPO_TRIPLE_SINGLE = 6;
     public final static int TIPO_TRIPLE_OCTAL = 7;
+    public final static int TIPO_RETORNO = 11;
 
     public final static int NOMBRE_VAR = 101;
     public final static int NOMBRE_FUN = 102;
@@ -1134,12 +1135,13 @@ case 45:
                 TablaSimbolos TS = lexico.getTablaSimbolos();
                 String lexemaFun = TS.getUltimoAmbito(); /*obtengo el lexema de la funcion*/
                 Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
+                Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
+                Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
                     System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                     generador.setError();
                 }
-
+                ret.setTipo(TIPO_RETORNO);
                 /*desapilar el ambito de la funcion*/
                 TS.eliminarAmbito();
      }
@@ -1152,12 +1154,14 @@ case 46:
                  String lexemaFun = TS.getUltimoAmbito(); /*obtengo el lexema de la funcion*/
                  Integer tipoFun = TS.getTipo(lexemaFun); /*obtengo el tipo de la funcion*/
 
-                Integer tipoRetorno = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", ""))).getTipo();
+                 Terceto ret = generador.getTerceto(Integer.parseInt(val_peek(1).sval.replaceAll("\\D", "")));
+                 Integer tipoRetorno = ret.getTipo();
                 if (tipoFun != tipoRetorno){
                      System.err.println("Error: tipo de retorno invalido en funcion: " + lexemaFun);
                      generador.setError();
                 }
                 /*desapilar el ambito de la funcion*/
+                ret.setTipo(TIPO_RETORNO);
                 TS.eliminarAmbito();
 
 	}
