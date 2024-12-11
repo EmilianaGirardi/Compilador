@@ -1,0 +1,52 @@
+prueba BEGIN
+
+	TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
+		    BEGIN
+		       OUTF([ADENTRO DE FUN 1]);
+		       TIPO_UNSIGNED FUN funcion2 (TIPO_UNSIGNED y)
+		       		BEGIN
+		       			OUTF([ADENTRO DE FUN 2]);
+		       			TIPO_UNSIGNED FUN funcion3 (TIPO_SINGLE z)
+		       				BEGIN
+		       					OUTF([ADENTRO DE FUN 3]);
+		       					IF(z>4.0)THEN
+		       						BEGIN
+		       							OUTF([z>4]);
+		       							RET(8);
+		       						END
+		       					ELSE
+		       						BEGIN
+		       							OUTF([z<4]);
+		       							RET(2);
+		       						END
+		       					END_IF;
+		       					
+		       					RET (0);
+		       				END;
+		       				
+		       			RET (funcion3(TIPO_SINGLE(y))+2);
+		       		END;
+		       
+		       RET (funcion2(x)+x);
+		    END;
+	
+	TIPO_UNSIGNED x;
+	x:= 1;
+	
+	TIPO_UNSIGNED y;
+	
+	y:=funcion1(x);
+	
+	OUTF([FUERA de funcion1]);
+	
+	IF(y<50)THEN
+		BEGIN
+			OUTF([y menor a 50 => el RET fue x]);
+		END
+	ELSE
+		BEGIN
+			OUTF([y mayor a 50 => el RET fue x+z]);
+		END
+	END_IF;
+
+END;

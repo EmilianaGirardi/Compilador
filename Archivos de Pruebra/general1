@@ -1,0 +1,63 @@
+prueba BEGIN
+
+	TIPO_UNSIGNED x, y;
+	TIPO_SINGLE z;
+	
+	z:=2.;
+	
+	reinicio@;
+	x:= x+5;
+	y:= y+2;
+	
+	TIPO_UNSIGNED FUN funcion(TIPO_UNSIGNED l)
+	BEGIN
+	    TIPO_UNSIGNED i;
+	    
+	    TIPO_UNSIGNED FUN funcion2(TIPO_UNSIGNED i)
+		    BEGIN
+		        RET (l+i*2);
+		    END;
+	    
+	    REPEAT
+	        BEGIN
+	            IF(l <= 80)THEN 
+	             BEGIN 
+	             	l:= funcion2(l);
+	             	
+	                IF(l < 80) THEN 
+	                 BEGIN
+	                    REPEAT 
+	                     BEGIN
+	                     	i:=i+1;
+	                     END
+	                    UNTIL(i > 7);
+	                 END
+	                ELSE 
+	                 BEGIN
+	                    IF(l > 80) THEN
+	                     BEGIN
+	                        l:= l + 5;
+	                     END
+	                    END_IF;
+	                 END
+	                END_IF;
+	             END
+	            ELSE 
+	             BEGIN
+	                RET(l);
+	             END
+	            END_IF;
+	        END
+	    UNTIL (l >= 100);
+	        
+	    RET(l);
+	END;
+	
+	x:= x + y + funcion(x);
+	IF(x<150)THEN
+	 BEGIN
+		GOTO reinicio@;
+	 END
+	END_IF;
+
+END;

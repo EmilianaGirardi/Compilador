@@ -1,0 +1,11 @@
+overflowSuma BEGIN
+
+	TIPO_UNSIGNED x;
+	TIPO_UNSIGNED y;
+	 
+    x:=50000;
+    y:=30000;
+
+    x:=x+y;
+
+END;

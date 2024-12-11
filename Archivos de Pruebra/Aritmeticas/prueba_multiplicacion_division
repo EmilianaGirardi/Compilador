@@ -1,0 +1,29 @@
+program_multiplicacion_division BEGIN
+
+	TIPO_UNSIGNED x;
+	TIPO_OCTAL y;
+	TIPO_SINGLE z;
+	
+	## Multiplicacion y division correcta
+	
+	x:=x*2;
+	y:=y*06;
+	z:=z*45.0123s+2;
+	
+	x:=x/2;
+	y:=y/06;
+	z:=z/45.0123s+2;
+	
+	## Multiplicacion y division incorrecta
+	
+	##x:=x*y;
+	##x:=x*z;
+	##y:=y*z;
+	
+	##x:=x/02;
+	##y:=y/1;
+	##y:=y/1.2s+8;
+	##z:=z/9;
+	##z:=z/01;
+
+END;

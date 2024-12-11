@@ -1,0 +1,24 @@
+prueba BEGIN
+
+program_suma_resta BEGIN
+
+	TIPO_UNSIGNED x;
+	TIPO_SINGLE y;
+	TIPO_OCTAL z;
+	 
+	x:=8+x-2;
+	y:=2.0s+23 - -1.0s-13 + y;
+	z:= 0456+0232-z;
+	
+	##Sumas y restas con Error.
+	
+	x:=x+y;
+	x:=x-y;
+	y:=z+y;
+	y:=z-y;
+	z:=z+x;
+	z:=z-x;
+
+END;
+
+END;

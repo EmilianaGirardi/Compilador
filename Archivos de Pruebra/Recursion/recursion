@@ -1,0 +1,18 @@
+prueba BEGIN
+
+
+	TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
+		BEGIN
+			x:=funcion1(x); ##RECURSION
+		    TIPO_UNSIGNED z;
+	        z:= 50;
+	        RET(x+z);
+		END;
+	
+	TIPO_SINGLE x;
+	x:= 1.1s+25;
+	
+	TIPO_UNSIGNED y;
+	y:=funcion1(TIPO_UNSIGNED(x));
+
+END;

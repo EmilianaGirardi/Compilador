@@ -1,0 +1,24 @@
+prueba BEGIN
+
+TIPO_UNSIGNED FUN funcion1 ( TIPO_UNSIGNED x )
+	    BEGIN
+	        TIPO_UNSIGNED z;
+	        z:= 50;
+	        IF ( x > 45)  THEN
+            BEGIN
+                RET (x);
+            END
+            END_IF;
+	        RET (x+z);
+	    END;
+
+TIPO_UNSIGNED x;
+x:= 5;
+
+funcion1(x);
+
+## La variable z no puede ser alcanzada porque es local de funcion1
+
+x:= z;
+
+END;

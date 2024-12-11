@@ -1,0 +1,13 @@
+aritmeticas BEGIN
+
+	TIPO_UNSIGNED x;
+	TIPO_SINGLE y;
+	TIPO_OCTAL z;
+	 
+	x:=8+x-2;
+	y:=2.0s+23 - -1.0s-13 + y;
+	z:= 0456+0232-z;
+
+
+
+END;

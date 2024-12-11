@@ -1,0 +1,37 @@
+prueba BEGIN
+
+	
+	TIPO_UNSIGNED FUN funcion1 ( TIPO_OCTAL x )
+		BEGIN
+			IF (x=045)  THEN
+		     BEGIN
+		     	RET (45);
+		     END
+		    ELSE
+		     BEGIN
+		     	RET(90);
+		     END
+		    END_IF;
+	
+	        RET(500);
+		END;
+	
+	TIPO_SINGLE FUN funcion2 ( TIPO_SINGLE x )
+		BEGIN
+			RET(x+2.0);
+		END;
+	
+	TIPO_OCTAL x;
+	x:= 047;
+	
+	TIPO_UNSIGNED y;
+	y:= 45;
+	
+	TIPO_SINGLE z;
+	z:= 5.0s10;
+	
+	y:=funcion1(x);
+	
+	z:=funcion2(z);
+
+END;

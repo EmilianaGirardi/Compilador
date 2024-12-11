@@ -1,0 +1,44 @@
+prueba BEGIN
+
+	TIPO_UNSIGNED x, y, z, i, j , k;
+	
+	x:= 5;
+	y:= 45;
+	z:= 59;
+	i:= 84;
+	j:= 95;
+	k:= 105;
+	
+	IF (z ! 60) THEN 
+	 BEGIN
+	    REPEAT 
+	     BEGIN
+	    	y:=y-5;
+	        IF(y <= 25) THEN 
+	        	BEGIN
+	        		OUTF([Sali por etiqueta]);
+	            	GOTO salir@;
+	        	END
+	        END_IF;
+	        
+	        x:=x+5;
+	        OUTF([Sumo x, resto y]);
+	     END
+	    UNTIL(x > 25);
+	 END
+	END_IF;
+	
+	TIPO_OCTAL var;
+	var:= 05;
+	
+	x:= x+25;
+	
+	salir@;
+	OUTF([SALI]);
+	x:= 10;
+	
+	TIPO_SINGLE w;
+	w:= 2.;
+	w:=-255.255s+80;
+
+END;

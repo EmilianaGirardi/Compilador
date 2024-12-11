@@ -1,0 +1,12 @@
+overflowFlotantes BEGIN
+
+TIPO_SINGLE x, y, z;
+
+    x:= 3.40282347s38;
+    y:= 95.5s14;
+    z:= 7.7;
+
+    z:= x + y + z;
+
+
+END;
